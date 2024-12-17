@@ -10,6 +10,7 @@
         RTS
     :   
 
+    JSR gamepad_poll
     lda gamepad
     and #PAD_D
     beq NOT_GAMEPAD_DOWN 
@@ -19,7 +20,8 @@
         LDA player_row
         CMP #MAP_ROWS - 1
         BNE :+
-            JMP NOT_GAMEPAD_DOWN
+            ; JMP NOT_GAMEPAD_DOWN
+            RTS
         :  
 
         LDA #BOTTOM
@@ -34,12 +36,13 @@
 
         BEQ HitDown
             ;otherwise keep now changed value
-            JMP NOT_GAMEPAD_DOWN
-
+            ; JMP NOT_GAMEPAD_DOWN
+            RTS
         HitDown: 
             ;sprite collided with wall
             DEC player_row
-            JMP NOT_GAMEPAD_DOWN
+            ; JMP NOT_GAMEPAD_DOWN
+            RTS
         
 
     NOT_GAMEPAD_DOWN: 
@@ -50,7 +53,8 @@
         ;bounds check first
         LDA player_row
         BNE :+
-            JMP NOT_GAMEPAD_UP
+            ; JMP NOT_GAMEPAD_UP
+        RTS
         :   
 
         LDA #TOP
@@ -65,12 +69,13 @@
 
         BEQ HitUp
             ;otherwise keep now changed value
-            JMP NOT_GAMEPAD_UP
-
+           ; JMP NOT_GAMEPAD_UP
+    RTS
         HitUp: 
             ;sprite collided with wall
             INC player_row
-            JMP NOT_GAMEPAD_UP
+            ;JMP NOT_GAMEPAD_UP
+            RTS
 
     NOT_GAMEPAD_UP: 
     lda gamepad
@@ -81,7 +86,8 @@
         ;bounds check first
         LDA player_collumn
         BNE :+
-            JMP NOT_GAMEPAD_LEFT
+            ;JMP NOT_GAMEPAD_LEFT
+        RTS
         :
 
         LDA #LEFT
@@ -97,14 +103,14 @@
 
         BEQ HitLeft
             ;otherwise keep now changed value
-            JMP NOT_GAMEPAD_LEFT
-
+            ;JMP NOT_GAMEPAD_LEFT
+    RTS
 
         HitLeft: 
             ;sprite collided with wall
             INC player_collumn
-            JMP NOT_GAMEPAD_LEFT
-
+           ; JMP NOT_GAMEPAD_LEFT
+RTS
 
     NOT_GAMEPAD_LEFT: 
     lda gamepad
@@ -114,7 +120,8 @@
         LDA player_collumn
         CMP #MAP_COLUMNS - 1
         BNE :+
-            JMP NOT_GAMEPAD_RIGHT
+           ; JMP NOT_GAMEPAD_RIGHT
+        RTS
         :
 
         LDA #RIGHT
@@ -130,13 +137,13 @@
 
         BEQ HitRight
             ;otherwise keep now changed value
-            JMP NOT_GAMEPAD_RIGHT
-
+;            JMP NOT_GAMEPAD_RIGHT
+RTS
         HitRight: 
             ;sprite collided with wall
             DEC player_collumn
-            JMP NOT_GAMEPAD_RIGHT
-
+            ;JMP NOT_GAMEPAD_RIGHT
+RTS
 
     NOT_GAMEPAD_RIGHT: 
         ;neither up, down, left, or right is pressed
