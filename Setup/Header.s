@@ -1,6 +1,13 @@
 ;*****************************************************************
 ; Defines
 ;*****************************************************************
+
+; enable /disable pal mode
+PAL_MODE = 1
+
+; TODO
+; .define DEBUG
+
 ; PPU Registers
 PPU_CONTROL = $2000 ; PPU Control Register 1 (Write)
 PPU_MASK = $2001 ; PPU Control Register 2 (Write)
