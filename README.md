@@ -26,7 +26,7 @@ Navigate through the maze and reach the end to complete the level.
 
 ## References
 
-### Initial Prjeect
+### Initial Project
 
 The original project was created by:
 
@@ -34,4 +34,4 @@ The original project was created by:
 - **Seppe Mestdagh**
 - **Aaron Van Sichem De Combe**
 
-For more information, updates, or to view the original project, please visit the official project repository [here](#https://github.com/thegamingnobody/AssemblyMaze).
+For more information, updates, or to view the original project, please visit the official project repository [here](https://github.com/thegamingnobody/AssemblyMaze).
