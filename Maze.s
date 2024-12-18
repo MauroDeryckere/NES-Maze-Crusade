@@ -321,9 +321,6 @@ skip_start_screen:
         @PLAYING: 
             CMP #2
             BNE @SOLVING
-            
-            ; try to update the player as often as possible (in case player pressed button in the middle of the frame)
-            JSR update_player_sprite
 
             ; ONCE PER FRAME
             LDA checked_this_frame
@@ -333,6 +330,8 @@ skip_start_screen:
                 STA checked_this_frame ; set flag so that we only do this once per frame
                 
                 JSR poll_clear_buffer ; clear buffer if necessary
+
+                JSR update_player_sprite
 
                 ; Have we started the game yet? if not, execute the start function once
                 LDA has_started
@@ -527,7 +526,6 @@ skip_start_screen:
     LDA gamepad
     AND #PAD_A
     BEQ A_NOT_PRESSED
-
 
     JMP START_CHECK
     A_NOT_PRESSED:
