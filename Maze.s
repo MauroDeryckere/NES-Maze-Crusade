@@ -64,9 +64,9 @@ draw_start_screen:
     LDA has_started
     CMP #1
     BEQ :+
-        INC temp_player_collumn ; tep var to maintain how many times weve executed
-        JSR display_Start_screen
-        JSR draw_title
+        ; INC temp_player_collumn ; tep var to maintain how many times weve executed
+        ; JSR display_Start_screen
+        ; JSR draw_title
     :   
         JSR draw_player_sprite
         JSR draw_title_settings
@@ -177,6 +177,9 @@ skip_start_screen:
     LDA #1 
     STA display_BFS_directions
 
+    INC temp_player_collumn ; tep var to maintain how many times weve executed
+    JSR display_Start_screen
+    JSR draw_title
 
 ;-----------------------------------------
 ;INITIALIZE MUSIC

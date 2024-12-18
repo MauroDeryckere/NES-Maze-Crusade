@@ -483,58 +483,52 @@ wait_vblank2:
 
 .segment "CODE"
 .proc display_Start_screen
-    LDA temp_player_collumn
-    CMP #1
-    BEQ @p0
+    ; LDA temp_player_collumn
+    ; CMP #1
+    ; BEQ @p0
+    ; CMP #2
+    ; BEQ @p1
+    ; CMP #3
+    ; BEQ @p2
+    ; CMP #4
+    ; BEQ @p3
+    ; CMP #5
+    ; BEQ @p4
 
-    CMP #2
-    BEQ @p1
-
-    CMP #3
-    BEQ @p2
-
-    CMP #4
-    BEQ @p3
-	
-    CMP #5
-    BEQ @p4
-
-    RTS
+    ; RTS
+    JSR ppu_off
 
     @p0: 
-    ; Write top border
-	vram_set_address (NAME_TABLE_0_ADDRESS + 17 * 32 + 11)
-	assign_16i paddr, top_border
-	jsr write_text
-    RTS
+        ; Write top border
+        vram_set_address (NAME_TABLE_0_ADDRESS + 17 * 32 + 11)
+        assign_16i paddr, top_border
+        jsr write_text
+
+    ;RTS
     @p1: 
-
-	; Write play button
-	vram_set_address (NAME_TABLE_0_ADDRESS + 18 * 32 + 11)
-	assign_16i paddr, play_text
-	jsr write_text
-
-    RTS
+        ; Write play button
+        vram_set_address (NAME_TABLE_0_ADDRESS + 18 * 32 + 11)
+        assign_16i paddr, play_text
+        jsr write_text
+   ; RTS
     @p2: 
-	; Write auto button
-	vram_set_address (NAME_TABLE_0_ADDRESS + 19 * 32 + 11)
-	assign_16i paddr, auto_text
-	jsr write_text
-    
-    RTS
+        ; Write auto button
+        vram_set_address (NAME_TABLE_0_ADDRESS + 19 * 32 + 11)
+        assign_16i paddr, auto_text
+        jsr write_text
+   ; RTS
     @p3: 
-	; Write hard button
-	vram_set_address (NAME_TABLE_0_ADDRESS + 20 * 32 + 11)
-	assign_16i paddr, hard_text
-	jsr write_text
-    RTS
+        ; Write hard button
+        vram_set_address (NAME_TABLE_0_ADDRESS + 20 * 32 + 11)
+        assign_16i paddr, hard_text
+        jsr write_text
+    ;RTS
     @p4: 
-	; Write bottom border
-	vram_set_address (NAME_TABLE_0_ADDRESS + 21 * 32 + 11)
-	assign_16i paddr, bottom_border
-	jsr write_text
-
-	rts
+        ; Write bottom border
+        vram_set_address (NAME_TABLE_0_ADDRESS + 21 * 32 + 11)
+        assign_16i paddr, bottom_border
+        jsr write_text
+	RTS
 .endproc
 
 .segment "CODE"
@@ -553,42 +547,26 @@ exit:
 .endproc
 
 .proc draw_title
-    LDA temp_player_collumn
+    ; LDA temp_player_collumn
     
-    CMP #1
-    BEQ @p0
-    CMP #2
-    BEQ @p1
-    CMP #3
-    BNE :+
-        JMP @p2
-    :
-    CMP #4
-    BNE :+
-        JMP @p3
-    :
-    CMP #5
-    BNE :+
-        JMP @p4
-    :
-    CMP #6
-    BNE :+
-        JMP @p5
-    :
-    CMP #7
-    BNE :+
-        JMP @p6
-    :
-    CMP #8
-    BNE :+
-        JMP @p7
-    :
-    CMP #9
-    BNE :+
-        JMP @p8
-    :
+    ; CMP #1
+    ; BEQ @p0
+    ; CMP #2
+    ; BEQ @p1
+    ; CMP #3
+    ; BNE :+
+    ;     JMP @p2
+    ; :
+    ; CMP #4
+    ; BNE :+
+    ;     JMP @p3
+    ; :
+    ; CMP #5
+    ; BNE :+
+    ;     JMP @p4
+    ; :
 
-    RTS
+    ; RTS
 
     @p0:
         vram_set_address (NAME_TABLE_0_ADDRESS + 1 * 32 + 1)
@@ -597,56 +575,44 @@ exit:
         vram_set_address (NAME_TABLE_0_ADDRESS + 2 * 32 + 1)
         assign_16i paddr, titlebox_line_2
         JSR write_text
-    RTS
-    @p1: 
 
+    ;RTS
+    @p1: 
         vram_set_address (NAME_TABLE_0_ADDRESS + 3 * 32 + 1)
         assign_16i paddr, title_line_1
-	    JSR write_text
-    RTS
-    @p2: 
+	    JSR write_text 
         vram_set_address (NAME_TABLE_0_ADDRESS + 4 * 32 + 1)
         assign_16i paddr, title_line_2
-        JSR write_text
-
-    RTS
-    @p3: 
-
+        JSR write_text 
+    ;RTS
+    @p2: 
         vram_set_address (NAME_TABLE_0_ADDRESS + 5 * 32 + 1)
         assign_16i paddr, title_line_3
         JSR write_text
-    RTS
-    @p4: 
         vram_set_address (NAME_TABLE_0_ADDRESS + 6 * 32 + 1)
         assign_16i paddr, title_line_4
         JSR write_text
-    RTS
-
-    @p5: 
+    ;RTS
+    @p3: 
         vram_set_address (NAME_TABLE_0_ADDRESS + 7 * 32 + 1)
         assign_16i paddr, title_line_5
         JSR write_text
-    RTS
-    @p6: 
         vram_set_address (NAME_TABLE_0_ADDRESS + 8 * 32 + 1)
         assign_16i paddr, title_line_6
         JSR write_text
-    RTS
-
-    @p7: 
+    ;RTS
+    @p4: 
         vram_set_address (NAME_TABLE_0_ADDRESS + 9 * 32 + 1)
         assign_16i paddr, titlebox_line_3
         JSR write_text
-
-    RTS
-    @p8: 
-
         vram_set_address (NAME_TABLE_0_ADDRESS + 10 * 32 + 1)
         assign_16i paddr, titlebox_line_4
         JSR write_text
 
         LDA #1
         STA has_started
+    
+        JSR ppu_update
     RTS
 
 .endproc
