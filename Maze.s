@@ -65,7 +65,7 @@ draw_start_screen:
     CMP #1
     BEQ :+
         ; INC temp_player_collumn ; tep var to maintain how many times weve executed
-        ; JSR display_Start_screen
+        JSR display_Start_screen
         ; JSR draw_title
     :   
         JSR draw_player_sprite
@@ -177,10 +177,6 @@ skip_start_screen:
     LDA #1 
     STA display_BFS_directions
 
-    INC temp_player_collumn ; tep var to maintain how many times weve executed
-    JSR display_Start_screen
-    JSR draw_title
-
 ;-----------------------------------------
 ;INITIALIZE MUSIC
 ;-----------------------------------------
@@ -197,10 +193,6 @@ skip_start_screen:
     ldy #.hibyte(sounds)
     jsr famistudio_sfx_init
 
-
-
-
-
     RTS
 .endproc
 ;*****************************************************************
@@ -212,28 +204,55 @@ skip_start_screen:
 .proc main
     JSR init
 
-    JSR title_screen
-
-
     mainloop:
-        INC random_seed  ; Chnage the random seed as many times as possible per frame
-        
+        INC random_seed  ; Change the random seed as many times as possible per frame
+        JSR gamepad_poll ; poll input as often as possible
+        JSR pause_logic ; check if we should pause
+
         LDA current_game_mode
         ;------------;
         ;   PAUSE    ;
         ;------------;
-        CMP #4
-        BNE @GENERATING
-            JSR input_logic
+        @PAUSED: 
+            CMP #4
+            BNE @TITLESCREEN
+                JMP mainloop
+        ;-------------;
+        ; TITLESCREEN ;
+        ;-------------;
+        @TITLESCREEN: 
+            CMP #0
+            BNE @GENERATING
+            
+
+            ; ONCE PER FRAME
+            LDA checked_this_frame
+            CMP #1
+            BEQ mainloop
+                LDA #1
+                STA checked_this_frame ; set flag so that we only do this once per frame
+
+                ; Have we started the start screen yet? if not, execute the start function once
+                LDA has_started
+                CMP #0
+                BNE :+
+                    JSR init_title_screen
+                    
+                    LDA #1
+                    STA has_started
+                    JMP @END
+                :
+
+                JSR title_screen_update
+            
             JMP @END
+
         ;------------;
         ; GENERATING ;
         ;------------;
         @GENERATING: 
             CMP #1
             BNE @PLAYING
-
-            ;JSR input_logic
 
             ; ONCE PER FRAME
             LDA checked_this_frame
@@ -303,12 +322,13 @@ skip_start_screen:
             CMP #2
             BNE @SOLVING
             
-            JSR input_logic ; poll input as often as possible
+            ; try to update the player as often as possible (in case player pressed button in the middle of the frame)
+            JSR update_player_sprite
 
             ; ONCE PER FRAME
             LDA checked_this_frame
             CMP #1
-            BEQ mainloop
+            BEQ @SOLVING
                 LDA #1
                 STA checked_this_frame ; set flag so that we only do this once per frame
                 
@@ -329,8 +349,6 @@ skip_start_screen:
                     LDA #1
                     STA has_started ;set started to 1 so that we start drawing the sprite
                 :
-
-                JSR update_player_sprite
                 
                 ; are we in hard mode?
                 LDA input_game_mode
@@ -379,7 +397,6 @@ skip_start_screen:
             BEQ :+
                 JMP @END
             :
-            JSR input_logic
 
             ; ONCE PER FRAME
             LDA checked_this_frame
@@ -506,8 +523,7 @@ skip_start_screen:
 ;*****************************************************************
 ; Input 
 ;*****************************************************************
-.proc input_logic
-    JSR gamepad_poll
+.proc pause_logic
     LDA gamepad
     AND #PAD_A
     BEQ A_NOT_PRESSED
@@ -524,9 +540,6 @@ skip_start_screen:
         lda gamepad_prev            
         and #PAD_START              
         bne NOT_GAMEPAD_START
-
-
-
             LDA current_game_mode
             CMP #4
             BNE is_not_paused
@@ -541,15 +554,14 @@ skip_start_screen:
     NOT_GAMEPAD_START:
 
     EXIT:
-
-    lda gamepad
-    sta gamepad_prev
-
     RTS
 .endproc
 
 .segment "CODE"
 .proc gamepad_poll
+    lda gamepad
+    sta gamepad_prev
+
 	; strobe the gamepad to latch current button state
 	LDA #1
 	STA JOYPAD1
@@ -574,20 +586,23 @@ loop:
 ;*****************************************************************
 
 ;*****************************************************************
-.proc title_screen
+.proc init_title_screen
 
-    ;------------------------
     ;PLAY TITLE SCREEN MUSIC
-    ;------------------------
-    lda #0
-    jsr play_music
+    LDA #0
+    JSR play_music
 
-    titleloop:
+    ;JSR display_Start_screen
+    ;JSR draw_title
 
+    RTS
+.endproc
+
+.proc title_screen_update
+        JSR gamepad_poll
 
         ; UP/DOWN MOVEMENT OF SELECTION
         @UP_DOWN_MOVEMENT: 
-            jsr gamepad_poll
             lda gamepad     
             and #PAD_D
             beq NOT_GAMEPAD_DOWN 
@@ -654,7 +669,7 @@ loop:
                 LDA player_row
                 CMP #18
                 BNE NOT_PLAY
-                    JMP exit_title_loop
+                    JMP EXIT_SCREEN
                 NOT_PLAY: 
                 LDA player_row
                 CMP #19
@@ -684,13 +699,11 @@ loop:
         ; Pressing start starts the game
         and #PAD_START
 
-        bne exit_title_loop
+        bne EXIT_SCREEN
 
+        RTS
 
-        JMP titleloop
-
-    exit_title_loop:
-
+    EXIT_SCREEN:
         ;PLAY START SOUND
         lda #FAMISTUDIO_SFX_CH1
         sta sfx_channel
@@ -705,10 +718,9 @@ loop:
 
         jsr tiny_delay_for_music
 
-
         LDA #1
         STA current_game_mode ; back to generating
-
+        
         LDA #0                      
         STA has_started
         JSR reset_generation

@@ -483,51 +483,30 @@ wait_vblank2:
 
 .segment "CODE"
 .proc display_Start_screen
-    ; LDA temp_player_collumn
-    ; CMP #1
-    ; BEQ @p0
-    ; CMP #2
-    ; BEQ @p1
-    ; CMP #3
-    ; BEQ @p2
-    ; CMP #4
-    ; BEQ @p3
-    ; CMP #5
-    ; BEQ @p4
+    ; Write top border
+    vram_set_address (NAME_TABLE_0_ADDRESS + 17 * 32 + 11)
+    assign_16i paddr, top_border
+    jsr write_text
 
-    ; RTS
-    JSR ppu_off
+    ; Write play button
+    vram_set_address (NAME_TABLE_0_ADDRESS + 18 * 32 + 11)
+    assign_16i paddr, play_text
+    jsr write_text
 
-    @p0: 
-        ; Write top border
-        vram_set_address (NAME_TABLE_0_ADDRESS + 17 * 32 + 11)
-        assign_16i paddr, top_border
-        jsr write_text
+    ; Write auto button
+    vram_set_address (NAME_TABLE_0_ADDRESS + 19 * 32 + 11)
+    assign_16i paddr, auto_text
+    jsr write_text
 
-    ;RTS
-    @p1: 
-        ; Write play button
-        vram_set_address (NAME_TABLE_0_ADDRESS + 18 * 32 + 11)
-        assign_16i paddr, play_text
-        jsr write_text
-   ; RTS
-    @p2: 
-        ; Write auto button
-        vram_set_address (NAME_TABLE_0_ADDRESS + 19 * 32 + 11)
-        assign_16i paddr, auto_text
-        jsr write_text
-   ; RTS
-    @p3: 
-        ; Write hard button
-        vram_set_address (NAME_TABLE_0_ADDRESS + 20 * 32 + 11)
-        assign_16i paddr, hard_text
-        jsr write_text
-    ;RTS
-    @p4: 
-        ; Write bottom border
-        vram_set_address (NAME_TABLE_0_ADDRESS + 21 * 32 + 11)
-        assign_16i paddr, bottom_border
-        jsr write_text
+    ; Write hard button
+    vram_set_address (NAME_TABLE_0_ADDRESS + 20 * 32 + 11)
+    assign_16i paddr, hard_text
+    jsr write_text
+
+    ; Write bottom border
+    vram_set_address (NAME_TABLE_0_ADDRESS + 21 * 32 + 11)
+    assign_16i paddr, bottom_border
+    jsr write_text
 	RTS
 .endproc
 
@@ -612,7 +591,6 @@ exit:
         LDA #1
         STA has_started
     
-        JSR ppu_update
     RTS
 
 .endproc
