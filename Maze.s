@@ -47,6 +47,11 @@ irq:
 
     ;increase our frame counter (one vblank occurs per frame)
     INC frame_counter
+    BNE :+ 
+        ;increase again when 0
+        INC frame_counter
+    :
+
     LDA #0
     STA checked_this_frame
 
@@ -144,36 +149,31 @@ skip_start_screen:
 
     JSR clear_changed_tiles_buffer
 
+    LDA #1
+    STA frame_counter
+    ; 0% n == 0, we want to stick in the 1-255 range for our framecounter so that the delays are never off e.g 255%5 , next frame 0%5
+
     ;set an initial randomseed value - must be non zero
     LDA #$10
     STA random_seed
-
-    ;player row and col on the startscreen
-    LDA #18
-    STA player_row
-    LDA #13
-    STA player_collumn
-
-    LDA #2
-    STA player_dir
 
     ;start with startscreen
     LDA #0
     STA current_game_mode
     STA has_started
-    STA temp_player_collumn
-    STA temp_player_row
             
     ;run test code
     ;JSR test_frontier ;test code
     ;JSR test_queue
 
+    ; edited though startscreen
     ;     000GHSSS
-    LDA #%00000001
-    ;EOR #HARD_MODE_MASK
-    ;EOR #GAME_MODE_MASK
-    STA input_game_mode
+    ; LDA #%00000001
+    ; EOR #HARD_MODE_MASK
+    ; EOR #GAME_MODE_MASK
+    ; STA input_game_mode 
 
+    ; display arrows instead of just red cells
     LDA #1 
     STA display_BFS_directions
 
@@ -589,6 +589,15 @@ loop:
 
 ;*****************************************************************
 .proc init_title_screen
+    ;player row and col on the startscreen
+    LDA #18
+    STA player_row
+    LDA #13
+    STA player_collumn
+
+    LDA #2
+    STA player_dir
+
     ;PLAY TITLE SCREEN MUSIC
     LDA #0
     JSR play_music
