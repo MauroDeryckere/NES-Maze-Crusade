@@ -2,11 +2,10 @@
 ; Defines
 ;*****************************************************************
 
-; enable /disable pal mode
+; enable / disable pal mode
 PAL_MODE = 1
-
-; TODO
-; .define DEBUG
+; enable / disable debug mode
+DEBUG_MODE = 0
 
 ; PPU Registers
 PPU_CONTROL = $2000 ; PPU Control Register 1 (Write)
@@ -128,6 +127,12 @@ SOLVE_MODE_MASK = %00000111 ; which solving algorithm
 CLEAR_SOLVING_MODE_MASK     = %11111000
 BFS_MODE_MASK               = %00000000
 LHR_MODE_MASK               = %00000001
+
+GAMEMODE_TITLE_SCREEN = 0
+GAMEMODE_GENERATING = 1
+GAMEMODE_PLAYING = 2
+GAMEMODE_SOLVING = 3
+GAMEMODE_PAUSED = 4
 
 ;*****************************************************************
 

@@ -214,17 +214,17 @@ skip_start_screen:
         ;   PAUSE    ;
         ;------------;
         @PAUSED: 
-            CMP #4
+            CMP #GAMEMODE_PAUSED
             BNE @TITLESCREEN
                 JMP mainloop
+
         ;-------------;
         ; TITLESCREEN ;
         ;-------------;
         @TITLESCREEN: 
-            CMP #0
+            CMP #GAMEMODE_TITLE_SCREEN
             BNE @GENERATING
             
-
             ; ONCE PER FRAME
             LDA checked_this_frame
             CMP #1
@@ -240,18 +240,18 @@ skip_start_screen:
                     
                     LDA #1
                     STA has_started
-                    JMP @END
+                    JMP mainloop
                 :
 
                 JSR title_screen_update
             
-            JMP @END
+            JMP mainloop
 
         ;------------;
         ; GENERATING ;
         ;------------;
         @GENERATING: 
-            CMP #1
+            CMP #GAMEMODE_GENERATING
             BNE @PLAYING
 
             ; ONCE PER FRAME
@@ -271,14 +271,14 @@ skip_start_screen:
                     ;------------------------
                     ;PAUSE TITLE SCREEN MUSIC
                     ;------------------------
-                    lda #1
-                    jsr pause_music
+                    LDA #1
+                    JSR pause_music
 
                     ;PLAY MAZE GENERATION SOUND ONCE WHEN GENERATING
-                    lda #FAMISTUDIO_SFX_CH0
-                    sta sfx_channel
-                    lda #0
-                    jsr play_sound_effect
+                    LDA #FAMISTUDIO_SFX_CH0
+                    STA sfx_channel
+                    LDA #0
+                    JSR play_sound_effect
 
                     JSR start_prims_maze
                     LDA #1
@@ -305,21 +305,21 @@ skip_start_screen:
                     AND #GAME_MODE_MASK
                     CMP #GAME_MODE_MASK
                     BEQ :+
-                        LDA #2
+                        LDA #GAMEMODE_PLAYING
                         STA current_game_mode
-                        JMP @END
+                        JMP mainloop
                     :
-                    LDA #3
+                    ; start auto solving
+                    LDA #GAMEMODE_PLAYING
                     STA current_game_mode
                 :
-
-                JMP @END
+                JMP mainloop
 
         ;---------;
         ; PLAYING ;
         ;---------;
         @PLAYING: 
-            CMP #2
+            CMP #GAMEMODE_PLAYING
             BNE @SOLVING
 
             ; ONCE PER FRAME
@@ -341,8 +341,8 @@ skip_start_screen:
                     ;------------------------
                     ;PLAY TITLE SCREEN MUSIC
                     ;------------------------
-                    lda #1
-                    jsr play_music   
+                    LDA #1
+                    JSR play_music   
 
                     JSR start_game
                     LDA #1
@@ -375,33 +375,34 @@ skip_start_screen:
                     ;------------------------
                     ;PLAY SOUND EFFECT AND STOP PREVIOUS
                     ;------------------------
-                    lda #2
-                    jsr stop_music
+                    LDA #2
+                    JSR stop_music
                     
-                    lda #1
-                    jsr play_sound_effect
+                    LDA #1
+                    JSR play_sound_effect
 
-                    jsr tiny_delay_for_music
+                    JSR tiny_delay_for_music
 
-                    LDA #1 ;set the gamemode to generating
+                    ; back to generating
+                    LDA #GAMEMODE_GENERATING 
                     STA current_game_mode
                     JSR reset_generation
-                JMP @END
+                JMP mainloop
 
         ;---------;
         ; SOLVING ;
         ;---------;
         @SOLVING: 
-            CMP #3
+            CMP #GAMEMODE_SOLVING
             BEQ :+
-                JMP @END
+                JMP mainloop
             :
 
             ; ONCE PER FRAME
             LDA checked_this_frame
             CMP #1
             BNE :+
-                JMP @END
+                JMP mainloop
             :
                 LDA #1
                 STA checked_this_frame ; set flag so that we only do this once per frame
@@ -412,12 +413,11 @@ skip_start_screen:
                 LDA has_started
                 CMP #0
                 BNE :++++ 
-
                     ;------------------------
                     ;PAUSE TITLE SCREEN MUSIC
                     ;------------------------
-                    lda #2
-                    jsr play_music
+                    LDA #2
+                    JSR play_music
 
                     ;select the solving mode based on hard mode or not
                     LDA input_game_mode
@@ -464,7 +464,7 @@ skip_start_screen:
                     CMP #0 ;BFS
                     BNE @LFR_SOLVE
 
-                    jsr play_when_backtracking
+                    JSR play_when_backtracking
 
                     JSR step_BFS
 
@@ -496,26 +496,21 @@ skip_start_screen:
 
                     JMP @SOLVE_END_REACHED
                 @END_SOLVE_MODES: 
-                    JMP @END
+                    JMP mainloop
                 
                 @SOLVE_END_REACHED: 
-
-                    lda #0
-                    sta sound_played2
+                    LDA #0
+                    STA sound_played2
 
                     ; back to generating
-                    LDA #1 ;set the gamemode to generating
+                    LDA #GAMEMODE_GENERATING
                     STA current_game_mode
                     LDA #0
                     STA has_started
 
                     JSR reset_generation
 
-                    JMP @END
-
-        @END: 
-
-            JMP mainloop
+                    JMP mainloop
 .endproc
 ;*****************************************************************
 
@@ -523,6 +518,15 @@ skip_start_screen:
 ; Input 
 ;*****************************************************************
 .proc pause_logic
+    LDA #DEBUG_MODE 
+    BNE :+ ; DEBUG_MODE != 0
+        ; can not pause while generating if not in debug build
+        LDA current_game_mode
+        CMP #GAMEMODE_GENERATING
+        BNE :+
+            RTS
+        :
+
     LDA gamepad
     AND #PAD_A
     BEQ A_NOT_PRESSED
@@ -531,22 +535,22 @@ skip_start_screen:
     A_NOT_PRESSED:
 
     START_CHECK:
-        lda gamepad     
-        and #PAD_START
-        beq NOT_GAMEPAD_START
+        LDA gamepad     
+        AND #PAD_START
+        BEQ NOT_GAMEPAD_START
 
-        lda gamepad_prev            
-        and #PAD_START              
-        bne NOT_GAMEPAD_START
+        LDA gamepad_prev            
+        AND #PAD_START              
+        BNE NOT_GAMEPAD_START
             LDA current_game_mode
-            CMP #4
+            CMP #GAMEMODE_PAUSED
             BNE is_not_paused
                 LDA gamemode_store_for_paused
                 STA current_game_mode
                 JMP EXIT            
             is_not_paused:
                 STA gamemode_store_for_paused
-                LDA #4
+                LDA #GAMEMODE_PAUSED
                 STA current_game_mode
 
     NOT_GAMEPAD_START:
@@ -585,29 +589,28 @@ loop:
 
 ;*****************************************************************
 .proc init_title_screen
-
     ;PLAY TITLE SCREEN MUSIC
     LDA #0
     JSR play_music
-
-    ;JSR display_Start_screen
-    ;JSR draw_title
 
     RTS
 .endproc
 
 .proc title_screen_update
-        JSR gamepad_poll
+        ;Loading the title as an animation TODO
+        
 
+
+        JSR gamepad_poll
         ; UP/DOWN MOVEMENT OF SELECTION
         @UP_DOWN_MOVEMENT: 
-            lda gamepad     
-            and #PAD_D
-            beq NOT_GAMEPAD_DOWN 
+            LDA gamepad     
+            AND #PAD_D
+            BEQ NOT_GAMEPAD_DOWN 
 
-            lda gamepad_prev            
-            and #PAD_D                  
-            bne NOT_GAMEPAD_DOWN
+            LDA gamepad_prev            
+            AND #PAD_D                  
+            BNE NOT_GAMEPAD_DOWN
                 LDA player_row
                 CMP #20
                 BEQ :+
@@ -615,13 +618,13 @@ loop:
                 :
 
             NOT_GAMEPAD_DOWN: 
-            lda gamepad     
-            and #PAD_U
-            beq NOT_GAMEPAD_UP
+            LDA gamepad     
+            AND #PAD_U
+            BEQ NOT_GAMEPAD_UP
 
-            lda gamepad_prev            
-            and #PAD_U           
-            bne NOT_GAMEPAD_UP
+            LDA gamepad_prev            
+            AND #PAD_U           
+            BNE NOT_GAMEPAD_UP
                 LDA player_row
                 CMP #18
                 BEQ :+
@@ -632,9 +635,9 @@ loop:
         ; SELECTION
         @SELECTION: 
             NOT_GAMEPAD_UP: 
-            lda gamepad     
-            and #PAD_SELECT
-            beq NOT_GAMEPAD_SELECT
+            LDA gamepad     
+            AND #PAD_SELECT
+            BEQ NOT_GAMEPAD_SELECT
 
             ; select pressed
 
@@ -643,7 +646,7 @@ loop:
             LDA sound_played   ; Check if sound has already been played
             BEQ PlaySoundOnce  ; If not, play the sound
 
-            jmp Resume         ; continue if already played
+            JMP Resume         ; continue if already played
 
         PlaySoundOnce:
             ; PLAY START SOUND
@@ -657,12 +660,11 @@ loop:
             STA sound_played
 
         Resume:
-
-            lda gamepad_prev            
-            and #PAD_SELECT  
-            bne NOT_GAMEPAD_SELECT
-            lda #0
-            sta sound_played ;reset sound_played flag
+            LDA gamepad_prev            
+            AND #PAD_SELECT  
+            BNE NOT_GAMEPAD_SELECT
+            LDA #0
+            STA sound_played ;reset sound_played flag
 
                 LDA player_row
                 CMP #18
@@ -688,35 +690,34 @@ loop:
         ;---------------------------
         NOT_GAMEPAD_SELECT: 
 
+        ; reset direction since moving row changes it
         LDA #2
         STA player_dir
 
-        lda gamepad
-        sta gamepad_prev
-
         ; Pressing start starts the game
-        and #PAD_START
+        LDA gamepad
+        AND #PAD_START
 
-        bne EXIT_SCREEN
+        BNE EXIT_SCREEN
 
         RTS
 
     EXIT_SCREEN:
         ;PLAY START SOUND
-        lda #FAMISTUDIO_SFX_CH1
-        sta sfx_channel
-        lda #2
-        jsr play_sound_effect
+        LDA #FAMISTUDIO_SFX_CH1
+        STA sfx_channel
+        LDA #2
+        JSR play_sound_effect
 
         ;------------------------
         ;STOP TITLE SCREEN MUSIC
         ;------------------------
-        lda #0
-        jsr stop_music
+        LDA #0
+        JSR stop_music
 
-        jsr tiny_delay_for_music
+        JSR tiny_delay_for_music
 
-        LDA #1
+        LDA #GAMEMODE_GENERATING
         STA current_game_mode ; back to generating
         
         LDA #0                      
@@ -750,6 +751,4 @@ loop:
     :
     RTS
 .endproc 
-
-
 ;*****************************************************************
