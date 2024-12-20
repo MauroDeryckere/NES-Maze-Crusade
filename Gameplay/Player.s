@@ -4,23 +4,24 @@
 ;update player position with player input
 .proc update_player_sprite
     ;check is delay is reached
-    modulo frame_counter, #PLAYER_MOVEMENT_DELAY
+    LDA player_movement_delay_ct
     BEQ :+
+        DEC player_movement_delay_ct
         RTS
-    :   
+    :
 
-    JSR gamepad_poll
+    LDX #4
+    STX frontier_offset
+
+    GAMEPAD_DOWN:
     lda gamepad
     and #PAD_D
     beq NOT_GAMEPAD_DOWN 
-        ;gamepad down is pressed
-
         ;bounds check first
         LDA player_row
         CMP #MAP_ROWS - 1
         BNE :+
-            ; JMP NOT_GAMEPAD_DOWN
-            RTS
+            JMP NOT_GAMEPAD_DOWN    
         :  
 
         LDA #BOTTOM
@@ -36,24 +37,21 @@
         BEQ HitDown
             ;otherwise keep now changed value
             ; JMP NOT_GAMEPAD_DOWN
+            LDA #PLAYER_MOVEMENT_DELAY
+            STA player_movement_delay_ct
             RTS
         HitDown: 
             ;sprite collided with wall
             DEC player_row
-            ; JMP NOT_GAMEPAD_DOWN
-            RTS
-        
 
     NOT_GAMEPAD_DOWN: 
     lda gamepad
     and #PAD_U
     beq NOT_GAMEPAD_UP
-
         ;bounds check first
         LDA player_row
         BNE :+
-            ; JMP NOT_GAMEPAD_UP
-        RTS
+            JMP NOT_GAMEPAD_UP
         :   
 
         LDA #TOP
@@ -69,12 +67,12 @@
         BEQ HitUp
             ;otherwise keep now changed value
            ; JMP NOT_GAMEPAD_UP
-    RTS
+            LDA #PLAYER_MOVEMENT_DELAY
+            STA player_movement_delay_ct
+            RTS
         HitUp: 
             ;sprite collided with wall
             INC player_row
-            ;JMP NOT_GAMEPAD_UP
-            RTS
 
     NOT_GAMEPAD_UP: 
     lda gamepad
@@ -85,8 +83,7 @@
         ;bounds check first
         LDA player_collumn
         BNE :+
-            ;JMP NOT_GAMEPAD_LEFT
-        RTS
+            JMP NOT_GAMEPAD_LEFT
         :
 
         LDA #LEFT
@@ -101,17 +98,17 @@
         ; a register now holds if the sprite is in a non passable area (0) or passable area (non zero)
 
         BEQ HitLeft
+        LDA #PLAYER_MOVEMENT_DELAY
+        STA player_movement_delay_ct
             ;otherwise keep now changed value
             ;JMP NOT_GAMEPAD_LEFT
-    RTS
+        RTS
 
         HitLeft: 
             ;sprite collided with wall
             INC player_collumn
-           ; JMP NOT_GAMEPAD_LEFT
-RTS
 
-    NOT_GAMEPAD_LEFT: 
+    NOT_GAMEPAD_LEFT:     
     lda gamepad
     and #PAD_R
     beq NOT_GAMEPAD_RIGHT
@@ -119,8 +116,7 @@ RTS
         LDA player_collumn
         CMP #MAP_COLUMNS - 1
         BNE :+
-           ; JMP NOT_GAMEPAD_RIGHT
-        RTS
+            JMP NOT_GAMEPAD_RIGHT
         :
 
         LDA #RIGHT
@@ -136,13 +132,13 @@ RTS
 
         BEQ HitRight
             ;otherwise keep now changed value
-;            JMP NOT_GAMEPAD_RIGHT
-RTS
+            ;JMP NOT_GAMEPAD_RIGHT
+            LDA #PLAYER_MOVEMENT_DELAY
+            STA player_movement_delay_ct
+            RTS 
         HitRight: 
             ;sprite collided with wall
             DEC player_collumn
-            ;JMP NOT_GAMEPAD_RIGHT
-RTS
 
     NOT_GAMEPAD_RIGHT: 
         ;neither up, down, left, or right is pressed

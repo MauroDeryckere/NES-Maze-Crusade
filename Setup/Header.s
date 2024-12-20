@@ -118,6 +118,7 @@
 
     player_row: 			.res 1
     player_collumn: 		.res 1
+    player_movement_delay_ct:   .res 1
 
     ; Score
     score_low:              .res 1

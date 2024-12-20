@@ -79,3 +79,22 @@
     ORA y_val
     STA maze_buffer, Y
 .endmacro
+
+;*****************************************************************
+; Maze Utility functions
+;*****************************************************************
+.segment "CODE"
+.proc clear_maze
+    LDY #0
+
+    loop: 
+    LDA #$0
+    STA maze_buffer, Y
+
+    INY
+    CPY #120
+    BNE loop
+    
+    RTS
+.endproc
+;*****************************************************************

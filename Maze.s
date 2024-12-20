@@ -208,7 +208,7 @@ irq:
     mainloop:
         INC random_seed  ; Change the random seed as many times as possible per frame
         JSR gamepad_poll ; poll input as often as possible
-        JSR pause_logic ; check if we should pause
+        ;JSR pause_logic ; check if we should pause
 
         LDA current_game_mode
         ;------------;
@@ -226,6 +226,12 @@ irq:
             CMP #GAMEMODE_TITLE_SCREEN
             BNE @GENERATING
             
+            ; as often as possible but after other logic if necessary
+            JSR title_screen_input_logic
+            LDA current_game_mode
+            CMP #GAMEMODE_TITLE_SCREEN
+            BNE mainloop
+
             ; ONCE PER FRAME
             LDA checked_this_frame
             CMP #1
@@ -240,14 +246,13 @@ irq:
                 BNE :+
                     JSR init_title_screen
                     
-                    JSR clear_changed_tiles_buffer
                     LDA #1
                     STA has_started
                     JMP mainloop
                 :
 
-                JSR title_screen_update
-            
+                JSR step_title_update
+    
             JMP mainloop
 
         ;------------;
@@ -600,11 +605,7 @@ loop:
 
 
 ;*****************************************************************
-.proc title_screen_update
-    JSR step_title_update
-
-
-    JSR gamepad_poll
+.proc title_screen_input_logic
     ; UP/DOWN MOVEMENT OF SELECTION
     @UP_DOWN_MOVEMENT: 
         LDA gamepad     
@@ -696,10 +697,9 @@ loop:
         LDA #2
         STA player_dir
 
-        ; Pressing start starts the game
+        ; start btn
         LDA gamepad
         AND #PAD_START
-
         BNE EXIT_SCREEN
 
         RTS
@@ -726,9 +726,6 @@ loop:
         STA has_started
         JSR reset_generation
 
-        ; reset frontier list
-        LDA #0
-        STA frontier_listQ1_size
         ; clear queue
         JSR clear_queue
 
@@ -1442,6 +1439,7 @@ loop:
     JSR hide_player_sprite
     JSR clear_changed_tiles_buffer
     JSR clear_maze
+
     JSR wait_frame
     JSR display_map
     
