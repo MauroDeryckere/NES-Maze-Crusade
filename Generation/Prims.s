@@ -2,6 +2,18 @@
 ; The main algorithm loop (prims)
 ;*****************************************************************
 .segment "CODE"
+;subroutine to add a cell to the frontierlist after accessing the neighbor and checking if it is valid
+.segment "CODE"
+.proc add_cell
+    STX x_val
+    STY y_val
+    
+    add_to_Frontier y_val, x_val
+    add_to_changed_tiles_buffer y_val, x_val, #FRONTIER_WALL_TILE
+
+    RTS
+.endproc  
+
 .proc start_prims_maze
     ; step 0 of the maze generation, set a random cell as passage and calculate its frontier cells
     JSR random_number_generator
@@ -46,30 +58,30 @@
     end_col:
 
     set_map_tile a_val, b_val
-    add_to_changed_tiles_buffer frontier_row, frontier_col, #1
+    add_to_changed_tiles_buffer frontier_row, frontier_col, #PATH_TILE_1
 
-        access_map_neighbor #LEFT_N, frontier_row, frontier_col
+        access_map_frontier_neighbor #LEFT_N, frontier_row, frontier_col
         CMP #0 
         BNE TopN
 
         JSR add_cell
 
     TopN: ;top neighbor
-        access_map_neighbor #TOP_N, frontier_row, frontier_col
+        access_map_frontier_neighbor #TOP_N, frontier_row, frontier_col
         CMP #0 
         BNE RightN
 
         JSR add_cell
 
     RightN: ;right neighbor
-        access_map_neighbor #RIGHT_N, frontier_row, frontier_col
+        access_map_frontier_neighbor #RIGHT_N, frontier_row, frontier_col
         CMP #0 
         BNE BottomN
 
         JSR add_cell
 
     BottomN: ;bottom neighbor
-        access_map_neighbor #BOTTOM_N, frontier_row, frontier_col
+        access_map_frontier_neighbor #BOTTOM_N, frontier_row, frontier_col
         CMP #0
         BNE End
 
@@ -100,9 +112,7 @@
     STX frontier_col
     STY frontier_row
 
-    ;store a and b val in a new value since a and b will be overwritten in the access map neighbor function
-    LDA a_val
-    STA frontier_page
+    ;store b val in a new value since b will be overwritten in the access map neighbor function
     LDA b_val
     STA frontier_offset
 
@@ -112,7 +122,7 @@
     LDA #0
     STA temp
 
-    access_map_neighbor #TOP_N, frontier_row, frontier_col
+    access_map_frontier_neighbor #TOP_N, frontier_row, frontier_col
     CMP #1 ;we want something in state passage
     BNE :+
         ;valid cell, Jump to next step
@@ -120,7 +130,7 @@
         PHA ;push direction on stack
         INC temp
     : ;right
-    access_map_neighbor #RIGHT_N, frontier_row, frontier_col
+    access_map_frontier_neighbor #RIGHT_N, frontier_row, frontier_col
     CMP #1 ;we want something in state passage
     BNE :+
         ;valid cell, Jump to next step
@@ -129,7 +139,7 @@
         INC temp
 
     : ;bottom
-    access_map_neighbor #BOTTOM_N, frontier_row, frontier_col
+    access_map_frontier_neighbor #BOTTOM_N, frontier_row, frontier_col
     CMP #1 ;we want something in state passage
     BNE :+
         ;valid cell, Jump to next step
@@ -137,7 +147,7 @@
         PHA ;push direction on stack
         INC temp        
     : ;left
-    access_map_neighbor #LEFT_N, frontier_row, frontier_col
+    access_map_frontier_neighbor #LEFT_N, frontier_row, frontier_col
     CMP #1 ;we want something in state passage
     BNE :+
         ;valid cell, Jump to next step
@@ -219,14 +229,15 @@
     nextnextstep: 
         JSR random_number_generator
         modulo random_seed, #02
-        ADC #04
+        CLC
+        ADC #PATH_TILE_1
         STA temp
 
         set_map_tile temp_row, temp_col
         add_to_changed_tiles_buffer temp_row, temp_col, temp
 
     ;calculate the new frontier cells for the chosen frontier cell and add them
-        access_map_neighbor #LEFT_N, frontier_row, frontier_col
+        access_map_frontier_neighbor #LEFT_N, frontier_row, frontier_col
         CMP #0 
         BEQ :+
             JMP TopN
@@ -245,7 +256,7 @@
         JSR add_cell
 
     TopN: ;top neighbor
-        access_map_neighbor #TOP_N, frontier_row, frontier_col
+        access_map_frontier_neighbor #TOP_N, frontier_row, frontier_col
         CMP #0 
         BEQ :+
             JMP RightN
@@ -264,7 +275,7 @@
         JSR add_cell
 
     RightN: ;right neighbor
-        access_map_neighbor #RIGHT_N, frontier_row, frontier_col
+        access_map_frontier_neighbor #RIGHT_N, frontier_row, frontier_col
         CMP #0 
         BEQ :+
             JMP BottomN
@@ -283,7 +294,7 @@
         JSR add_cell
 
     BottomN: ;bottom neighbor
-        access_map_neighbor #BOTTOM_N, frontier_row, frontier_col
+        access_map_frontier_neighbor #BOTTOM_N, frontier_row, frontier_col
         CMP #0 
         BEQ :+
             JMP end
@@ -304,7 +315,8 @@
 
     JSR random_number_generator
     modulo random_seed, #02
-    ADC #04
+    CLC
+    ADC #PATH_TILE_1
     STA temp
 
     ;remove the chosen frontier cell from the list
@@ -339,7 +351,7 @@
     BEQ rowloop_ue
 
     set_map_tile #0, temp
-    add_to_changed_tiles_buffer #0, temp, #1
+    add_to_changed_tiles_buffer #0, temp, #PATH_TILE_1
     LDA #0
     STA player_row
     LDA temp
@@ -358,7 +370,7 @@
         BEQ rowloop_e
 
         set_map_tile #0, temp
-        add_to_changed_tiles_buffer #29, temp, #1
+        add_to_changed_tiles_buffer #29, temp, #PATH_TILE_1
 
         LDA #29
         STA player_row
@@ -386,7 +398,7 @@
         BEQ colloop_ue
 
         set_map_tile temp, #0
-        add_to_changed_tiles_buffer temp, #0, #1
+        add_to_changed_tiles_buffer temp, #0, #PATH_TILE_1
         
         LDA temp
         STA end_row
@@ -405,7 +417,7 @@
         BEQ colloop_e
 
         set_map_tile temp, #31
-        add_to_changed_tiles_buffer temp, #31, #1
+        add_to_changed_tiles_buffer temp, #31, #PATH_TILE_1
 
         LDA temp
         STA end_row

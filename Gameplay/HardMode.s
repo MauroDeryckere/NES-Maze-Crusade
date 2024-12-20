@@ -5,7 +5,8 @@
 .proc start_hard_mode
     JSR random_number_generator
     modulo random_seed, #02
-    ADC #04
+    CLC
+    ADC #PATH_TILE_1
     STA x_val
 
 
@@ -40,7 +41,8 @@
         ADC player_collumn
         STA temp
         modulo temp, #02
-        ADC #04
+        CLC
+        ADC #PATH_TILE_1
         STA temp
 
         get_map_tile_state frontier_row, player_collumn
@@ -48,7 +50,7 @@
         add_to_changed_tiles_buffer frontier_row, player_collumn, temp
         JMP below
         a_wall: 
-            add_to_changed_tiles_buffer frontier_row, player_collumn, #0
+            add_to_changed_tiles_buffer frontier_row, player_collumn, #WALL_TILE
     below:
         LDA player_row
         CMP #MAP_ROWS - 1
@@ -62,7 +64,8 @@
         ADC player_collumn
         STA temp
         modulo temp, #02
-        ADC #04
+        CLC
+        ADC #PATH_TILE_1
         STA temp
 
         get_map_tile_state frontier_row, player_collumn
@@ -70,7 +73,7 @@
         add_to_changed_tiles_buffer frontier_row, player_collumn, temp
         JMP left
         b_wall: 
-            add_to_changed_tiles_buffer frontier_row, player_collumn, #0
+            add_to_changed_tiles_buffer frontier_row, player_collumn, #WALL_TILE
     
     left: 
         LDA player_collumn
@@ -85,7 +88,8 @@
         ADC player_row
         STA temp
         modulo temp, #02
-        ADC #04
+        CLC
+        ADC #PATH_TILE_1
         STA temp
 
         get_map_tile_state player_row, frontier_col
@@ -93,7 +97,7 @@
         add_to_changed_tiles_buffer player_row, frontier_col, temp
         JMP right
         l_wall: 
-            add_to_changed_tiles_buffer player_row, frontier_col, #0
+            add_to_changed_tiles_buffer player_row, frontier_col, #WALL_TILE
 
     right: 
         LDA player_collumn
@@ -108,7 +112,8 @@
         ADC player_row
         STA temp
         modulo temp, #02
-        ADC #04
+        CLC
+        ADC #PATH_TILE_1
         STA temp
 
         get_map_tile_state player_row, frontier_col
@@ -116,7 +121,7 @@
         add_to_changed_tiles_buffer player_row, frontier_col, temp
         JMP end
         r_wall: 
-            add_to_changed_tiles_buffer player_row, frontier_col, #0
+            add_to_changed_tiles_buffer player_row, frontier_col, #WALL_TILE
     end: 
 
     RTS
