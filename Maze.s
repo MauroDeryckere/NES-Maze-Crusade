@@ -51,6 +51,7 @@ irq:
 
     ;increase our frame counter (one vblank occurs per frame)
     INC frame_counter
+    LDA frame_counter
     BNE :+ 
         ;increase again when 0
         INC frame_counter
@@ -527,7 +528,15 @@ irq:
         CMP #GAMEMODE_GENERATING
         BNE :+
             RTS
-        :
+    :
+    
+    ; Can not pause in titlescreen
+    LDA current_game_mode
+    CMP #GAMEMODE_PAUSED
+    BNE :+
+        RTS
+    :
+
 
     LDA gamepad
     AND #PAD_A

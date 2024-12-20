@@ -5,7 +5,6 @@
 .proc update_player_sprite
     ;check is delay is reached
     modulo frame_counter, #PLAYER_MOVEMENT_DELAY
-    CMP #0
     BEQ :+
         RTS
     :   
