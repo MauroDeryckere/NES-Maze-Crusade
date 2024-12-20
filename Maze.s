@@ -208,7 +208,6 @@ irq:
     mainloop:
         INC random_seed  ; Change the random seed as many times as possible per frame
         JSR gamepad_poll ; poll input as often as possible
-        ;JSR pause_logic ; check if we should pause
 
         LDA current_game_mode
         ;------------;
@@ -217,6 +216,7 @@ irq:
         @PAUSED: 
             CMP #GAMEMODE_PAUSED
             BNE @TITLESCREEN
+                JSR pause_logic
                 JMP mainloop
 
         ;-------------;
@@ -261,6 +261,8 @@ irq:
         @GENERATING: 
             CMP #GAMEMODE_GENERATING
             BNE @PLAYING
+
+            JSR pause_logic ; check if we should pause
 
             ; ONCE PER FRAME
             LDA checked_this_frame
@@ -329,6 +331,8 @@ irq:
         @PLAYING: 
             CMP #GAMEMODE_PLAYING
             BNE @SOLVING
+
+            JSR pause_logic ; check if we should pause
 
             ; ONCE PER FRAME
             LDA checked_this_frame
@@ -405,6 +409,8 @@ irq:
             BEQ :+
                 JMP mainloop
             :
+
+            JSR pause_logic ; check if we should pause
 
             ; ONCE PER FRAME
             LDA checked_this_frame
@@ -534,14 +540,6 @@ irq:
         BNE :+
             RTS
     :
-    
-    ; Can not pause in titlescreen
-    LDA current_game_mode
-    CMP #GAMEMODE_PAUSED
-    BNE :+
-        RTS
-    :
-
 
     LDA gamepad
     AND #PAD_A
