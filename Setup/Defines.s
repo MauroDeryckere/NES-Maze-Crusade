@@ -140,8 +140,12 @@ GAMEMODE_PAUSED = 4
 ; Tiles
 WALL_TILE = 0
 FRONTIER_WALL_TILE = 1
+BLACK_TILE = 16
 BROKEN_WALL_TILE = 17
+
 PATH_TILE_1 = 2
 PATH_TILE_2 = 3
 PATH_TILE_3 = 4
+PATH_TILE_END_L = 5
+PATH_TILE_END_R = 6
 ;*****************************************************************

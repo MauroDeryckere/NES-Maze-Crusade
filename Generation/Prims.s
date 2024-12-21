@@ -1,7 +1,6 @@
 ;*****************************************************************
 ; The main algorithm loop (prims)
 ;*****************************************************************
-.segment "CODE"
 ;subroutine to add a cell to the frontierlist after accessing the neighbor and checking if it is valid
 .segment "CODE"
 .proc add_cell
@@ -97,7 +96,6 @@
    RTS
 .endproc
 
-.segment "CODE"
 .proc run_prims_maze
     LDA frontier_listQ1_size ; if empty end algorithm
     BNE :+
@@ -358,29 +356,32 @@
     AND #%11110000
     CMP #%11110000 
     BEQ :+
-        JMP even_rows
+        JMP rowloop_e
     :
-    ;uneven row means black border at top
+
+; START POSITION
+    ;uneven row means empty border at top
+    ;randomly generate a start tile until we find a valid one in row 0 (valid means a walkable tile below)
     rowloop_ue:
-    JSR random_number_generator
-    modulo random_seed, #31
-    STA temp
+        JSR random_number_generator
+        modulo random_seed, #31
+        STA temp
 
-    get_map_tile_state #1, temp
-    BEQ rowloop_ue
+        get_map_tile_state #1, temp
+        BEQ rowloop_ue
 
-    set_map_tile #0, temp
-    add_to_changed_tiles_buffer #0, temp, #PATH_TILE_1
-    LDA #0
-    STA player_row
-    LDA temp
-    STA player_collumn
+        set_map_tile #0, temp
+        add_to_changed_tiles_buffer #0, temp, #PATH_TILE_1
+        LDA #0
+        STA player_row
+        LDA temp
+        STA player_collumn
 
-    JMP col_check
+        JMP col_check
 
-    ;even rows means black border at bottom, find a tile in row 30 with a white tile above to set as start pos
-    even_rows:
-        rowloop_e:
+    ;even rows means empy border at bottom 
+    ;randomly generate a start tile until we find a valid one in row 30 (valid means a walkable tile above)
+    rowloop_e:
         JSR random_number_generator
         modulo random_seed, #31
         STA temp
@@ -396,6 +397,8 @@
         LDA temp
         STA player_collumn
 
+
+; END POSITION
     col_check: 
         LDA odd_frontiers
         ;are cols even
@@ -405,29 +408,39 @@
         AND #%00001111
         CMP #%00001111 
         BEQ :+
-            JMP even_cols
+            JMP colloop_e
         :
 
-        colloop_ue:
+    colloop_ue:
         JSR random_number_generator
         modulo random_seed, #29
         STA temp
 
-        get_map_tile_state temp, #1
+        get_map_tile_state temp, #1 
         BEQ colloop_ue
 
         set_map_tile temp, #0
-        add_to_changed_tiles_buffer temp, #0, #PATH_TILE_1
+        add_to_changed_tiles_buffer temp, #0, #PATH_TILE_END_R
         
         LDA temp
         STA end_row
+
+        TAX
+        INX
+        STX temp
+        add_to_changed_tiles_buffer temp, #0, #FRONTIER_WALL_TILE
+
+        LDX end_row
+        DEX
+        STX temp
+        add_to_changed_tiles_buffer temp, #0, #FRONTIER_WALL_TILE
+
         LDA #0
         STA end_col
 
         JMP end
 
-    even_cols:
-        colloop_e:
+    colloop_e:
         JSR random_number_generator
         modulo random_seed, #29
         STA temp
@@ -436,15 +449,25 @@
         BEQ colloop_e
 
         set_map_tile temp, #31
-        add_to_changed_tiles_buffer temp, #31, #PATH_TILE_1
+        add_to_changed_tiles_buffer temp, #31, #PATH_TILE_END_L
 
         LDA temp
         STA end_row
+
+        TAX
+        INX
+        STX temp
+        add_to_changed_tiles_buffer temp, #31, #FRONTIER_WALL_TILE
+
+        LDX end_row
+        DEX
+        STX temp
+        add_to_changed_tiles_buffer temp, #31, #FRONTIER_WALL_TILE
+
         LDA #31
         STA end_col
 
     end: 
-
     RTS
 .endproc
 ;*****************************************************************

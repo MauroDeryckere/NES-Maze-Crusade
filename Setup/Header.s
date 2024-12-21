@@ -71,6 +71,7 @@
     ;maze
     maze_buffer:        	.res 120
 
+    ; End tile of the maze
     end_row: 				.res 1
     end_col:				.res 1
 
@@ -118,9 +119,9 @@
 
     player_row: 			.res 1
     player_collumn: 		.res 1
-    player_movement_delay_ct:   .res 1
+    player_movement_delay_ct:   .res 1 ; also used for animation during generation
 
-    ; Score
+    ; Score | HHLL - 0000 up to 9999 score
     score_low:              .res 1
     score_high:             .res 1
 
