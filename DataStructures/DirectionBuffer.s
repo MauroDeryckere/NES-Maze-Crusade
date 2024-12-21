@@ -97,4 +97,16 @@
     AND #%00000011
 .endmacro
 
+.proc clear_direction_buffer
+    LDX #0
+    LDA #0
+
+    @clear_dir: 
+        STA DIRECTIONS_ADDRESS, x
+        INX
+        CPX #DIRECTIONS_BUFFER_SIZE
+        BNE @clear_dir
+    RTS
+.endproc
+
 ;*****************************************************************

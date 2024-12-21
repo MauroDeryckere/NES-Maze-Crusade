@@ -308,7 +308,7 @@ irq:
 
                 ; BROKEN TILES ANIMATION
                 LDA player_movement_delay_ct
-                CMP #20
+                CMP #GENERATION_ANIMATION_DELAY
                 BEQ :+
                     INC player_movement_delay_ct
                     JMP mainloop

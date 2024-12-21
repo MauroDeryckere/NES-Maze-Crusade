@@ -389,7 +389,7 @@
         get_map_tile_state #28, temp
         BEQ rowloop_e
 
-        set_map_tile #0, temp
+        set_map_tile #29, temp
         add_to_changed_tiles_buffer #29, temp, #PATH_TILE_1
 
         LDA #29

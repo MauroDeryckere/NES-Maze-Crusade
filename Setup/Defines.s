@@ -67,17 +67,22 @@ PAD_D      = $20
 PAD_L      = $40
 PAD_R      = $80
 
+; DURING TITLE SCREEN
+START_SCREEN_BUFFER_1 = $0320
+START_SCREEN_BUFFER_2 = $41F
+START_SCREEN_BUFFER_3 = $51E
+
 ; MAP BUFFER
 MAP_BUFFER_SIZE = 120
 MAP_COLUMNS = 32 ;32 bits
 MAP_ROWS = 30
 
-; FRONTIER LIST ; maintain 2 pages to be sure but there are no cases that surpas 1 page at the moment
+; FRONTIER LIST
 FRONTIER_LISTQ1 = $0320
-FRONTIER_LIST_CAPACITY = 255
+FRONTIER_LIST_CAPACITY = 255 ; capacity is more than enough, can be reduced if necessary
 
 ; VISITED CELLS BUFFER
-VISISTED_ADDRESS = FRONTIER_LISTQ1 + FRONTIER_LIST_CAPACITY 
+VISISTED_ADDRESS = FRONTIER_LISTQ1
 ; 120 byte buffer same as maze buffer but this stores if a cell is visited (1) or not (0)
 VISITED_BUFFER_SIZE = 120 
 ; next available address == $496
@@ -85,11 +90,6 @@ VISITED_BUFFER_SIZE = 120
 ; DIRECTIONS BUFFER
 DIRECTIONS_ADDRESS = VISISTED_ADDRESS + VISITED_BUFFER_SIZE
 DIRECTIONS_BUFFER_SIZE = 240
-
-; DURING TITLE SCREEN
-START_SCREEN_BUFFER_1 = $0320
-START_SCREEN_BUFFER_2 = $41F
-START_SCREEN_BUFFER_3 = $51E
 
 ; Queue data structure constants
 QUEUE_START = $05B4 ; start address for the queue | right after start screen buffer_3 (never fully filled)
@@ -117,6 +117,7 @@ LEFT_D = 3
 CHANGED_TILES_BUFFER_SIZE = 40
 
 ;SETUP
+GENERATION_ANIMATION_DELAY = 40
 PLAYER_MOVEMENT_DELAY = 5 ;sets the delay for player movement (==  movement speed)
 MAZE_GENERATION_SPEED = 1 ;how much is maze generation slowed down
 SCORE_DIGIT_OFFSET = 8
@@ -143,6 +144,7 @@ FRONTIER_WALL_TILE = 1
 BLACK_TILE = 16
 BROKEN_WALL_TILE = 17
 
+PATH_TILES_AMOUNT = 3
 PATH_TILE_1 = 2
 PATH_TILE_2 = 3
 PATH_TILE_3 = 4

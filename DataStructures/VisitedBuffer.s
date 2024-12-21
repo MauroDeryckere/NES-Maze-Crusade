@@ -1,6 +1,8 @@
  ;*****************************************************************
 ; Map buffer - visited list 
-; same macros as maze buffer but not in zero page. read maze buffer documentation for info
+; Used in the BFS to track which cells have been visited and haven't been.
+; Also used as a buffer to track which cells are visible to the player or not in hard mode 
+; to ensure we only update newly visible tiles in the background
 ;*****************************************************************
 .macro calculate_offset_and_mask_visited Row, Column
     ;Calculate the base address of the row (Row * 4)
@@ -47,6 +49,7 @@
     :
 .endmacro
 
+; sets the bit to 1
 .macro set_visited Row, Col
     calculate_offset_and_mask_visited Row, Col
     
@@ -57,6 +60,7 @@
 
 .endmacro
 
+; 0 or non zero value
 .macro is_visited Row, Col
     calculate_offset_and_mask_visited Row, Col
     
@@ -65,5 +69,18 @@
     AND y_val
 
 .endmacro
+
+.proc clear_visited_buffer
+    LDX #0
+    LDA #0
+    
+    @clear_cell: 
+        STA VISISTED_ADDRESS, x
+        INX
+        CPX #VISITED_BUFFER_SIZE
+        BNE @clear_cell
+
+        RTS
+.endproc
 
 ;*****************************************************************
