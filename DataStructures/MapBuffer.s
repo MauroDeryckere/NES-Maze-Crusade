@@ -64,7 +64,7 @@
     calculate_tile_offset_and_mask Row, Column
 
     LDY temp_address
-    LDA maze_buffer, Y   
+    LDA MAZE_BUFFER, Y   
     AND y_val
 .endmacro
 
@@ -75,9 +75,9 @@
     calculate_tile_offset_and_mask Row, Column
     
     LDY temp_address
-    LDA maze_buffer, Y   
+    LDA MAZE_BUFFER, Y   
     ORA y_val
-    STA maze_buffer, Y
+    STA MAZE_BUFFER, Y
 .endmacro
 
 ;*****************************************************************
@@ -88,12 +88,12 @@
     LDY #0
 
     loop: 
-    LDA #$0
-    STA maze_buffer, Y
+        LDA #$0
+        STA MAZE_BUFFER, Y
 
-    INY
-    CPY #120
-    BNE loop
+        INY
+        CPY #120
+        BNE loop
     
     RTS
 .endproc

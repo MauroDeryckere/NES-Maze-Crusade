@@ -68,9 +68,6 @@
     has_started:            .res 1  ; internal flag to show whether or not a mode has started, used to only execute the start function once 
     is_backtracking:        .res 1 ; is BFS currently backtracking the path (internal) - will be set to FF when end is reached
 
-    ;maze
-    maze_buffer:        	.res 120
-
     ; End tile of the maze
     end_row: 				.res 1
     end_col:				.res 1

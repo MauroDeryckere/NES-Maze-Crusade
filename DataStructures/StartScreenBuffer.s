@@ -13,14 +13,14 @@
     ; buffer 1
     CPX #0
     BNE :+
-    LDY maze_buffer
+    LDY MAZE_BUFFER
     STA START_SCREEN_BUFFER_1, Y
     INY
     LDA temp
     STA START_SCREEN_BUFFER_1, Y
 
-    INC maze_buffer
-    INC maze_buffer
+    INC MAZE_BUFFER
+    INC MAZE_BUFFER
 
     LDA a_val
     RTS
@@ -28,27 +28,27 @@
     : ; buffer 2
     CPX #1
     BNE :+
-    LDY maze_buffer + 1
+    LDY MAZE_BUFFER + 1
     STA START_SCREEN_BUFFER_2, Y
     INY
     LDA temp
     STA START_SCREEN_BUFFER_2, Y
     
-    INC maze_buffer + 1
-    INC maze_buffer + 1
+    INC MAZE_BUFFER + 1
+    INC MAZE_BUFFER + 1
 
     LDA a_val
     RTS
 
     : ; buffer 3
-    LDY maze_buffer + 2
+    LDY MAZE_BUFFER + 2
     STA START_SCREEN_BUFFER_3, Y
     INY
     LDA temp
     STA START_SCREEN_BUFFER_3, Y
     
-    INC maze_buffer + 2
-    INC maze_buffer + 2
+    INC MAZE_BUFFER + 2
+    INC MAZE_BUFFER + 2
     
     LDA a_val
     RTS
@@ -108,7 +108,7 @@
     TAX ; X is now our offset
     INX
 
-    LDY maze_buffer
+    LDY MAZE_BUFFER
     DEY
 
     LDA START_SCREEN_BUFFER_1, Y
@@ -118,8 +118,8 @@
     LDA START_SCREEN_BUFFER_1, Y
     STA START_SCREEN_BUFFER_1, X
 
-    DEC maze_buffer
-    DEC maze_buffer
+    DEC MAZE_BUFFER
+    DEC MAZE_BUFFER
     RTS
     ; buffer 2
     :
@@ -128,7 +128,7 @@
     TAX
     INX
 
-    LDY maze_buffer + 1
+    LDY MAZE_BUFFER + 1
     DEY
 
     LDA START_SCREEN_BUFFER_2, Y
@@ -138,15 +138,15 @@
     LDA START_SCREEN_BUFFER_2, Y
     STA START_SCREEN_BUFFER_2, X
 
-    DEC maze_buffer + 1
-    DEC maze_buffer + 1
+    DEC MAZE_BUFFER + 1
+    DEC MAZE_BUFFER + 1
     RTS
     ; buffer 3
     :
     TAX
     INX
 
-    LDY maze_buffer + 2
+    LDY MAZE_BUFFER + 2
     DEY
 
     LDA START_SCREEN_BUFFER_3, Y
@@ -156,8 +156,8 @@
     LDA START_SCREEN_BUFFER_3, Y
     STA START_SCREEN_BUFFER_3, X
 
-    DEC maze_buffer + 2
-    DEC maze_buffer + 2
+    DEC MAZE_BUFFER + 2
+    DEC MAZE_BUFFER + 2
     RTS
 .endproc
 
@@ -171,7 +171,7 @@
     CPX #0
     BNE @N
         ;clamp the offset
-        LDA maze_buffer
+        LDA MAZE_BUFFER
         LSR
         STA temp
         modulo random_seed, temp
@@ -180,7 +180,7 @@
     @N:
     CPX #1
     BNE @NN
-        LDA maze_buffer + 1
+        LDA MAZE_BUFFER + 1
         LSR
         STA temp
         ;clamp the offset
@@ -188,7 +188,7 @@
         LDX #1
         JMP @END
     @NN:
-        LDA maze_buffer + 2
+        LDA MAZE_BUFFER + 2
         LSR
         STA temp
         ;clamp the offset

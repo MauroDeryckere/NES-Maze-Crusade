@@ -772,9 +772,9 @@ loop:
 ; During the titlescreen we temporarily treat some values as sizes of different buffers and since nothing in memory is currently in use we use those locations as buffers
 .proc init_title_screen
     LDA #0 
-    STA maze_buffer
-    STA maze_buffer + 1
-    STA maze_buffer + 2
+    STA MAZE_BUFFER
+    STA MAZE_BUFFER + 1
+    STA MAZE_BUFFER + 2
 
     ;initial player row and col on the startscreen
     LDA #18
@@ -1423,7 +1423,7 @@ loop:
 ; one step of updating the title
 .proc step_title_update
     BUFFER_3: 
-        LDA maze_buffer + 2
+        LDA MAZE_BUFFER + 2
         CMP #0
         BNE :+
             JMP BUFFER_1
@@ -1436,7 +1436,7 @@ loop:
         LDY b_val 
         JSR remove_from_start_screen_buffer    
 
-        LDA maze_buffer + 2
+        LDA MAZE_BUFFER + 2
         CMP #0
         BNE :+
             JMP BUFFER_1
@@ -1455,7 +1455,7 @@ loop:
         RTS
 
     BUFFER_1: 
-        LDA maze_buffer
+        LDA MAZE_BUFFER
         CMP #0
         BNE :+
             JMP BUFFER_2
@@ -1472,7 +1472,7 @@ loop:
         LDY b_val 
         JSR remove_from_start_screen_buffer
 
-        LDA maze_buffer
+        LDA MAZE_BUFFER
         CMP #0
         BNE :+
             JMP BUFFER_2
@@ -1486,7 +1486,7 @@ loop:
         JSR remove_from_start_screen_buffer
 
     BUFFER_2: 
-        LDA maze_buffer + 1
+        LDA MAZE_BUFFER + 1
         CMP #0
         BNE :+
             RTS
