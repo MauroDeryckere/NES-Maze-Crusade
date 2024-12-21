@@ -11,7 +11,7 @@
 
     add_to_changed_tiles_buffer player_row, player_collumn, x_val
     ; add_to_changed_tiles_buffer end_row, end_col, x_val
-    
+
     LDA #0
     STA should_clear_buffer
 
@@ -21,27 +21,6 @@
 ; whenever the character moves in hard mode we should add any invible tiles to the changed tiles buffer 
 ; to make them visible during the next vblank
 .proc update_visibility
-    ; is_visited player_row, player_collumn
-    ; BEQ :+
-    ;     JMP above
-    ; :
-
-    ; set_visited player_row, player_collumn
-
-    ; JSR random_number_generator
-    ; modulo random_seed, #PATH_TILES_AMOUNT
-    ; CLC
-    ; ADC #PATH_TILE_1
-    ; STA temp
-
-    ; get_map_tile_state player_row, player_collumn
-    ; BEQ p_wall
-    ; add_to_changed_tiles_buffer player_row, player_collumn, temp
-    ; JMP above
-    ; p_wall: 
-    ;     add_to_changed_tiles_buffer player_row, player_collumn, #WALL_TILE
-        
-
     above:
         LDA player_row
         CMP #0
@@ -67,7 +46,7 @@
             ADC #PATH_TILE_1
             STA temp
 
-            add_to_changed_tiles_buffer frontier_row, player_collumn, #PATH_TILE_1
+            add_to_changed_tiles_buffer frontier_row, player_collumn, temp
         JMP below
         a_wall: 
             add_to_changed_tiles_buffer frontier_row, player_collumn, #WALL_TILE
@@ -95,7 +74,7 @@
             CLC
             ADC #PATH_TILE_1
             STA temp
-            add_to_changed_tiles_buffer frontier_row, player_collumn, #PATH_TILE_1
+            add_to_changed_tiles_buffer frontier_row, player_collumn, temp
         JMP left
         b_wall: 
             add_to_changed_tiles_buffer frontier_row, player_collumn, #WALL_TILE
@@ -125,7 +104,7 @@
             CLC
             ADC #PATH_TILE_1
             STA temp
-            add_to_changed_tiles_buffer player_row, frontier_col, #PATH_TILE_1
+            add_to_changed_tiles_buffer player_row, frontier_col, temp
         JMP right
         l_wall: 
             add_to_changed_tiles_buffer player_row, frontier_col, #WALL_TILE
@@ -155,7 +134,7 @@
             CLC
             ADC #PATH_TILE_1
             STA temp
-            add_to_changed_tiles_buffer player_row, frontier_col, #PATH_TILE_1
+            add_to_changed_tiles_buffer player_row, frontier_col, temp
         JMP end
         r_wall: 
             add_to_changed_tiles_buffer player_row, frontier_col, #WALL_TILE
