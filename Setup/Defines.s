@@ -74,29 +74,26 @@ MAP_ROWS = 30
 
 ; FRONTIER LIST ; maintain 2 pages to be sure but there are no cases that surpas 1 page at the moment
 FRONTIER_LISTQ1 = $0320
-; next available address == $041E
+FRONTIER_LIST_CAPACITY = 255
 
 ; VISITED CELLS BUFFER
-VISISTED_ADDRESS = $041E ; 120 byte buffer same as maze buffer but this stores if a cell is visited (1) or not (0)
+VISISTED_ADDRESS = FRONTIER_LISTQ1 + FRONTIER_LIST_CAPACITY 
+; 120 byte buffer same as maze buffer but this stores if a cell is visited (1) or not (0)
 VISITED_BUFFER_SIZE = 120 
 ; next available address == $496
 
 ; DIRECTIONS BUFFER
-DIRECTIONS_ADDRESS = $0496
+DIRECTIONS_ADDRESS = VISISTED_ADDRESS + VISITED_BUFFER_SIZE
 DIRECTIONS_BUFFER_SIZE = 240
-; next available address == $586
-
-; Queue data structure constants
-QUEUE_START = $0586 ; start address for the queue 
-QUEUE_CAPACITY = $FF ; the maximum capacity of the queue - actual  available size is capacity - 1
-; next available address == $685
 
 ; DURING TITLE SCREEN
 START_SCREEN_BUFFER_1 = $0320
 START_SCREEN_BUFFER_2 = $41F
 START_SCREEN_BUFFER_3 = $51E
-; next available address = $61D
 
+; Queue data structure constants
+QUEUE_START = $05B4 ; start address for the queue | right after start screen buffer_3 (never fully filled)
+QUEUE_CAPACITY = 209 ; the maximum capacity of the queue - actual  available size is capacity - 1
 
 ; player directions
 LEFT = 0
@@ -143,6 +140,7 @@ GAMEMODE_PAUSED = 4
 ; Tiles
 WALL_TILE = 0
 FRONTIER_WALL_TILE = 1
+BROKEN_WALL_TILE = 17
 PATH_TILE_1 = 2
 PATH_TILE_2 = 3
 PATH_TILE_3 = 4

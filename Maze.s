@@ -260,7 +260,9 @@ irq:
         ;------------;
         @GENERATING: 
             CMP #GAMEMODE_GENERATING
-            BNE @PLAYING
+            BEQ :+
+                JMP PLAYING
+            :
 
             JSR pause_logic ; check if we should pause
 
@@ -298,12 +300,42 @@ irq:
                 ;slow down generation if necessary
                 modulo frame_counter, #MAZE_GENERATION_SPEED
                 CMP #0
-                BNE mainloop
+                BEQ :+
+                    JMP mainloop
+                :
+
                 JSR run_prims_maze ; whether or not the algorithm is finished is stored in the A register (0 when not finished)
 
+                ; BROKEN TILES ANIMATION
+                LDA player_movement_delay_ct
+                CMP #20
+                BEQ :+
+                    INC player_movement_delay_ct
+                    JMP mainloop
+                :
+                    JSR dequeue
+                    STA temp_row
+
+                    JSR dequeue
+                    STA temp_col
+
+                    JSR random_number_generator
+                    modulo random_seed, #03
+                    CLC
+                    ADC #PATH_TILE_1
+                    STA temp
+
+                    add_to_changed_tiles_buffer temp_row, temp_col, temp
+            ; -------------------------------------------------------------
+
+                JSR is_empty
+                CMP #1
+                BNE NOT_END_GEN
+
                 ; Has the maze finished generating?
-                CMP #0
-                BEQ :++
+                ; CMP #0
+                ; BEQ :++
+                END_GEN:                     
                     JSR calculate_prims_start_end
 
                     ; reset some flags for the next game mode so that they could be reused
@@ -317,18 +349,25 @@ irq:
                     BEQ :+
                         LDA #GAMEMODE_PLAYING
                         STA current_game_mode
+
+                        ;reset player movement delay since we used it for the animation
+                        LDA #0
+                        STA player_movement_delay_ct
+
                         JMP mainloop
                     :
                     ; start auto solving
-                    LDA #GAMEMODE_PLAYING
+                    LDA #GAMEMODE_SOLVING
                     STA current_game_mode
-                :
+
+
+                NOT_END_GEN: 
                 JMP mainloop
 
         ;---------;
         ; PLAYING ;
         ;---------;
-        @PLAYING: 
+        PLAYING: 
             CMP #GAMEMODE_PLAYING
             BNE @SOLVING
 
@@ -372,10 +411,10 @@ irq:
                 ; Has the player reached the end?
                     LDA player_row
                     CMP end_row
-                    BNE @PLAYING
+                    BNE @SOLVING
                     LDA player_collumn
                     CMP end_col
-                    BNE @PLAYING
+                    BNE @SOLVING
 
                 ; ONLY EXECUTED WHEN END IS REACHED
                 ; reset some flags for the next game mode so that they could be reused
@@ -717,16 +756,16 @@ loop:
 
         JSR tiny_delay_for_music
 
+        ; reset the player movement delay and use it as an animation delay
+        LDA #1
+        STA player_movement_delay_ct
+
         LDA #GAMEMODE_GENERATING
         STA current_game_mode ; back to generating
         
         LDA #0                      
         STA has_started
         JSR reset_generation
-
-        ; clear queue
-        JSR clear_queue
-
     RTS
 .endproc
 
@@ -1383,7 +1422,56 @@ loop:
 
 ; one step of updating the title
 .proc step_title_update
+    BUFFER_3: 
+        LDA maze_buffer + 2
+        CMP #0
+        BNE :+
+            JMP BUFFER_1
+        :
+        LDX #2
+        JSR get_random_start_screen_buffer_tile
+        add_to_changed_tiles_buffer y_val, x_val, #FRONTIER_WALL_TILE
+
+        LDX #2
+        LDY b_val 
+        JSR remove_from_start_screen_buffer    
+
+        LDA maze_buffer + 2
+        CMP #0
+        BNE :+
+            JMP BUFFER_1
+        :
+        LDX #2
+        JSR get_random_start_screen_buffer_tile
+        add_to_changed_tiles_buffer y_val, x_val, #FRONTIER_WALL_TILE
+            LDA y_val
+            JSR enqueue
+            LDA x_val 
+            JSR enqueue
+        LDX #2
+        LDY b_val 
+        JSR remove_from_start_screen_buffer   
+
+        RTS
+
     BUFFER_1: 
+        LDA maze_buffer
+        CMP #0
+        BNE :+
+            JMP BUFFER_2
+        :
+        LDX #0
+        JSR get_random_start_screen_buffer_tile
+            LDA y_val
+            JSR enqueue
+            LDA x_val 
+            JSR enqueue
+        add_to_changed_tiles_buffer y_val, x_val, #PATH_TILE_1
+
+        LDX #0
+        LDY b_val 
+        JSR remove_from_start_screen_buffer
+
         LDA maze_buffer
         CMP #0
         BNE :+
@@ -1401,7 +1489,7 @@ loop:
         LDA maze_buffer + 1
         CMP #0
         BNE :+
-            JMP BUFFER_3
+            RTS
         :
         LDX #1
         JSR get_random_start_screen_buffer_tile
@@ -1409,21 +1497,7 @@ loop:
 
         LDX #1
         LDY b_val 
-        JSR remove_from_start_screen_buffer        
-
-    BUFFER_3: 
-        LDA maze_buffer + 2
-        CMP #0
-        BNE :+
-            RTS
-        :
-        LDX #2
-        JSR get_random_start_screen_buffer_tile
-        add_to_changed_tiles_buffer y_val, x_val, #FRONTIER_WALL_TILE
-
-        LDX #2
-        LDY b_val 
-        JSR remove_from_start_screen_buffer    
+        JSR remove_from_start_screen_buffer   
 
     RTS
 .endproc
@@ -1440,7 +1514,9 @@ loop:
 
     JSR wait_frame
     JSR display_map
-    
+
+    JSR clear_queue
+
     RTS
 .endproc
 

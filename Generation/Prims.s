@@ -58,7 +58,12 @@
     end_col:
 
     set_map_tile a_val, b_val
-    add_to_changed_tiles_buffer frontier_row, frontier_col, #PATH_TILE_1
+    add_to_changed_tiles_buffer frontier_row, frontier_col, #BROKEN_WALL_TILE
+    
+    LDA frontier_row
+    JSR enqueue
+    LDA frontier_col
+    JSR enqueue
 
         access_map_frontier_neighbor #LEFT_N, frontier_row, frontier_col
         CMP #0 
@@ -227,14 +232,21 @@
     
 
     nextnextstep: 
-        JSR random_number_generator
-        modulo random_seed, #02
-        CLC
-        ADC #PATH_TILE_1
-        STA temp
+        ; JSR random_number_generator
+        ; modulo random_seed, #02
+        ; CLC
+        ; ADC #PATH_TILE_1
+        ; STA temp
 
         set_map_tile temp_row, temp_col
-        add_to_changed_tiles_buffer temp_row, temp_col, temp
+
+        add_to_changed_tiles_buffer temp_row, temp_col, #BROKEN_WALL_TILE
+
+        ;enqueue these to be updated as an "animation"
+        LDA temp_row
+        JSR enqueue
+        LDA temp_col
+        JSR enqueue
 
     ;calculate the new frontier cells for the chosen frontier cell and add them
         access_map_frontier_neighbor #LEFT_N, frontier_row, frontier_col
@@ -322,6 +334,13 @@
     ;remove the chosen frontier cell from the list
     set_map_tile frontier_row, frontier_col
     add_to_changed_tiles_buffer frontier_row, frontier_col, temp
+
+    ;enqueue these to be updated as an "animation"
+    ; LDA frontier_row
+    ; JSR enqueue
+    ; LDA frontier_col
+    ; JSR enqueue
+
     remove_from_Frontier frontier_offset
 
     ;return with 0 in A reg to show we are not done with algorithm yet
