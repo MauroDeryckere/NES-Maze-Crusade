@@ -179,18 +179,17 @@ irq:
     LDA #1 
     STA display_BFS_directions
 
-;-----------------------------------------
-;INITIALIZE MUSIC
-;-----------------------------------------
+    ;-----------------------------------------
+    ;INITIALIZE MUSIC
+    ;-----------------------------------------
     lda #1 
     ldx #.lobyte(music_data_duck_tales)
     ldy #.hibyte(music_data_duck_tales)
     jsr famistudio_init
 
-;-----------------------------------------
-;INITIALIZE SOUNDEFFECTS
-;-----------------------------------------
- 
+    ;-----------------------------------------
+    ;INITIALIZE SOUNDEFFECTS
+    ;-----------------------------------------
     ldx #.lobyte(sounds)
     ldy #.hibyte(sounds)
     jsr famistudio_sfx_init
@@ -209,6 +208,28 @@ irq:
     mainloop:
         INC random_seed  ; Change the random seed as many times as possible per frame
         JSR gamepad_poll ; poll input as often as possible
+
+        ; newly pressed buttons: not held last frame, and held now
+        LDA gamepad_prev
+        EOR #%11111111
+        AND gamepad
+        STA gamepad_pressed
+
+        LDA gamepad_prev + 1
+        EOR #%11111111
+        AND gamepad + 1
+        STA gamepad_pressed + 1
+
+        ; newly released buttons: not held now, and held last frame
+        LDA gamepad
+        EOR #%11111111
+        AND gamepad_prev
+        STA gamepad_released
+
+        LDA gamepad + 1
+        EOR #%11111111
+        AND gamepad_prev + 1
+        STA gamepad_released + 1
 
         LDA current_game_mode
         ;------------;
@@ -581,63 +602,66 @@ irq:
             RTS
     :
 
-    LDA gamepad
-    AND #PAD_A
-    BEQ A_NOT_PRESSED
+    LDA gamepad_pressed
+    AND #PAD_START
+    BEQ NOT_GAMEPAD_START
 
-    JMP START_CHECK
-    A_NOT_PRESSED:
-
-    START_CHECK:
-        LDA gamepad     
-        AND #PAD_START
-        BEQ NOT_GAMEPAD_START
-
-        LDA gamepad_prev            
-        AND #PAD_START              
-        BNE NOT_GAMEPAD_START
-            LDA current_game_mode
-            CMP #GAMEMODE_PAUSED
-            BNE is_not_paused
-                LDA gamemode_store_for_paused
-                STA current_game_mode
-                JMP EXIT            
-            is_not_paused:
-                STA gamemode_store_for_paused
-                LDA #GAMEMODE_PAUSED
-                STA current_game_mode
+    LDA current_game_mode
+    CMP #GAMEMODE_PAUSED
+    BNE @is_not_paused
+        LDA gamemode_store_for_paused
+        STA current_game_mode
+        JMP NOT_GAMEPAD_START            
+    @is_not_paused:
+        STA gamemode_store_for_paused
+        LDA #GAMEMODE_PAUSED
+        STA current_game_mode
 
     NOT_GAMEPAD_START:
 
-    EXIT:
     RTS
 .endproc
 
 .segment "CODE"
 .proc gamepad_poll
+    CLC
+    ; https://www.nesdev.org/wiki/Controller_reading_code 
     LDA gamepad
     STA gamepad_prev
+    LDA gamepad + 1
+    STA gamepad_prev + 1
+    
+    @readjoy2_safe:
+        LDX #0
+        JSR @readjoyx_safe  ; X=0: safe read controller 1
+        INX
+        ; fall through to readjoyx_safe, X=1: safe read controller 2
 
-	; strobe the gamepad to latch current button state
-	LDA #1
-	STA JOYPAD1
-	LDA #0
-	STA JOYPAD1
-	; read 8 bytes from the interface at $4016
-	LDX #8
-loop:
-    PHA
-    LDA JOYPAD1
-    ; combine low two bits and store in carry bit
-	AND #%00000011
-	CMP #%00000001
-	PLA
-	; rotate carry into gamepad variable
-	ROR
-	DEX
-	BNE loop
-	STA gamepad
-	RTS
+    @readjoyx_safe:
+        JSR @readjoyx
+
+    @reread:
+        LDA gamepad, X
+        PHA
+        JSR @readjoyx
+        PLA
+        CMP gamepad, X
+        BNE @reread
+        RTS
+
+    @readjoyx: ; X register = 0 for controller 1, 1 for controller 2
+        LDA #$01
+        STA JOYPAD1
+        STA gamepad, X
+        LSR A
+        STA JOYPAD1
+    @loop:
+        LDA JOYPAD1, X
+        AND #%00000011  ; ignore bits other than controller
+        CMP #$01        ; Set carry if and only if nonzero
+        ROL gamepad, X  ; Carry -> bit 0; but 7 -> Carry
+        BCC @loop
+        RTS
 .endproc
 ;*****************************************************************
 

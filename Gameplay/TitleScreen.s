@@ -3,13 +3,9 @@
 .proc title_screen_input_logic
     ; UP/DOWN MOVEMENT OF SELECTION
     @UP_DOWN_MOVEMENT: 
-        LDA gamepad     
+        LDA gamepad_pressed     
         AND #PAD_D
         BEQ NOT_GAMEPAD_DOWN 
-
-        LDA gamepad_prev            
-        AND #PAD_D                  
-        BNE NOT_GAMEPAD_DOWN
             LDA player_row
             CMP #20
             BEQ :+
@@ -17,13 +13,9 @@
             :
 
     NOT_GAMEPAD_DOWN: 
-        LDA gamepad     
-        AND #PAD_U
-        BEQ NOT_GAMEPAD_UP
-
-        LDA gamepad_prev            
+        LDA gamepad_pressed            
         AND #PAD_U           
-        BNE NOT_GAMEPAD_UP
+        BEQ NOT_GAMEPAD_UP
             LDA player_row
             CMP #18
             BEQ :+
@@ -34,41 +26,36 @@
     ; SELECTION
     @SELECTION: 
         NOT_GAMEPAD_UP: 
-        LDA gamepad     
+        LDA gamepad_pressed     
         AND #PAD_SELECT
         BEQ NOT_GAMEPAD_SELECT
 
-        ; select pressed
+        CheckAndPlaySound:
+            LDA sound_played   ; Check if sound has already been played
+            BEQ PlaySoundOnce  ; If not, play the sound
 
+            JMP Resume         ; continue if already played
 
-    CheckAndPlaySound:
-        LDA sound_played   ; Check if sound has already been played
-        BEQ PlaySoundOnce  ; If not, play the sound
+        PlaySoundOnce:
+            ; PLAY START SOUND
+            LDA #FAMISTUDIO_SFX_CH1
+            STA sfx_channel
+            LDA #2
+            JSR play_sound_effect
 
-        JMP Resume         ; continue if already played
+            ; Set the flag to indicate the sound was played
+            LDA #$01
+            STA sound_played
 
-    PlaySoundOnce:
-        ; PLAY START SOUND
-        LDA #FAMISTUDIO_SFX_CH1
-        STA sfx_channel
-        LDA #2
-        JSR play_sound_effect
-
-        ; Set the flag to indicate the sound was played
-        LDA #$01
-        STA sound_played
-
-    Resume:
-        LDA gamepad_prev            
-        AND #PAD_SELECT  
-        BNE NOT_GAMEPAD_SELECT
-        LDA #0
-        STA sound_played ;reset sound_played flag
+        Resume:
+            LDA #0
+            STA sound_played ;reset sound_played flag
 
             LDA player_row
             CMP #18
             BNE NOT_PLAY
                 JMP EXIT_SCREEN
+
         NOT_PLAY: 
             LDA player_row
             CMP #19
@@ -93,7 +80,7 @@
         STA player_dir
 
         ; start btn
-        LDA gamepad
+        LDA gamepad_pressed
         AND #PAD_START
         BNE EXIT_SCREEN
 

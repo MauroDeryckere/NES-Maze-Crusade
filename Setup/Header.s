@@ -31,8 +31,10 @@
     ppu_ctl1:		    	.res 1 ; PPU Control Register 2 Value
 
     ;input
-    gamepad:		    	.res 1 ; stores the current gamepad values
-    gamepad_prev:		    .res 1 ; stores the previous gamepad values
+    gamepad:		    	.res 2 ; stores the current gamepad values
+    gamepad_prev:		    .res 2 ; stores the previous gamepad values
+    gamepad_pressed:        .res 2 ; pressed this frame
+    gamepad_released:       .res 2 ; released this frame
 
     frame_counter: 			.res 1
 
