@@ -116,11 +116,11 @@ wait_vblank2:
 .endproc
 
 .segment "CODE"
-.proc clear_nametable
+.proc clear_nametable_0
     LDA PPU_STATUS 
-    LDA #$20
+    LDA #NAME_TABLE_0_ADDRESS_HIGH
     STA PPU_VRAM_ADDRESS2
-    LDA #$00
+    LDA #NAME_TABLE_0_ADDRESS_LOW
     STA PPU_VRAM_ADDRESS2
 
     LDA #0
@@ -134,6 +134,34 @@ wait_vblank2:
         DEY
         BNE rowloop
 
+    ; attributes
+    LDX #64
+    loop:
+        STA PPU_VRAM_IO
+        DEX
+        BNE loop
+    RTS
+.endproc
+
+.proc clear_nametable_1
+    LDA PPU_STATUS 
+    LDA #NAME_TABLE_1_ADDRESS_HIGH
+    STA PPU_VRAM_ADDRESS2
+    LDA #NAME_TABLE_1_ADDRESS_LOW
+    STA PPU_VRAM_ADDRESS2
+
+    LDA #0
+    LDY #30
+    rowloop:
+        LDX #32
+        columnloop:
+            STA PPU_VRAM_IO
+            DEX
+            BNE columnloop
+        DEY
+        BNE rowloop
+
+    ; attributes
     LDX #64
     loop:
         STA PPU_VRAM_IO
@@ -146,47 +174,21 @@ wait_vblank2:
 ;*****************************************************************
 ; Graphics 
 ;*****************************************************************
- ;Displays the map in one go
 .segment "CODE"
-.proc display_map
+; fills the nametables with all walls (again)
+.proc display_map_all_walls
     JSR ppu_off
-    JSR clear_nametable
-    
-    vram_set_address (NAME_TABLE_0_ADDRESS) 
-    assign_16i paddr, MAZE_BUFFER    ;load map into ppu
+    ;since our wall tile is at idx 0, clearing the nametable is all that's required
+    JSR clear_nametable_0
+    JSR clear_nametable_1
 
-    LDY #0          ;reset value of y
-    loop:
-        LDA (paddr),y   ;get byte to load
-        TAX
-        LDA #8          ;8 bits in a byte
-        STA byte_loop_couter
-
-        byteloop:
-        TXA             ;copy x into a to preform actions on a copy
-        set_Carry_to_highest_bit_A  ;rol sets bit 0 to the value of the carry flag, so we make sure the carry flag is set to the value of bit 7 to rotate correctly
-        ROL             ;rotate to get the correct bit on pos 0
-        TAX             ;copy current rotation back to x
-        AND #%00000001  ;and with 1, to check if tile is filled
-        STA PPU_VRAM_IO ;write to ppu
-
-        DEC byte_loop_couter    ;decrease counter
-        LDA byte_loop_couter    ;get value into A
-        BNE byteloop            ;repeat byteloop if not done with byte yet
-
-        INY
-            CPY #MAZE_BUFFER_SIZE              ;the screen is 120 bytes in total, so check if 120 bytes have been displayed to know if we're done
-            BNE loop
-
-        JSR ppu_update
-
-        RTS
+    JSR ppu_update
+    RTS
 .endproc
 
 ;displays a clear map
 .proc display_clear_map
     JSR ppu_off
-    JSR clear_nametable
 
     ; Set PPU address to $2000 (nametable start)
     LDA #$20         ; High byte of address
@@ -194,12 +196,12 @@ wait_vblank2:
     LDA #$00         ; Low byte of address
     STA $2006
 
-    LDA #07
+    LDA #07 ; clear tile
     LDY #30
     rowloop:
         LDX #32
         columnloop:
-            STA $2007        ; Write tile 0 to PPU data
+            STA $2007        ; Write tile to PPU data
             DEX
             BNE columnloop
         DEY

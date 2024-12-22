@@ -7,6 +7,11 @@
 .macro calculate_offset_and_mask_visited Row, Column
     ;Calculate the base address of the row (Row * 4)
     LDA Row
+
+    ; Decrease row by 1 - top border is empty so row 1 is actually row 0 in the buffer
+    SEC
+    SBC #1
+
     ASL             ;== times 2
     ASL             ;== times 2
     STA x_val

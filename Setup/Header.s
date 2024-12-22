@@ -2,7 +2,7 @@
 
 .segment "HEADER"
     INES_MAPPER = 0 ; 0 = NROM
-    INES_MIRROR = 0 ; 0 = horizontal mirror/1 = vertical
+    INES_MIRROR = 1 ; 0 = horizontal mirror/1 = vertical
     INES_SRAM = 0 ; 1 = battery save at $6000-7FFF
 
     .byte 'N', 'E', 'S', $1A ; ID
@@ -39,6 +39,9 @@
     gamepad_prev:		    .res 2 ; stores the previous gamepad values
     gamepad_pressed:        .res 2 ; pressed this frame
     gamepad_released:       .res 2 ; released this frame
+
+    ;scrolling
+    scroll_x:               .res 1 
 
 
     ;gameplay flags

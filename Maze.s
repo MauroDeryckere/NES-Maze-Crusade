@@ -102,11 +102,28 @@ irq:
         BCC @loop
 
 
-    ; write current scroll and control settings
+    ; ; write current scroll and control settings
+    ; LDA scroll_x ; Set horizontal scroll to 8 pixels
+    ; STA $2005    ; First write to $2005 (X offset)
+    ; LDA #0 
+    ; STA $2005
+
+    ; ; Check if we need to switch nametables
+    ; LDA scroll_x
+    ; CLC
+    ; ADC #1     ; Increment X scroll by 8 pixels
+    ; BCC NoSwitch ; If less than 256, no nametable switch needed
+    ; INC $2000    ; Switch to the next nametable
+
+    ; NoSwitch:
+    ; STA scroll_x ; Update the scroll position
+
 	LDA #0
 	STA PPU_VRAM_ADDRESS1
+    LDA #0
 	STA PPU_VRAM_ADDRESS1
-	LDA ppu_ctl0
+	
+    LDA ppu_ctl0
 	STA PPU_CONTROL
 	LDA ppu_ctl1
 	STA PPU_MASK
@@ -144,7 +161,8 @@ irq:
 
     ;clear stuff
     JSR ppu_off
-    JSR clear_nametable
+    JSR clear_nametable_0
+    JSR clear_nametable_1
 
     JSR ppu_update
 
@@ -164,15 +182,8 @@ irq:
     STA has_started
             
     ;run test code
-    ;JSR test_frontier ;test code
+    ;JSR test_frontier 
     ;JSR test_queue
-
-    ; edited though startscreen
-    ;     000GHSSS
-    ; LDA #%00000001
-    ; EOR #HARD_MODE_MASK
-    ; EOR #GAME_MODE_MASK
-    ; STA input_game_mode 
 
     ; display arrows instead of just red cells
     LDA #1 
@@ -676,7 +687,7 @@ irq:
     JSR clear_maze
 
     JSR wait_frame
-    JSR display_map
+    JSR display_map_all_walls
 
     JSR clear_queue
 
