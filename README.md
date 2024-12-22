@@ -6,6 +6,17 @@ The NES Maze Game is a maze navigation game inspired by classic titles from the 
 
 Players can enjoy the game on original NES hardware or through a compatible NES emulator, making it accessible to a wider audience of retro gaming enthusiasts.
 
+## Table of Contents
+1. [Overview](#overview)
+2. [How To Play](#how-to-play)  
+   - [Title Screen Controls](#title-screen-controls)  
+   - [In-Game Controls](#in-game-controls)  
+   - [Objective](#objective)  
+3. [Used Software](#used-software)  
+4. [References](#references)  
+   - [Sources](#sources)  
+   - [Initial Project](#initial-project)  
+
 ## How To Play
 
 ### Title Screen Controls
