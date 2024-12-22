@@ -46,8 +46,11 @@ For the controller input on the NES there are some things to consider if you use
 
 The initial project was made during a class in a [DAE](https://www.digitalartsandentertainment.be/page/31/Game+Development) course (Retro Console & Emulator Programming) given by Tom Tesch.
 
-**We used the following book in that class to setup the project:**
-Cruise, Tony. (2024). Classic Programming on the NES. Manning Publications Co.. ISBN: 9781633438019.
+**We used the following book in that class to setup the project:** </br>
+Cruise, Tony. (2024). </br>
+Classic Programming on the NES. </br>
+Manning Publications Co.</br>
+ISBN: 9781633438019.
 
 The original project was created by:
 
