@@ -175,7 +175,7 @@ wait_vblank2:
         BNE byteloop            ;repeat byteloop if not done with byte yet
 
         INY
-            CPY #MAP_BUFFER_SIZE              ;the screen is 120 bytes in total, so check if 120 bytes have been displayed to know if we're done
+            CPY #MAZE_BUFFER_SIZE              ;the screen is 120 bytes in total, so check if 120 bytes have been displayed to know if we're done
             BNE loop
 
         JSR ppu_update

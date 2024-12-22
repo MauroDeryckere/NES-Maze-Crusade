@@ -15,6 +15,11 @@
 .macro calculate_tile_offset_and_mask Row, Column
     ;Calculate the base address of the row (Row * 4)
     LDA Row
+
+    ; Decrease row by 1 - top border is empty so row 1 is actually row 0 in the buffer
+    SEC
+    SBC #1
+
     ASL             ;== times 2
     ASL             ;== times 2
     STA x_val
@@ -92,7 +97,7 @@
         STA MAZE_BUFFER, Y
 
         INY
-        CPY #120
+        CPY #MAZE_BUFFER_SIZE
         BNE loop
     
     RTS

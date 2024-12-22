@@ -576,6 +576,8 @@ irq:
                     LDA #0
                     STA sound_played2
 
+                    add_score #100
+
                     ; back to generating
                     LDA #GAMEMODE_GENERATING
                     STA current_game_mode
