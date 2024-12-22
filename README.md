@@ -51,7 +51,7 @@ Navigate through the maze and reach the end to complete the level.
 
 ### Sources
 
-For the controller input on the NES there are some things to consider if you use DPCM safety, to ensure this won't be an issue I used the following [source](https://www.nesdev.org/wiki/Controller_reading_code).
+For the controller input on the NES there are some things to consider if you use DPCM samples, to ensure this won't be an issue I used the following [source](https://www.nesdev.org/wiki/Controller_reading_code).
 
 ### Initial Project
 
