@@ -31,7 +31,7 @@ Navigate through the maze and reach the end to complete the level.
 
 **Audio:**
 - [FamiStudio](https://famistudio.org/)
-- 
+
 **Coding:**
 - [Visual Studio Code](https://code.visualstudio.com/)
 - [Mesen](https://www.mesen.ca/) and [MesenX](https://github.com/NovaSquirrel/Mesen-X) (debugging and emulating)
