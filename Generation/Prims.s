@@ -16,26 +16,29 @@
 .proc start_prims_maze
     ; step 0 of the maze generation, set a random cell as passage and calculate its frontier cells
     JSR random_number_generator
-    modulo random_seed, #29
-    ;LDA #29
+
+    ; ensure the row is always even so that there is a border at the bottom and top
+    modulo random_seed, #27 ; 27 because we dont want row 0 and dont want row 28 (28 + 1 == 29 -> uneven + 1 == out of bounds (30))
+
+    ; dont include row 0
+    STA a_val
+    INC a_val
+    modulo a_val, #2
+    
+    CLC
+    ADC a_val
     STA a_val
     STA frontier_row
-    ;STA temp
+
+    ; col
     JSR random_number_generator
     modulo random_seed, #31
-    ;LDA #31
     STA b_val
     STA frontier_col
-    ;STA temp
-
 
     ;set the even / uneven row and col flag
     LDA #0
     STA odd_frontiers
-    
-    LDA frontier_row
-    CMP #0
-    BEQ end_row ;when zero were even
     
     modulo frontier_row, #2
     CMP #0
@@ -361,25 +364,25 @@
 
 ; START POSITION
     ;uneven row means empty border at top
-    ;randomly generate a start tile until we find a valid one in row 0 (valid means a walkable tile below)
+    ;randomly generate a start tile until we find a valid one in row 2 (valid means a walkable tile below)
     rowloop_ue:
         JSR random_number_generator
         modulo random_seed, #31
         STA temp
 
-        get_map_tile_state #1, temp
+        get_map_tile_state #2, temp
         BEQ rowloop_ue
 
-        set_map_tile #0, temp
-        add_to_changed_tiles_buffer #0, temp, #PATH_TILE_1
-        LDA #0
+        set_map_tile #1, temp
+        add_to_changed_tiles_buffer #1, temp, #PATH_TILE_1
+        LDA #1
         STA player_row
         LDA temp
         STA player_collumn
 
         JMP col_check
 
-    ;even rows means empy border at bottom 
+    ;even rows means use border at bottom 
     ;randomly generate a start tile until we find a valid one in row 30 (valid means a walkable tile above)
     rowloop_e:
         JSR random_number_generator
@@ -413,8 +416,9 @@
 
     colloop_ue:
         JSR random_number_generator
-        modulo random_seed, #29
+        modulo random_seed, #28
         STA temp
+        INC temp ;exclude row 0
 
         get_map_tile_state temp, #1 
         BEQ colloop_ue
@@ -442,8 +446,9 @@
 
     colloop_e:
         JSR random_number_generator
-        modulo random_seed, #29
+        modulo random_seed, #28
         STA temp
+        INC temp ;exclude row 0
 
         get_map_tile_state temp, #30
         BEQ colloop_e

@@ -30,16 +30,16 @@
     ppu_ctl0:		    	.res 1 ; PPU Control Register 2 Value
     ppu_ctl1:		    	.res 1 ; PPU Control Register 2 Value
 
+    frame_counter: 			.res 1
+
+    random_seed:			.res 1 ; Initial seed value | Used internally for random function, do not overwrite
+
     ;input
     gamepad:		    	.res 2 ; stores the current gamepad values
     gamepad_prev:		    .res 2 ; stores the previous gamepad values
     gamepad_pressed:        .res 2 ; pressed this frame
     gamepad_released:       .res 2 ; released this frame
 
-    frame_counter: 			.res 1
-
-    ;random
-    random_seed:			.res 1 ; Initial seed value | Used internally for random function, do not overwrite
 
     ;gameplay flags
     odd_frontiers: 			.res 1 ; was the maze generated with odd or even frontier rows and columns
@@ -70,6 +70,7 @@
     has_started:            .res 1  ; internal flag to show whether or not a mode has started, used to only execute the start function once 
     is_backtracking:        .res 1 ; is BFS currently backtracking the path (internal) - will be set to FF when end is reached
 
+    
     ; End tile of the maze
     end_row: 				.res 1
     end_col:				.res 1

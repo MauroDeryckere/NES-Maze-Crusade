@@ -167,10 +167,10 @@
     JMP :+++++ ;no valid direction, invalid neighbor
 
     : ;top check
-    ; If Row is 0 or 1, it's out of bounds
+    ; If Row is 0 or 1 or 2, it's out of bounds
     LDA Row
-    CMP #2 
-    BCC :++++ ; row < 2
+    CMP #3
+    BCC :++++ ; row < 3
     JMP :+++++ 
 
     : ;right check

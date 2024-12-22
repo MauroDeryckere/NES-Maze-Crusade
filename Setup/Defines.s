@@ -81,7 +81,7 @@ MAP_ROWS = 30
 
 ; FRONTIER LIST
 FRONTIER_LISTQ1 = MAZE_BUFFER + MAP_BUFFER_SIZE
-FRONTIER_LIST_CAPACITY = 120 ; capacity is more than enough, can be reduced if necessary
+FRONTIER_LIST_CAPACITY = 255 ; capacity is more than enough, can be reduced if necessary
 
 ; VISITED CELLS BUFFER
 ; 120 byte buffer same as maze buffer but this stores if a cell is visited (1) or not (0)
@@ -121,7 +121,7 @@ CHANGED_TILES_BUFFER_SIZE = 40
 GENERATION_ANIMATION_DELAY = 40
 PLAYER_MOVEMENT_DELAY = 5 ;sets the delay for player movement (==  movement speed)
 MAZE_GENERATION_SPEED = 1 ;how much is maze generation slowed down
-SCORE_DIGIT_OFFSET = 8
+SCORE_DIGIT_OFFSET = 232
 
 ; Gamemode masks
 ; 000G HSSS

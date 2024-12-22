@@ -74,7 +74,6 @@ irq:
     CMP #1
     BEQ :+
         JSR display_Start_screen
-        ; JSR draw_title
     :   
         JSR draw_title_settings
 @skip_start_screen:
