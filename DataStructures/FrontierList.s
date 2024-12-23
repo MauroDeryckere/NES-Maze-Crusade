@@ -96,7 +96,7 @@
     STA FRONTIER_LISTQ1, X
 
 
-    ; ; in case you want to replace the garbage at end with FF for debugging (clear values)
+    ; in case you want to replace the garbage at end with FF for debugging (clear values)
     LDA frontier_listQ1_size
 
     TAX
@@ -111,6 +111,7 @@
     INX
     LDA #$FF
     STA FRONTIER_LISTQ1, X
+    ; ------------------------------------------------------------------------------------
 
 
     DEC frontier_listQ1_size

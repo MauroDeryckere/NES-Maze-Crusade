@@ -7,6 +7,7 @@
     LDA player_movement_delay_ct
     BEQ :+
         DEC player_movement_delay_ct
+        RTS
     :
 
     @GAMEPAD_DOWN:
@@ -16,12 +17,6 @@
             ; update the player direction
             LDA #BOTTOM_D
             STA player_dir 
-
-            ; check if delay is reached if not only we only change the direction
-            LDA player_movement_delay_ct
-            BEQ :+
-                RTS
-            :
 
             ;--------------------------------------------------------------
             ;COLLISION DETECTION
@@ -63,12 +58,6 @@
             LDA #TOP_D
             STA player_dir
 
-            ; check if delay is reached if not only we only change the direction
-            LDA player_movement_delay_ct
-            BEQ :+
-                RTS
-            :
-
             ;--------------------------------------------------------------
             ;COLLISION DETECTION
             ;--------------------------------------------------------------
@@ -106,12 +95,6 @@
             ; change player direction
             LDA #LEFT_D
             STA player_dir
-
-            ; check if delay is reached if not only we only change the direction
-            LDA player_movement_delay_ct
-            BEQ :+
-                RTS
-            :
 
             ;--------------------------------------------------------------
             ;COLLISION DETECTION
@@ -162,12 +145,6 @@
             ; change player direction
             LDA #RIGHT_D
             STA player_dir
-
-            ; check if delay is reached if not only we only change the direction
-            LDA player_movement_delay_ct
-            BEQ :+
-                RTS
-            :
 
             ;--------------------------------------------------------------
             ;COLLISION DETECTION
