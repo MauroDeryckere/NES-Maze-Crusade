@@ -21,9 +21,19 @@
 ; whenever the character moves in hard mode we should add any invible tiles to the changed tiles buffer 
 ; to make them visible during the next vblank
 .proc update_visibility
+    ;apply current scroll settings to the col
+    LDA scroll_x
+    LSR
+    LSR
+    LSR
+    CLC
+    ADC player_collumn
+
+    STA temp_col
+
     above:
         LDA player_row
-        CMP #0
+        CMP #MAP_START_ROW
         BNE :+
             JMP below
         :
@@ -31,14 +41,14 @@
         STA frontier_row
         DEC frontier_row
 
-        is_visited frontier_row, player_collumn
+        is_visited frontier_row, temp_col
         BEQ :+
             JMP below
         :
 
-        set_visited frontier_row, player_collumn
+        set_visited frontier_row, temp_col
 
-        get_map_tile_state frontier_row, player_collumn
+        get_map_tile_state frontier_row, temp_col
         BEQ a_wall
             JSR random_number_generator
             modulo random_seed, #PATH_TILES_AMOUNT
@@ -46,13 +56,13 @@
             ADC #PATH_TILE_1
             STA temp
 
-            add_to_changed_tiles_buffer frontier_row, player_collumn, temp
+            add_to_changed_tiles_buffer frontier_row, temp_col, temp
         JMP below
         a_wall: 
-            add_to_changed_tiles_buffer frontier_row, player_collumn, #WALL_TILE
+            add_to_changed_tiles_buffer frontier_row, temp_col, #WALL_TILE
     below:
         LDA player_row
-        CMP #MAP_ROWS - 1
+        CMP #MAP_END_ROW
         BNE :+
             JMP left
         :
@@ -60,28 +70,28 @@
         STA frontier_row
         INC frontier_row
 
-        is_visited frontier_row, player_collumn
+        is_visited frontier_row, temp_col
         BEQ :+
             JMP left
         :
 
-        set_visited frontier_row, player_collumn
+        set_visited frontier_row, temp_col
 
-        get_map_tile_state frontier_row, player_collumn
+        get_map_tile_state frontier_row, temp_col
         BEQ b_wall
             JSR random_number_generator
             modulo random_seed, #PATH_TILES_AMOUNT
             CLC
             ADC #PATH_TILE_1
             STA temp
-            add_to_changed_tiles_buffer frontier_row, player_collumn, temp
+            add_to_changed_tiles_buffer frontier_row, temp_col, temp
         JMP left
         b_wall: 
-            add_to_changed_tiles_buffer frontier_row, player_collumn, #WALL_TILE
+            add_to_changed_tiles_buffer frontier_row, temp_col, #WALL_TILE
     
     left: 
-        LDA player_collumn
-        CMP #0
+        LDA temp_col
+        CMP #MAP_START_COL
         BNE :+
            JMP right
         :
@@ -110,8 +120,8 @@
             add_to_changed_tiles_buffer player_row, frontier_col, #WALL_TILE
 
     right: 
-        LDA player_collumn
-        CMP #MAP_COLUMNS - 1
+        LDA temp_col
+        CMP #MAP_END_ROW
         BNE :+
             JMP end
         :

@@ -181,6 +181,22 @@ wait_vblank2:
         DEY
         BNE @rowloop
 
+    LDA #NAME_TABLE_1_ADDRESS_HIGH
+    STA $2006
+    LDA #NAME_TABLE_1_ADDRESS_LOW
+    STA $2006
+
+    LDA #BLACK_TILE ; clear tile
+    LDY #30
+    @rowloop2:
+        LDX #32
+        @columnloop2:
+            STA PPU_VRAM_IO ; Write tile to PPU data
+            DEX
+            BNE @columnloop2
+        DEY
+        BNE @rowloop2
+
     JSR ppu_update
 
     RTS
