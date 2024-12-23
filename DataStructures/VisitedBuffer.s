@@ -14,6 +14,7 @@
 
     ASL             ;== times 2
     ASL             ;== times 2
+    ASL             ;== times 2
     STA x_val
 
     ;Calculate the byte offset within the row (Column / 8)

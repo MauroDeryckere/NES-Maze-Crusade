@@ -79,7 +79,7 @@
         ;explore neighbors
         @topn: 
             LDA frontier_row
-            CMP #0
+            CMP #1
             BNE :+
                 JMP @rightn
             :

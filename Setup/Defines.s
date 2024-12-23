@@ -94,7 +94,7 @@ FRONTIER_LISTQ1 = MAZE_BUFFER + MAZE_BUFFER_SIZE
 FRONTIER_LIST_CAPACITY = 255 ; capacity is more than enough, can be reduced if necessary
 
 ; VISITED CELLS BUFFER | doubles as visibility buffer
-; 120 byte buffer same as maze buffer but this stores if a cell is visited (1) or not (0)
+; same size as maze buffer but this stores if a cell is visited (1) or not (0)
 VISISTED_ADDRESS = MAZE_BUFFER + MAZE_BUFFER_SIZE
 VISITED_BUFFER_SIZE = MAZE_BUFFER_SIZE
 
@@ -103,8 +103,8 @@ DIRECTIONS_ADDRESS = VISISTED_ADDRESS + VISITED_BUFFER_SIZE
 DIRECTIONS_BUFFER_SIZE = 240
 
 ; Queue data structure constants
-QUEUE_START = $05B4 + 3; start address for the queue | right after start screen buffer_3 (never fully filled)
-QUEUE_CAPACITY = 209 - 3; the maximum capacity of the queue - actual  available size is capacity - 1
+QUEUE_START = DIRECTIONS_ADDRESS + DIRECTIONS_BUFFER_SIZE; start address for the queue | right after start screen buffer_3 (never fully filled)
+QUEUE_CAPACITY = 201; the maximum capacity of the queue - actual  available size is capacity - 1
 
 ; player directions
 LEFT = 0
