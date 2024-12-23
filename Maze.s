@@ -311,7 +311,8 @@ irq:
                 LDA has_started
                 CMP #0
                 BNE :+
-
+                    LDA #0
+                    STA player_movement_delay_ct
                     ;------------------------
                     ;PAUSE TITLE SCREEN MUSIC
                     ;------------------------
@@ -337,6 +338,7 @@ irq:
                 :
 
                 JSR run_prims_maze ; whether or not the algorithm is finished is stored in the A register (0 when not finished)
+                JSR run_prims_maze ; whether or not the algorithm is finished is stored in the A register (0 when not finished)
 
                 ; BROKEN TILES ANIMATION
                 LDA player_movement_delay_ct
@@ -346,6 +348,27 @@ irq:
                     JMP mainloop
                 :
                 
+                    JSR is_empty
+                    CMP #1
+                    BNE :+
+                        JMP SKIP_DEQ	
+                    :
+
+                    JSR dequeue
+                    STA temp_row
+
+                    JSR dequeue
+                    STA temp_col
+
+                    JSR random_number_generator
+                    modulo random_seed, #03
+                    CLC
+                    ADC #PATH_TILE_1
+                    STA temp
+
+                    add_to_changed_tiles_buffer temp_row, temp_col, temp
+
+
                     JSR is_empty
                     CMP #1
                     BEQ SKIP_DEQ
@@ -361,7 +384,7 @@ irq:
                     CLC
                     ADC #PATH_TILE_1
                     STA temp
-                  ; causes a bug - TODO
+
                     add_to_changed_tiles_buffer temp_row, temp_col, temp
                     SKIP_DEQ: 
             ; -------------------------------------------------------------

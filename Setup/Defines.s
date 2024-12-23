@@ -128,7 +128,7 @@ LEFT_D = 3
 CHANGED_TILES_BUFFER_SIZE = 40
 
 ;SETUP
-GENERATION_ANIMATION_DELAY = 60
+GENERATION_ANIMATION_DELAY = 35
 PLAYER_MOVEMENT_DELAY = 5 ;sets the delay for player movement (==  movement speed)
 MAZE_GENERATION_SPEED = 1 ;how much is maze generation slowed down
 SCORE_DIGIT_OFFSET = 232
