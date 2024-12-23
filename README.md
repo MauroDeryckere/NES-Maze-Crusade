@@ -8,12 +8,13 @@ Players can enjoy the game on original NES hardware or through a compatible NES 
 
 ## Table of Contents
 1. [Overview](#overview)
-2. [How To Play](#how-to-play)  
-   - [Title Screen Controls](#title-screen-controls)  
+2. [How To Play](#how-to-play)
+   - [Gamemodes](#gamemodes) 
+   - [Title Screen Controls](#title-screen-controls)
    - [In-Game Controls](#in-game-controls)  
    - [Objective](#objective)  
-3. [Used Software](#used-software)  
-4. [References](#references)  
+4. [Used Software](#used-software)  
+5. [References](#references)  
    - [Sources](#sources)  
    - [Initial Project](#initial-project)  
 
