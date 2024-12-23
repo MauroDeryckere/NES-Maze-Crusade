@@ -1,31 +1,6 @@
 ;*****************************************************************
 ; Graphics utility functions
 ;*****************************************************************
-.proc poll_clear_buffer
-    LDA should_clear_buffer
-    BEQ :+
-        JSR clear_changed_tiles_buffer
-        LDA #0
-        STA should_clear_buffer
-    :
-    RTS
-.endproc
-
-.segment "CODE"
-.proc clear_changed_tiles_buffer
-    LDY #0
-
-    loop: 
-    LDA #$FF
-    STA changed_tiles_buffer, Y
-
-    INY
-    CPY #CHANGED_TILES_BUFFER_SIZE
-    BNE loop
-
-    RTS
-.endproc
-
 .proc wait_frame
 	INC nmi_ready
 @loop:
@@ -302,7 +277,7 @@ wait_vblank2:
         ASL low_byte ;x2 == 32
         ROL high_byte
 
-        LDA #$20 ;add high byte
+        LDA #NAME_TABLE_0_ADDRESS_HIGH ;add high byte
         CLC
         ADC high_byte
         STA $2006
@@ -340,6 +315,81 @@ wait_vblank2:
     done: 
         LDA #1
         STA should_clear_buffer
+
+
+ ;update the map tiles
+    LDY #0
+    maploop2: 
+        LDX #0 ; flag wall or not
+        LDA #0
+        STA high_byte
+
+        ;row
+        LDA changed_tiles_buffer2, y
+        ;LDA #0
+        CMP #$FF ;end of buffer
+        BEQ done2 
+        STA low_byte
+
+        ; clear the flag bit and row
+        AND #%01100000
+        TAX ;Store the 2-bit TileID in X (0-3) - not shifted yet  
+
+
+        LDA low_byte
+        AND #%00011111 ; Clear the tileID and flag from the row
+        STA low_byte
+        
+        CLC
+        ASL low_byte ;x2
+        ROL high_byte
+        ASL low_byte ;x2
+        ROL high_byte
+        ASL low_byte ;x2
+        ROL high_byte
+        ASL low_byte ;x2
+        ROL high_byte
+        ASL low_byte ;x2 == 32
+        ROL high_byte
+
+        LDA #NAME_TABLE_1_ADDRESS_HIGH ;add high byte
+        CLC
+        ADC high_byte
+        STA $2006
+        
+        ;col
+        INY
+        LDA changed_tiles_buffer2, y
+        AND #%00011111 ;clear tileID
+        ADC low_byte 
+        STA $2006
+
+        ;extract the tileID  
+        LDA changed_tiles_buffer2, y
+        AND #%11100000
+        ;1110 0000 -> 0000 0111
+        LSR
+        LSR
+        LSR
+        LSR
+        LSR
+        STA low_byte ;temporarily store result
+
+        ;extract the tileID  
+        ; need to do row * 16 + col
+        ;0110 0000 -> 0000 0011
+        ; but the row is already stored in a significant enough bit so we can minimise amount of shifts
+        TXA 
+        LSR
+        ADC low_byte
+        STA PPU_VRAM_IO
+
+        INY
+        CPY #CHANGED_TILES_BUFFER_SIZE
+        BNE maploop2    
+    done2: 
+    RTS
+
 .endproc
 
 ; populate oam buffer with player sprite

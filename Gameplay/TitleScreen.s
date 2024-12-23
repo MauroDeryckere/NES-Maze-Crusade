@@ -133,7 +133,7 @@
     ;PLAY TITLE SCREEN MUSIC
     LDA #0
     JSR play_music
-    
+
     ; label to allow collapsing this big block of code
     @TITLE_SCREEN_BUFFER_FILL: 
         ; fill buffers with initial values for the title
