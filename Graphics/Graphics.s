@@ -157,6 +157,35 @@ wait_vblank2:
     JSR clear_nametable_0
     JSR clear_nametable_1
 
+    ;afterwards display the hud line again
+    LDA #NAME_TABLE_0_ADDRESS_HIGH
+    STA PPU_VRAM_ADDRESS2
+    LDA #NAME_TABLE_0_ADDRESS_LOW
+    STA PPU_VRAM_ADDRESS2
+
+    LDA #HUD_BG_TILE
+    LDX #SCREEN_COLS
+
+    @loop_0: 
+        DEX
+        STA PPU_VRAM_IO
+        BNE @loop_0
+
+
+    LDA #NAME_TABLE_1_ADDRESS_HIGH
+    STA PPU_VRAM_ADDRESS2
+    LDA #NAME_TABLE_1_ADDRESS_LOW
+    STA PPU_VRAM_ADDRESS2
+
+    LDA #HUD_BG_TILE
+    LDX #SCREEN_COLS
+
+    @loop_1: 
+        DEX
+        STA PPU_VRAM_IO
+        BNE @loop_1
+
+
     JSR ppu_update
     RTS
 .endproc
@@ -166,14 +195,21 @@ wait_vblank2:
     JSR ppu_off
     ; Set PPU address to nametable address
     LDA #NAME_TABLE_0_ADDRESS_HIGH
-    STA $2006
+    STA PPU_VRAM_ADDRESS2
     LDA #NAME_TABLE_0_ADDRESS_LOW
-    STA $2006
+    STA PPU_VRAM_ADDRESS2
+
+    LDA #HUD_BG_TILE
+    LDY #SCREEN_COLS
+    @top_loop:           
+        STA PPU_VRAM_IO ; Write tile to PPU data
+        DEY
+    BNE @top_loop
 
     LDA #BLACK_TILE ; clear tile
-    LDY #30
+    LDY #MAP_ROWS
     @rowloop:
-        LDX #32
+        LDX #SCREEN_COLS
         @columnloop:
             STA PPU_VRAM_IO ; Write tile to PPU data
             DEX
@@ -182,14 +218,21 @@ wait_vblank2:
         BNE @rowloop
 
     LDA #NAME_TABLE_1_ADDRESS_HIGH
-    STA $2006
+    STA PPU_VRAM_ADDRESS2
     LDA #NAME_TABLE_1_ADDRESS_LOW
-    STA $2006
+    STA PPU_VRAM_ADDRESS2
+
+    LDA #HUD_BG_TILE
+    LDY #SCREEN_COLS
+    @top_loop2:           
+        STA PPU_VRAM_IO ; Write tile to PPU data
+        DEY
+    BNE @top_loop2
 
     LDA #BLACK_TILE ; clear tile
-    LDY #30
+    LDY #MAP_ROWS
     @rowloop2:
-        LDX #32
+        LDX #SCREEN_COLS
         @columnloop2:
             STA PPU_VRAM_IO ; Write tile to PPU data
             DEX
@@ -212,7 +255,7 @@ wait_vblank2:
 
     ; store the "border" first
     LDY #32
-    LDA #WALL_TILE
+    LDA #HUD_BG_TILE
     @toprow_loop: 
         STA PPU_VRAM_IO
         DEY
