@@ -60,6 +60,11 @@
     beq NOT_GAMEPAD_UP
         ;bounds check first
         LDA player_row
+        CMP #1
+        BNE :+
+            JMP NOT_GAMEPAD_UP
+        :   
+        CMP #0
         BNE :+
             JMP NOT_GAMEPAD_UP
         :   
