@@ -125,21 +125,21 @@ wait_vblank2:
 
     LDA #0
     LDY #30
-    rowloop:
+    @rowloop:
         LDX #32
-        columnloop:
+        @columnloop:
             STA PPU_VRAM_IO
             DEX
-            BNE columnloop
+            BNE @columnloop
         DEY
-        BNE rowloop
+        BNE @rowloop
 
     ; attributes
     LDX #64
-    loop:
+    @loop:
         STA PPU_VRAM_IO
         DEX
-        BNE loop
+        BNE @loop
     RTS
 .endproc
 
@@ -152,21 +152,21 @@ wait_vblank2:
 
     LDA #0
     LDY #30
-    rowloop:
+    @rowloop:
         LDX #32
-        columnloop:
+        @columnloop:
             STA PPU_VRAM_IO
             DEX
-            BNE columnloop
+            BNE @columnloop
         DEY
-        BNE rowloop
+        BNE @rowloop
 
     ; attributes
     LDX #64
-    loop:
+    @loop:
         STA PPU_VRAM_IO
         DEX
-        BNE loop
+        BNE @loop
     RTS
 .endproc
 ;*****************************************************************
@@ -189,23 +189,22 @@ wait_vblank2:
 ;displays a clear map
 .proc display_clear_map
     JSR ppu_off
-
-    ; Set PPU address to $2000 (nametable start)
-    LDA #$20         ; High byte of address
+    ; Set PPU address to nametable address
+    LDA #NAME_TABLE_0_ADDRESS_HIGH
     STA $2006
-    LDA #$00         ; Low byte of address
+    LDA #NAME_TABLE_0_ADDRESS_LOW
     STA $2006
 
-    LDA #07 ; clear tile
+    LDA #BLACK_TILE ; clear tile
     LDY #30
-    rowloop:
+    @rowloop:
         LDX #32
-        columnloop:
-            STA $2007        ; Write tile to PPU data
+        @columnloop:
+            STA PPU_VRAM_IO ; Write tile to PPU data
             DEX
-            BNE columnloop
+            BNE @columnloop
         DEY
-        BNE rowloop
+        BNE @rowloop
 
     JSR ppu_update
 
@@ -455,7 +454,6 @@ wait_vblank2:
 ;*****************************************************************
 ; startscreen
 ;*****************************************************************
-
 .proc draw_title_settings
     LDA input_game_mode
     AND #GAME_MODE_MASK
@@ -515,16 +513,16 @@ wait_vblank2:
 
 .segment "CODE"
 .proc write_text
-	ldy #0
-loop:
-	lda (paddr),y ; get the byte at the current source address
-	beq exit ; exit when we encounter a zero in the text
-    SEC
-    SBC #$11
-	sta PPU_VRAM_IO ; write the byte to video memory
-	iny
-	jmp loop
-exit:
+    ldy #0
+    @loop:
+        lda (paddr),y ; get the byte at the current source address
+        beq exit ; exit when we encounter a zero in the text
+        SEC
+        SBC #$11
+        sta PPU_VRAM_IO ; write the byte to video memory
+        iny
+        jmp @loop
+    exit:
 	rts
 .endproc
 
@@ -599,15 +597,15 @@ exit:
 ; .endproc
 
 top_border:
-.byte $83, $82, $82, $82, $82, $82, $82, $82, $82, $86, 0
+    .byte $83, $82, $82, $82, $82, $82, $82, $82, $82, $86, 0
 play_text:
-.byte $81, $48, $48, "p", "l", "a", "y", $48, $48, $85, 0
+    .byte $81, $48, $48, "p", "l", "a", "y", $48, $48, $85, 0
 auto_text:
-.byte $81, $48, $48, "a", "u", "t", "o", $48, $7A, $85, 0
+    .byte $81, $48, $48, "a", "u", "t", "o", $48, $7A, $85, 0
 hard_text:
-.byte $81, $48, $48, "h", "a", "r", "d", $48, $7A, $85, 0
+    .byte $81, $48, $48, "h", "a", "r", "d", $48, $7A, $85, 0
 bottom_border:
-.byte $84, $87, $87, $87, $87, $87, $87, $87, $87, $88, 0
+    .byte $84, $87, $87, $87, $87, $87, $87, $87, $87, $88, 0
 
 ; titlebox_line_1:
 ; .byte $11,$15,  $11, $11, $17, $17, $17,  $11,$11,    $17, $17, $15, $15, $11,    $11,$11,    $15, $11, $11, $15, $15,    $11,$11,    $15, $11, $15, $11, $11,  $11,$11, 0

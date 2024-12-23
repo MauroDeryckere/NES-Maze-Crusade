@@ -118,7 +118,7 @@ irq:
     ; NoSwitch:
     ; STA scroll_x ; Update the scroll position
 
-	LDA #0
+	LDA scroll_x
 	STA PPU_VRAM_ADDRESS1
     LDA #0
 	STA PPU_VRAM_ADDRESS1
@@ -691,11 +691,13 @@ irq:
 
     JSR clear_queue
 
+    LDA #0
+    STA scroll_x
+
     RTS
 .endproc
 
 .proc start_game
-    
     LDA input_game_mode
     AND #HARD_MODE_MASK
     CMP #0

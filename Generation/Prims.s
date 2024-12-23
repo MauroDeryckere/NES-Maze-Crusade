@@ -31,9 +31,16 @@
     STA frontier_row
 
     ; col
+    ; temporarily guarantee uneven col to ensure end border is always at left side.
     JSR random_number_generator
-    modulo random_seed, #31
+    modulo random_seed, #30 ; dont include 31 - out of bounds when increasing
     STA b_val
+    modulo b_val, #2
+    CMP #0
+    BNE :+
+        INC b_val
+    :
+    LDA b_val
     STA frontier_col
 
     ;set the even col flag (new system always has an even row)
