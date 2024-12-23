@@ -216,6 +216,9 @@ irq:
     JSR init
 
     mainloop:
+        ;------------;
+        ;   INPUT    ;
+        ;------------;
         INC random_seed  ; Change the random seed as many times as possible per frame
         JSR gamepad_poll ; poll input as often as possible
 
@@ -449,7 +452,7 @@ irq:
                 
                 JSR poll_clear_buffer ; clear buffer if necessary
 
-                JSR update_player_sprite
+                JSR update_player_position
 
                 ; Have we started the game yet? if not, execute the start function once
                 LDA has_started

@@ -2,210 +2,218 @@
 ; Player
 ;*****************************************************************
 ;update player position with player input
-.proc update_player_sprite
-    ;check is delay is reached
+.proc update_player_position
+    ;check if delay is reached otherwise update delay
     LDA player_movement_delay_ct
     BEQ :+
         DEC player_movement_delay_ct
-        RTS
     :
 
-    LDX #4
-    STX frontier_offset
+    @GAMEPAD_DOWN:
+        LDA gamepad
+        AND #PAD_D
+        BEQ @GAMEPAD_UP 
+            ; update the player direction
+            LDA #BOTTOM_D
+            STA player_dir 
 
-    GAMEPAD_DOWN:
-    lda gamepad
-    and #PAD_D
-    beq NOT_GAMEPAD_DOWN 
-        ;bounds check first
-        LDA player_row
-        CMP #MAP_ROWS - 1
+            ; check if delay is reached if not only we only change the direction
+            LDA player_movement_delay_ct
+            BEQ :+
+                RTS
+            :
+
+            ;--------------------------------------------------------------
+            ;COLLISION DETECTION
+            ;--------------------------------------------------------------
+            ;bounds check first
+            LDA player_row
+            CMP #MAP_END_ROW
+            BEQ @GAMEPAD_UP    
+
+            INC player_row
+            
+            LDA scroll_x
+            LSR
+            LSR
+            LSR
+            CLC
+            ADC player_collumn
+            STA temp
+
+            get_map_tile_state player_row, temp ;figure out which row and colom is needed
+            ; a register now holds if the sprite is in a non passable area (0) or passable area (non zero)
+
+            BEQ @HitDown
+                ; otherwise keep now changed value
+                ; reset cooldown
+                LDA #PLAYER_MOVEMENT_DELAY
+                STA player_movement_delay_ct
+                RTS
+            @HitDown: ; sprite collided with wall
+                DEC player_row
+
+    @GAMEPAD_UP: 
+        LDA gamepad
+        AND #PAD_U
         BNE :+
-            JMP NOT_GAMEPAD_DOWN    
-        :  
+            JMP @GAMEPAD_LEFT
+        :
+            ; change player direction
+            LDA #TOP_D
+            STA player_dir
 
-        LDA #BOTTOM
-        STA player_dir 
+            ; check if delay is reached if not only we only change the direction
+            LDA player_movement_delay_ct
+            BEQ :+
+                RTS
+            :
 
-        ;--------------------------------------------------------------
-        ;COLLISION DETECTION
-        ;--------------------------------------------------------------
-        INC player_row
-        
-        LDA scroll_x
-        LSR
-        LSR
-        LSR
-        CLC
-        ADC player_collumn
-        STA temp
+            ;--------------------------------------------------------------
+            ;COLLISION DETECTION
+            ;--------------------------------------------------------------
+            ; bounds check first
+            LDA player_row
+            CMP #MAP_START_ROW
+            BEQ @GAMEPAD_LEFT 
 
-        get_map_tile_state player_row, temp ;figure out which row and colom is needed
-        ; a register now holds if the sprite is in a non passable area (0) or passable area (non zero)
-
-
-        BEQ HitDown
-            ;otherwise keep now changed value
-            ; JMP NOT_GAMEPAD_DOWN
-            LDA #PLAYER_MOVEMENT_DELAY
-            STA player_movement_delay_ct
-            RTS
-        HitDown: 
-            ;sprite collided with wall
             DEC player_row
 
-    NOT_GAMEPAD_DOWN: 
-    lda gamepad
-    and #PAD_U
-    beq NOT_GAMEPAD_UP
-        ;bounds check first
-        LDA player_row
-        CMP #1
-        BNE :+
-            JMP NOT_GAMEPAD_UP
-        :   
-        CMP #0
-        BNE :+
-            JMP NOT_GAMEPAD_UP
-        :   
+            LDA scroll_x
+            LSR
+            LSR
+            LSR
+            CLC
+            ADC player_collumn
+            STA temp
 
-        LDA #TOP
-        STA player_dir
+            get_map_tile_state player_row, temp ;figure out which row and colom is needed
+            ; a register now holds if the sprite is in a non passable area (0) or passable area (non zero)
 
-        ;--------------------------------------------------------------
-        ;COLLISION DETECTION
-        ;--------------------------------------------------------------
-        DEC player_row
+            BEQ @HitUp
+                ;otherwise keep now changed value
+                ; Reset cooldown
+                LDA #PLAYER_MOVEMENT_DELAY
+                STA player_movement_delay_ct
+                RTS
+            @HitUp: ; sprite collided with wall
+                INC player_row
 
-        LDA scroll_x
-        LSR
-        LSR
-        LSR
-        CLC
-        ADC player_collumn
-        STA temp
+    @GAMEPAD_LEFT: 
+        LDA gamepad
+        AND #PAD_L
+        BEQ @GAMEPAD_RIGHT
+            ; change player direction
+            LDA #LEFT_D
+            STA player_dir
 
-        get_map_tile_state player_row, temp ;figure out which row and colom is needed
-        ; a register now holds if the sprite is in a non passable area (0) or passable area (non zero)
-
-        BEQ HitUp
-            ;otherwise keep now changed value
-           ; JMP NOT_GAMEPAD_UP
-            LDA #PLAYER_MOVEMENT_DELAY
-            STA player_movement_delay_ct
-            RTS
-        HitUp: 
-            ;sprite collided with wall
-            INC player_row
-
-    NOT_GAMEPAD_UP: 
-    lda gamepad
-    and #PAD_L
-    beq NOT_GAMEPAD_LEFT
-        ;gamepad left is pressed
-
-        ;bounds check first
-        LDA player_collumn
-        BNE :+
-            JMP NOT_GAMEPAD_LEFT
-        :
-
-        LDA #LEFT
-        STA player_dir
-
-        ;--------------------------------------------------------------
-        ;COLLISION DETECTION
-        ;--------------------------------------------------------------
-        DEC player_collumn
-
-        LDA scroll_x
-        LSR
-        LSR
-        LSR
-        CLC
-        ADC player_collumn
-        STA temp
-
-        get_map_tile_state player_row, temp ;figure out which row and colom is needed
-        ; a register now holds if the sprite is in a non passable area (0) or passable area (non zero)
-
-        BEQ HitLeft
-            LDA #PLAYER_MOVEMENT_DELAY
-            STA player_movement_delay_ct
-            ;otherwise keep now changed value
-            ;JMP NOT_GAMEPAD_LEFT
-            LDA player_collumn
-            CMP #8
-            BCS :+
-                LDA scroll_x
-                BEQ :+
-                    SEC
-                    SBC #8
-                    STA scroll_x
-                    INC player_collumn
+            ; check if delay is reached if not only we only change the direction
+            LDA player_movement_delay_ct
+            BEQ :+
+                RTS
             :
 
-        RTS
-
-        HitLeft: 
-            ;sprite collided with wall
-            INC player_collumn
-
-    NOT_GAMEPAD_LEFT:     
-    lda gamepad
-    and #PAD_R
-    beq NOT_GAMEPAD_RIGHT
-        ;bounds check first
-        LDA player_collumn
-        CMP #MAP_COLUMNS - 1
-        BNE :+
-            JMP NOT_GAMEPAD_RIGHT
-        :
-
-        LDA #RIGHT
-        STA player_dir
-
-        ;--------------------------------------------------------------
-        ;COLLISION DETECTION
-        ;--------------------------------------------------------------
-        INC player_collumn
-        
-        LDA scroll_x
-        LSR
-        LSR
-        LSR
-        CLC
-        ADC player_collumn
-        STA temp
-
-        get_map_tile_state player_row, temp ;figure out which row and colom is needed
-        ; a register now holds if the sprite is in a non passable area (0) or passable area (non zero)
-
-        BEQ HitRight
-            ;otherwise keep now changed value
-            ;JMP NOT_GAMEPAD_RIGHT
-            LDA #PLAYER_MOVEMENT_DELAY
-            STA player_movement_delay_ct
-
+            ;--------------------------------------------------------------
+            ;COLLISION DETECTION
+            ;--------------------------------------------------------------
+            ; bounds check first
             LDA player_collumn
-            CMP #24
-            BCC :+
-                LDA scroll_x
-                CMP #248
-                BEQ :+
-                    CLC
-                    ADC #8
-                    STA scroll_x
-                    DEC player_collumn
-            :
+            CMP #MAP_START_COL
+            BEQ  @GAMEPAD_RIGHT
 
-            RTS 
-        HitRight: 
-            ;sprite collided with wall
             DEC player_collumn
 
-    NOT_GAMEPAD_RIGHT: 
-        ;neither up, down, left, or right is pressed
+            LDA scroll_x
+            LSR
+            LSR
+            LSR
+            CLC
+            ADC player_collumn
+            STA temp
+
+            get_map_tile_state player_row, temp ;figure out which row and colom is needed
+            ; a register now holds if the sprite is in a non passable area (0) or passable area (non zero)
+
+            BEQ @HitLeft
+                ; otherwise keep now changed value
+                ; reset cooldown
+                LDA #PLAYER_MOVEMENT_DELAY
+                STA player_movement_delay_ct
+
+                LDA player_collumn
+                CMP #8
+                BCS :+
+                    LDA scroll_x
+                    BEQ :+
+                        SEC
+                        SBC #8
+                        STA scroll_x
+                        INC player_collumn
+                :
+            RTS
+
+            @HitLeft: ; sprite collided with wall
+                INC player_collumn
+
+    @GAMEPAD_RIGHT:     
+        LDA gamepad
+        AND #PAD_R
+        BEQ @NOT_GAMEPAD_RIGHT
+            ; change player direction
+            LDA #RIGHT_D
+            STA player_dir
+
+            ; check if delay is reached if not only we only change the direction
+            LDA player_movement_delay_ct
+            BEQ :+
+                RTS
+            :
+
+            ;--------------------------------------------------------------
+            ;COLLISION DETECTION
+            ;--------------------------------------------------------------
+            ; bounds check first
+            LDA player_collumn
+            CMP #MAP_END_COL
+            BEQ @NOT_GAMEPAD_RIGHT
+
+            INC player_collumn
+            
+            LDA scroll_x
+            LSR
+            LSR
+            LSR
+            CLC
+            ADC player_collumn
+            STA temp
+
+            get_map_tile_state player_row, temp ;figure out which row and colom is needed
+            ; a register now holds if the sprite is in a non passable area (0) or passable area (non zero)
+
+            BEQ @HitRight
+                ; otherwise keep now changed value
+                ; reset cooldown
+                LDA #PLAYER_MOVEMENT_DELAY
+                STA player_movement_delay_ct
+
+                LDA player_collumn
+                CMP #24
+                BCC :+
+                    LDA scroll_x
+                    CMP #248
+                    BEQ :+
+                        CLC
+                        ADC #8
+                        STA scroll_x
+                        DEC player_collumn
+                :
+
+                RTS 
+            @HitRight: ; sprite collided with wall
+                DEC player_collumn
+
+    @NOT_GAMEPAD_RIGHT: 
+        ;neither up, down, left, or right is pressed - could add extra logic for other buttons here in future
     RTS
 .endproc
 ;*****************************************************************

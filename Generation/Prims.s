@@ -78,28 +78,28 @@
 
     skip_tile_add: 
 
-        access_map_frontier_neighbor #LEFT_N, frontier_row, frontier_col
+        access_map_frontier_neighbor #LEFT_D, frontier_row, frontier_col
         CMP #0 
         BNE TopN
 
         JSR add_cell
 
     TopN: ;top neighbor
-        access_map_frontier_neighbor #TOP_N, frontier_row, frontier_col
+        access_map_frontier_neighbor #TOP_D, frontier_row, frontier_col
         CMP #0 
         BNE RightN
 
         JSR add_cell
 
     RightN: ;right neighbor
-        access_map_frontier_neighbor #RIGHT_N, frontier_row, frontier_col
+        access_map_frontier_neighbor #RIGHT_D, frontier_row, frontier_col
         CMP #0 
         BNE BottomN
 
         JSR add_cell
 
     BottomN: ;bottom neighbor
-        access_map_frontier_neighbor #BOTTOM_N, frontier_row, frontier_col
+        access_map_frontier_neighbor #BOTTOM_D, frontier_row, frontier_col
         CMP #0
         BNE End
 
@@ -139,36 +139,36 @@
     LDA #0
     STA temp
 
-    access_map_frontier_neighbor #TOP_N, frontier_row, frontier_col
+    access_map_frontier_neighbor #TOP_D, frontier_row, frontier_col
     CMP #1 ;we want something in state passage
     BNE :+
         ;valid cell, Jump to next step
-        LDA #TOP_N 
+        LDA #TOP_D
         PHA ;push direction on stack
         INC temp
     : ;right
-    access_map_frontier_neighbor #RIGHT_N, frontier_row, frontier_col
+    access_map_frontier_neighbor #RIGHT_D, frontier_row, frontier_col
     CMP #1 ;we want something in state passage
     BNE :+
         ;valid cell, Jump to next step
-        LDA #RIGHT_N 
+        LDA #RIGHT_D
         PHA ;push direction on stack
         INC temp
 
     : ;bottom
-    access_map_frontier_neighbor #BOTTOM_N, frontier_row, frontier_col
+    access_map_frontier_neighbor #BOTTOM_D, frontier_row, frontier_col
     CMP #1 ;we want something in state passage
     BNE :+
         ;valid cell, Jump to next step
-        LDA #BOTTOM_N 
+        LDA #BOTTOM_D
         PHA ;push direction on stack
         INC temp        
     : ;left
-    access_map_frontier_neighbor #LEFT_N, frontier_row, frontier_col
+    access_map_frontier_neighbor #LEFT_D, frontier_row, frontier_col
     CMP #1 ;we want something in state passage
     BNE :+
         ;valid cell, Jump to next step
-        LDA #LEFT_N 
+        LDA #LEFT_D
         PHA ;push direction on stack
         INC temp
     
@@ -197,7 +197,7 @@
     ;calculate the cell between picked frontier and passage cell and set this to a passage 
     nextstep: 
     LDA used_direction
-    CMP #TOP_N
+    CMP #TOP_D
     BNE :+
         LDA frontier_row
         STA temp_row
@@ -208,7 +208,7 @@
         JMP nextnextstep
 
     :; right
-    CMP #RIGHT_N
+    CMP #RIGHT_D
     BNE :+
         LDA frontier_row
         STA temp_row
@@ -219,7 +219,7 @@
         JMP nextnextstep
 
     :; bottom
-    CMP #BOTTOM_N
+    CMP #BOTTOM_D
     BNE :+
         LDA frontier_row
         STA temp_row
@@ -230,7 +230,7 @@
         JMP nextnextstep
 
     : ;left
-    CMP #LEFT_N
+    CMP #LEFT_D
     BNE :+
         LDA frontier_row
         STA temp_row
@@ -267,7 +267,7 @@
         skip_tile_add_2: 
 
     ;calculate the new frontier cells for the chosen frontier cell and add them
-        access_map_frontier_neighbor #LEFT_N, frontier_row, frontier_col
+        access_map_frontier_neighbor #LEFT_D, frontier_row, frontier_col
         CMP #0 
         BEQ :+
             JMP TopN
@@ -286,7 +286,7 @@
         JSR add_cell
 
     TopN: ;top neighbor
-        access_map_frontier_neighbor #TOP_N, frontier_row, frontier_col
+        access_map_frontier_neighbor #TOP_D, frontier_row, frontier_col
         CMP #0 
         BEQ :+
             JMP RightN
@@ -305,7 +305,7 @@
         JSR add_cell
 
     RightN: ;right neighbor
-        access_map_frontier_neighbor #RIGHT_N, frontier_row, frontier_col
+        access_map_frontier_neighbor #RIGHT_D, frontier_row, frontier_col
         CMP #0 
         BEQ :+
             JMP BottomN
@@ -324,7 +324,7 @@
         JSR add_cell
 
     BottomN: ;bottom neighbor
-        access_map_frontier_neighbor #BOTTOM_N, frontier_row, frontier_col
+        access_map_frontier_neighbor #BOTTOM_D, frontier_row, frontier_col
         CMP #0 
         BEQ :+
             JMP end

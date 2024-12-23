@@ -43,7 +43,6 @@
     ;scrolling
     scroll_x:               .res 1 
 
-
     ;gameplay flags
     odd_frontiers: 			.res 1 ; was the maze generated with odd or even frontier rows and columns
     checked_this_frame:     .res 1 ; has code been executed during this frame
@@ -98,8 +97,6 @@
 
     a_val: 					.res 1
     b_val: 					.res 1
-
-    byte_loop_couter:   	.res 1 ; counter for the bits in map transfer
 
     paddr:              	.res 2 ; 16-bit address pointer
 

@@ -152,54 +152,48 @@
 .macro bounds_check_frontier_neighbor Direction, Row, Col
     ;Jump to the correct direction check
     LDA Direction
-    CMP #TOP_N
+    CMP #TOP_D
     BEQ :+
 
-    CMP #RIGHT_N
+    CMP #RIGHT_D
     BEQ :++
 
-    CMP #BOTTOM_N
+    CMP #BOTTOM_D
     BEQ :+++
 
-    CMP #LEFT_N
+    CMP #LEFT_D
     BEQ :++++
 
-    JMP :+++++ ;no valid direction, invalid neighbor
-
     : ;top check
-    ; If Row is 0 or 1 or 2, it's out of bounds
     LDA Row
-    CMP #3
+    CMP #MAP_START_ROW + 2
     BCC :++++ ; row < 3
     JMP :+++++ 
 
     : ;right check
-    ; If col is 31 or 30, it's out of bounds
     LDA Col
-    CMP #60
-    BCS :+++ ; col >= 30
+    CMP #MAP_END_COL - 1
+    BCS :+++ ; col >= 60
     JMP :++++ 
 
     : ;bottom check
-    ; If Row is 28 or 29, it's out of bounds
     LDA Row
-    CMP #28
+    CMP #MAP_END_ROW - 1
     BCS :++ ; row >= 28
     JMP :+++ 
 
     : ;left check
-    ; If col is 0 or 1, it's out of bounds
     LDA Col
-    CMP #2 
+    CMP #MAP_START_COL + 2
     BCC :+ ; col < 2
     JMP :++ 
 
     : ;out of bounds
-    LDA #$0 ;0 indicates invalid neighbor
+    LDA #0 ;0 indicates invalid neighbor
     JMP :++
 
     : ;in bounds
-    LDA #$1 ;1 indicates valid neighbor 
+    LDA #1 ;1 indicates valid neighbor 
 
     : ;end
 .endmacro
@@ -208,20 +202,18 @@
 .macro calculate_frontier_neighbor_position Direction, Row, Col
     ;Jump to the correct direction check
     LDA Direction
-    CMP #TOP_N
+    CMP #TOP_D
     BEQ :+
 
-    CMP #RIGHT_N
+    CMP #RIGHT_D
     BEQ :++
 
-    CMP #BOTTOM_N
+    CMP #BOTTOM_D
     BEQ :+++
 
-    CMP #LEFT_N
+    CMP #LEFT_D
     BEQ :++++
     
-    JMP :+++++ ;no valid direction, invalid neighbor
-
     ;top
     : 
     LDA Row

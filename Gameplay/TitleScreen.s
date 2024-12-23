@@ -76,7 +76,7 @@
     ;---------------------------
     NOT_GAMEPAD_SELECT: 
         ; reset direction since moving row changes it
-        LDA #2
+        LDA #RIGHT_D
         STA player_dir
 
         ; start btn
@@ -127,7 +127,7 @@
     LDA #13
     STA player_collumn
 
-    LDA #2
+    LDA #RIGHT_D
     STA player_dir
 
     ;PLAY TITLE SCREEN MUSIC
