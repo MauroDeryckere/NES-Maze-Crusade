@@ -8,7 +8,13 @@
     STY y_val
     
     add_to_Frontier y_val, x_val
-    add_to_changed_tiles_buffer y_val, x_val, #FRONTIER_WALL_TILE
+    LDA x_val
+    CMP #32
+    BCS skip_tile_add_4; greater than
+ 
+        add_to_changed_tiles_buffer y_val, x_val, #FRONTIER_WALL_TILE
+
+    skip_tile_add_4: 
 
     RTS
 .endproc  
@@ -59,12 +65,18 @@
     end_col:
 
     set_map_tile a_val, b_val
-    add_to_changed_tiles_buffer frontier_row, frontier_col, #BROKEN_WALL_TILE
-    
-    LDA frontier_row
-    JSR enqueue
+
     LDA frontier_col
-    JSR enqueue
+    CMP #32
+    BCS skip_tile_add; greater than
+        add_to_changed_tiles_buffer frontier_row, frontier_col, #BROKEN_WALL_TILE
+
+        LDA frontier_row
+        JSR enqueue
+        LDA frontier_col
+        JSR enqueue
+
+    skip_tile_add: 
 
         access_map_frontier_neighbor #LEFT_N, frontier_row, frontier_col
         CMP #0 
@@ -240,13 +252,19 @@
 
         set_map_tile temp_row, temp_col
 
-        add_to_changed_tiles_buffer temp_row, temp_col, #BROKEN_WALL_TILE
-
-        ;enqueue these to be updated as an "animation"
-        LDA temp_row
-        JSR enqueue
         LDA temp_col
-        JSR enqueue
+        CLC
+        CMP #32
+        BCS skip_tile_add_2; greater than
+            add_to_changed_tiles_buffer temp_row, temp_col, #BROKEN_WALL_TILE
+
+            ;enqueue these to be updated as an "animation"
+            LDA temp_row
+            JSR enqueue
+            LDA temp_col
+            JSR enqueue
+
+        skip_tile_add_2: 
 
     ;calculate the new frontier cells for the chosen frontier cell and add them
         access_map_frontier_neighbor #LEFT_N, frontier_row, frontier_col
@@ -325,21 +343,27 @@
         JSR add_cell
     end: 
 
-    JSR random_number_generator
-    modulo random_seed, #02
-    CLC
-    ADC #PATH_TILE_1
-    STA temp
-
     ;remove the chosen frontier cell from the list
     set_map_tile frontier_row, frontier_col
-    add_to_changed_tiles_buffer frontier_row, frontier_col, temp
 
-    ;enqueue these to be updated as an "animation"
-    ; LDA frontier_row
-    ; JSR enqueue
-    ; LDA frontier_col
-    ; JSR enqueue
+    LDA frontier_col
+    CMP #32
+    BCS skip_tile_add_3; greater than
+        JSR random_number_generator
+        modulo random_seed, #02
+        CLC
+        ADC #PATH_TILE_1
+        STA temp
+
+        add_to_changed_tiles_buffer frontier_row, frontier_col, temp
+
+        ;enqueue these to be updated as an "animation"
+        ; LDA frontier_row
+        ; JSR enqueue
+        ; LDA frontier_col
+        ; JSR enqueue
+
+    skip_tile_add_3:     
 
     remove_from_Frontier frontier_offset
 

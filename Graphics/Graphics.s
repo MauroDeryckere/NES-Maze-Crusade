@@ -131,15 +131,15 @@ wait_vblank2:
             STA PPU_VRAM_IO
             DEX
             BNE @columnloop
-        DEY
-        BNE @rowloop
+    DEY
+    BNE @rowloop
 
     ; attributes
-    LDX #64
-    @loop:
-        STA PPU_VRAM_IO
-        DEX
-        BNE @loop
+    ; LDX #64
+    ; @loop:
+    ;     STA PPU_VRAM_IO
+    ;     DEX
+    ;     BNE @loop
     RTS
 .endproc
 
@@ -162,11 +162,11 @@ wait_vblank2:
         BNE @rowloop
 
     ; attributes
-    LDX #64
-    @loop:
-        STA PPU_VRAM_IO
-        DEX
-        BNE @loop
+    ; LDX #64
+    ; @loop:
+    ;     STA PPU_VRAM_IO
+    ;     DEX
+    ;     BNE @loop
     RTS
 .endproc
 ;*****************************************************************
@@ -210,6 +210,60 @@ wait_vblank2:
 
     RTS
 .endproc
+
+; loads the second half of the map in nametable 2 to allow scrolling
+.proc display_map_nametable_1
+    JSR ppu_off
+    JSR clear_nametable_1
+
+    vram_set_address (NAME_TABLE_1_ADDRESS) 
+    assign_16i paddr, MAZE_BUFFER    ;load map into ppu
+
+    ; store the "border" first
+    LDY #32
+    LDA #WALL_TILE
+    @toprow_loop: 
+        STA PPU_VRAM_IO
+        DEY
+        BNE @toprow_loop
+
+    LDY #0
+    @rowloop:
+        INY
+        INY
+        INY
+        INY
+        @byteloop:
+            LDA #%10000000
+            STA temp
+            LDX #8
+            @bitloop:
+                LDA (paddr), Y
+                AND temp
+                CMP #0
+                BEQ :+
+                    LDA #PATH_TILE_1
+                    STA PPU_VRAM_IO
+                    JMP :++
+                :
+                    LDA #WALL_TILE
+                    STA PPU_VRAM_IO
+                :
+                LSR temp
+                DEX
+                BNE @bitloop
+            INY
+            TYA
+            AND #%00000100
+            BNE @byteloop
+
+        CPY #MAZE_BUFFER_SIZE
+        BNE @rowloop
+
+        JSR ppu_update
+
+        RTS
+.endproc 
 
 ;handles the background tiles during vblank using the buffers set in zero page
 .proc draw_background

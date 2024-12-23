@@ -97,20 +97,20 @@
 
 
     ; ; in case you want to replace the garbage at end with FF for debugging (clear values)
-    ; LDA frontier_listQ1_size
+    LDA frontier_listQ1_size
 
-    ; TAX
-    ; DEX ;decrease size by 1 before multiplying (otherwise we will go out of bounds since size 1 == index 0 )
-    ; TXA
+    TAX
+    DEX ;decrease size by 1 before multiplying (otherwise we will go out of bounds since size 1 == index 0 )
+    TXA
 
-    ; ASL
-    ; TAX ;calculated address offset for last item in X
+    ASL
+    TAX ;calculated address offset for last item in X
 
-    ; LDA #$FF
-    ; STA FRONTIER_LISTQ1, X 
-    ; INX
-    ; LDA #$FF
-    ; STA FRONTIER_LISTQ1, X
+    LDA #$FF
+    STA FRONTIER_LISTQ1, X 
+    INX
+    LDA #$FF
+    STA FRONTIER_LISTQ1, X
 
 
     DEC frontier_listQ1_size
@@ -176,7 +176,7 @@
     : ;right check
     ; If col is 31 or 30, it's out of bounds
     LDA Col
-    CMP #30
+    CMP #60
     BCS :+++ ; col >= 30
     JMP :++++ 
 

@@ -22,6 +22,7 @@
 
     ASL             ;== times 2
     ASL             ;== times 2
+    ASL             ;== times 2
     STA x_val
 
     ;Calculate the byte offset within the row (Column / 8)
@@ -93,7 +94,7 @@
     LDY #0
 
     loop: 
-        LDA #$0
+        LDA #0
         STA MAZE_BUFFER, Y
 
         INY

@@ -31,8 +31,18 @@
         ;COLLISION DETECTION
         ;--------------------------------------------------------------
         INC player_row
-        get_map_tile_state player_row, player_collumn ;figure out which row and colom is needed
+        
+        LDA scroll_x
+        LSR
+        LSR
+        LSR
+        CLC
+        ADC player_collumn
+        STA temp
+
+        get_map_tile_state player_row, temp ;figure out which row and colom is needed
         ; a register now holds if the sprite is in a non passable area (0) or passable area (non zero)
+
 
         BEQ HitDown
             ;otherwise keep now changed value
@@ -61,7 +71,16 @@
         ;COLLISION DETECTION
         ;--------------------------------------------------------------
         DEC player_row
-        get_map_tile_state player_row, player_collumn ;figure out which row and colom is needed
+
+        LDA scroll_x
+        LSR
+        LSR
+        LSR
+        CLC
+        ADC player_collumn
+        STA temp
+
+        get_map_tile_state player_row, temp ;figure out which row and colom is needed
         ; a register now holds if the sprite is in a non passable area (0) or passable area (non zero)
 
         BEQ HitUp
@@ -94,14 +113,33 @@
         ;--------------------------------------------------------------
         DEC player_collumn
 
-        get_map_tile_state player_row, player_collumn ;figure out which row and colom is needed
+        LDA scroll_x
+        LSR
+        LSR
+        LSR
+        CLC
+        ADC player_collumn
+        STA temp
+
+        get_map_tile_state player_row, temp ;figure out which row and colom is needed
         ; a register now holds if the sprite is in a non passable area (0) or passable area (non zero)
 
         BEQ HitLeft
-        LDA #PLAYER_MOVEMENT_DELAY
-        STA player_movement_delay_ct
+            LDA #PLAYER_MOVEMENT_DELAY
+            STA player_movement_delay_ct
             ;otherwise keep now changed value
             ;JMP NOT_GAMEPAD_LEFT
+            LDA player_collumn
+            CMP #8
+            BCS :+
+                LDA scroll_x
+                BEQ :+
+                    SEC
+                    SBC #8
+                    STA scroll_x
+                    INC player_collumn
+            :
+
         RTS
 
         HitLeft: 
@@ -127,7 +165,15 @@
         ;--------------------------------------------------------------
         INC player_collumn
         
-        get_map_tile_state player_row, player_collumn ;figure out which row and colom is needed
+        LDA scroll_x
+        LSR
+        LSR
+        LSR
+        CLC
+        ADC player_collumn
+        STA temp
+
+        get_map_tile_state player_row, temp ;figure out which row and colom is needed
         ; a register now holds if the sprite is in a non passable area (0) or passable area (non zero)
 
         BEQ HitRight
@@ -135,6 +181,19 @@
             ;JMP NOT_GAMEPAD_RIGHT
             LDA #PLAYER_MOVEMENT_DELAY
             STA player_movement_delay_ct
+
+            LDA player_collumn
+            CMP #24
+            BCC :+
+                LDA scroll_x
+                CMP #248
+                BEQ :+
+                    CLC
+                    ADC #8
+                    STA scroll_x
+                    DEC player_collumn
+            :
+
             RTS 
         HitRight: 
             ;sprite collided with wall

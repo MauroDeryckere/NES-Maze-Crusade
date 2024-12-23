@@ -345,6 +345,11 @@ irq:
                     INC player_movement_delay_ct
                     JMP mainloop
                 :
+                
+                    JSR is_empty
+                    CMP #1
+                    BEQ SKIP_DEQ
+
                     JSR dequeue
                     STA temp_row
 
@@ -356,12 +361,16 @@ irq:
                     CLC
                     ADC #PATH_TILE_1
                     STA temp
-
+                  ; causes a bug - TODO
                     add_to_changed_tiles_buffer temp_row, temp_col, temp
+                    SKIP_DEQ: 
             ; -------------------------------------------------------------
 
                 JSR is_empty
                 CMP #1
+                BNE NOT_END_GEN
+
+                LDA frontier_listQ1_size
                 BNE NOT_END_GEN
 
                 ; Has the maze finished generating?
@@ -386,12 +395,15 @@ irq:
                         LDA #0
                         STA player_movement_delay_ct
 
+                        JSR display_map_nametable_1
+
                         JMP mainloop
                     :
                     ; start auto solving
                     LDA #GAMEMODE_SOLVING
                     STA current_game_mode
 
+                    JSR display_map_nametable_1
 
                 NOT_END_GEN: 
                 JMP mainloop
@@ -444,7 +456,16 @@ irq:
                     LDA player_row
                     CMP end_row
                     BNE @SOLVING
+
+                    LDA scroll_x
+                    LSR
+                    LSR
+                    LSR
+                    STA temp
                     LDA player_collumn
+                    CLC
+                    ADC temp
+
                     CMP end_col
                     BNE @SOLVING
 
