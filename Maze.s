@@ -634,6 +634,8 @@ irq:
                     LDA is_backtracking
                     CMP #$FF                 
                     BEQ @SOLVE_END_REACHED
+                    
+                    JSR update_player_position
 
                     JMP @END_SOLVE_MODES
                 @LFR_SOLVE: 

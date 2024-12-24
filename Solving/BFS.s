@@ -32,10 +32,10 @@
     JSR init_BFS
 
     ; add start row and col to queue
-    LDA player_row
+    LDA start_row
     STA frontier_row
     JSR enqueue
-    LDA player_collumn
+    LDA start_col
     STA frontier_col
     JSR enqueue
 
@@ -267,11 +267,11 @@
             RTS
 
         skip_initial_step: 
-            LDA player_row
+            LDA start_row
             CMP frontier_row
             BNE :+
                 
-                LDA player_collumn
+                LDA start_col
                 CMP frontier_col
                 BNE :+
                     LDA #$FF

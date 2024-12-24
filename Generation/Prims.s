@@ -393,8 +393,10 @@
         
         LDA #0
         STA player_collumn
+        STA start_col
         LDA temp
         STA player_row
+        STA start_row
 
         JMP END_STARTPOS
 
@@ -412,7 +414,9 @@
 
         LDA #31
         STA player_collumn
+        STA start_col
         LDA temp
+        STA start_row
         STA player_row
 
         JMP END_STARTPOS
@@ -432,7 +436,9 @@
         add_to_changed_tiles_buffer #1, temp, #PATH_TILE_1
         LDA #1
         STA player_row
+        STA start_col
         LDA temp
+        STA start_row
         STA player_collumn
 
         JMP END_STARTPOS
@@ -453,7 +459,9 @@
 
         LDA #29
         STA player_row
+        STA start_col
         LDA temp
+        STA start_row
         STA player_collumn
     END_STARTPOS:
 
