@@ -459,9 +459,9 @@
 
         LDA #29
         STA player_row
-        STA start_col
-        LDA temp
         STA start_row
+        LDA temp
+        STA start_col
         STA player_collumn
     END_STARTPOS:
 
