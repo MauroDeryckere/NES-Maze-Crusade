@@ -1,443 +1,230 @@
 ;****************************************************************
-;MAZE SOLVER
+; Left Hand Rule Solving Algorithm
 ;****************************************************************
 .proc left_hand_rule
-    ;---------------------------------------------------------------------------------------------------------------------------
-    ;WHEN SOLVING, UPDATE PLAYER MOVEMENT OUTSIDE OF INPUT FROM PLAYER (WE SHOULD DISABLE THE PLAYER_UPDATE IN THIS MODE)
-    ;---------------------------------------------------------------------------------------------------------------------------
 
-    ;----------------------------------------------------------
-    ;DRAW CELL
-    ;----------------------------------------------------------
-    LDA input_game_mode
-    AND #HARD_MODE_MASK
-    CMP #0
-    BEQ :+
-        JMP _skip
-    :
-        add_to_changed_tiles_buffer player_row, player_collumn, #2 
-    _skip: 
-    ;----------------------------------------------------------
+    ; draw a different tile wherever the solver has walked - not necessary
+    ; ;DRAW CELL
+        ; LDA input_game_mode
+        ; AND #HARD_MODE_MASK
+        ; CMP #0
+        ; BEQ :+
+        ;     JMP _skip
+        ; :
+        ;     add_to_changed_tiles_buffer player_row, player_collumn, #2 
+        ; _skip: 
+
     ;MAKE SURE LOCAL DIRECTION IS WITHIN RANGE 0-3
-    ;----------------------------------------------------------
-    lda player_dir
-    cmp #$FF        ; Check if A went below 0 (will become $FF due to underflow)
-    bne SkipWrap    ; If not $FF, skip wrapping
-    lda #$03        ; Wrap around to 3 if A is $FF
-    sta player_dir
+        LDA player_dir
+        CMP #$FF        ; Check if A went below 0 (will become $FF due to underflow)
+        BNE :+          ; If not $FF, skip wrapping
+        LDA #$03        ; Wrap around to 3 if A is $FF
+        STA player_dir
+        : ;skip  wrap
 
-    SkipWrap:
-    ;solver_local_direction now contains a value between 0-3
+        LDA player_dir
+        CMP #4
+        BNE :+
+            LDA #0
+            STA player_dir
+        :
 
-    ;---------------------------------------------------------
-    ;LOAD LOCAL DIRECTION OF TILE
-    ;---------------------------------------------------------
-    sta player_dir ; direction is TOP
-    cmp #TOP_D
-    beq DIRECTION_IS_TOP
-    cmp #BOTTOM_D
-    beq dir_is_bottom_intermediate
-    cmp #RIGHT_D
-    beq dir_is_right_intermediate
-    cmp #LEFT_D
-    beq dir_is_left_intermediate
-
-    dir_is_right_intermediate :
-        jmp DIRECTION_IS_RIGHT ;intermediate jump cause of range error
-    dir_is_left_intermediate :
-        jmp DIRECTION_IS_LEFT ;intermediate jump cause of range error
-    dir_is_bottom_intermediate : 
-        jmp DIRECTION_IS_BOTTOM ; intermediate jump cause of range error
-
+   
+    ;DIRECTION SWITCH CASE
+    LDA player_dir
+    @TOP: 
+        CMP #TOP_D      
+        BEQ :+
+            JMP @RIGHT
+        :
         
-    ;**********************
-    ;MAIN ALGORITHM START
-    ;**********************
-    DIRECTION_IS_TOP: 
-    ;---------------------------------------
-    ;CHECK LEFT TILE
-    ;---------------------------------------
-        lda player_collumn
-        sec 
-        sbc #1 ;tile to the left is current collumn - 1
-        sta temp_player_collumn
+        LDA player_row
+        STA temp_row
 
-        get_map_tile_state player_row, temp_player_collumn ; a register now holds passable (!0) or non passable (0)
+        LDA player_collumn
+        STA temp_col
 
-        bne :+                           ; Branch to the intermediate jump if Z flag is not set
-        jmp AFTER_BRANCH4            ; If Z flag is set, skip the jump and continue here
+        CMP #MAP_START_COL
+        BNE :+
+            JMP @front_wall_top
         :
-        jmp LEFT_TILE_IS_PASSABLE_REL_TOP
-        AFTER_BRANCH4:
-        ;-------------------------------------------------------
-        ;LEFT TILE NOT PASSABLE, CHECK IF WE CAN MOVE FORWARDS
-        ;------------------------------------------------------
-            lda player_row
-            sec 
-            sbc #1 ;tile to the top is row - 1
-            sta temp_player_row; rotate local direction to the left
-            get_map_tile_state temp_player_row, player_collumn ; a register now holds passable (!0) or non passable (0)
+        ; check left wall
+        DEC temp_col
 
-            bne FORWARDS_TOP_PASSABLE
-            ;---------------------------------------------------------------
-            ;MOVING FORWARDS NOT POSSIBLE, SO WE CHECK IF RIGHT IS POSSIBLE
-            ;---------------------------------------------------------------
-            moving_forward_not_possible_row: 
-                lda player_collumn
-                clc
-                adc #1 ;tile to the right is collumn + 1
-                sta temp_player_collumn; 
-                get_map_tile_state player_row, temp_player_collumn ; a register now holds passable (!0) or non passable (0)
+        get_map_tile_state temp_row, temp_col
+        BEQ :+
+            ; LDA #LEFT_D
+            ; STA player_dir  
+            DEC player_dir
 
-                bne RIGHT_TOP_PASSABLE
-                    moving_right_not_possible: 
-                    ;---------------------------------
-                    ;RIGHT NOT POSSIBLE, SO WE ROTATE
-                    ;---------------------------------
-                    dec player_dir
-                    rts
-
-                RIGHT_TOP_PASSABLE:
-                    ;--------------------------------
-                    ;RIGHT POSSIBLE, SO MOVE RIGHT
-                    ;--------------------------------
-                    LDA player_collumn        ; Load the value of player_collumn
-                    CMP #31                   ; Compare player_collumn with 31
-                    BEQ SkipMoveRight         ; If it's 31, skip the increment
-
-                    INC player_collumn        ; Increment player_collumn (move right)
-                    LDA #RIGHT_D              ; Update the local direction to RIGHT
-                    STA player_dir
-                    RTS                        ; Return from subroutine
-
-                SkipMoveRight:
-                ; MOVING RIGHT IS NOT POSSIBLE
-                    jmp moving_right_not_possible
-                     
-
-            FORWARDS_TOP_PASSABLE: 
-            ;----------------------------------------------
-            ;MOVING FORWARDS IS POSSIBLE, SO WE DO
-            ;----------------------------------------------
-
-                
-                LDA player_row            ; Load the value of player_row
-                BEQ SkipMoveForwardRow        ; If player_row is 0, skip the decrement
-
-                DEC player_row            ; Decrement player_row (move forward)
-                LDA #TOP_D                 ; Update the local direction to TOP
-                STA player_dir
-                RTS                        ; Return from subroutine
-
-                SkipMoveForwardRow:
-                ; MOVING FORWARD NOT POSSIBLE
-                jmp moving_forward_not_possible_row
-
-        LEFT_TILE_IS_PASSABLE_REL_TOP: 
-        ;----------------------------------------------
-        ;LEFT TILE IS PASSABLE, SO WE MOVE LEFT
-        ;----------------------------------------------
-
-            LDA player_collumn        ; Load the value of player_collumn
-            BEQ SkipMoveLeft           ; If player_collumn is 0, skip the decrement
-
-            DEC player_collumn        ; Decrement player_collumn (move left)
-            LDA #LEFT_D                ; Update the local direction to LEFT
-            STA player_dir
-            RTS                        ; Return from subroutine
-
-        SkipMoveLeft:
-            ;LEFT TILE IS NOT PASSABLE
-            jmp AFTER_BRANCH4
-    DIRECTION_IS_BOTTOM: 
-    ;----------------------------------------
-    ;CHECK LEFT TILE
-    ;----------------------------------------
-
-    ;relative to rasterspace it is the right tile
-        lda player_collumn
-        clc 
-        adc #1 ;tile to the left is current collum + 1
-        sta temp_player_collumn
-        get_map_tile_state player_row, temp_player_collumn ;passable (non zero) non passable (0)
-
-
-       
-        bne :+                           ; Branch to the intermediate jump if Z flag is not set
-        jmp AFTER_BRANCH3             ; If Z flag is set, skip the jump and continue here
+            DEC player_collumn
+            RTS
         :
-        jmp LEFT_TILE_PASSABLE_REL_BOTTOM
-        AFTER_BRANCH3:
-        ;-------------------------------------------------------
-        ;LEFT TILE NOT PASSABLE, CHECK IF WE CAN MOVE FORWARDS
-        ;------------------------------------------------------
-            lda player_row
-            clc 
-            adc #1 ;tile to the bottom is row + 1
-            sta temp_player_row; rotate local direction to the left
-            get_map_tile_state temp_player_row, player_collumn ; a register now holds passable (!0) or non passable (0)
 
-            bne FORWARDS_BOTTOM_PASSABLE
-           ;---------------------------------------------------------------
-            ;MOVING FORWARDS NOT POSSIBLE, SO WE CHECK IF RIGHT IS POSSIBLE
-            ;---------------------------------------------------------------
-            moving_forward_not_possible_row2: 
-                lda player_collumn
-                sec
-                sbc #1 
-                sta temp_player_collumn; 
-                get_map_tile_state player_row, temp_player_collumn ; a register now holds passable (!0) or non passable (0)
-
-                bne RIGHT_BOTTOM_PASSABLE
-                    ;---------------------------------
-                    ;RIGHT NOT POSSIBLE, SO WE ROTATE
-                    ;---------------------------------
-                    right_not_possible: 
-                    dec player_dir
-                    rts
-
-                RIGHT_BOTTOM_PASSABLE:
-                    ;--------------------------------
-                    ;RIGHT POSSIBLE, SO MOVE RIGHT
-                    ;--------------------------------
-
-                    LDA player_collumn        ; Load the value of player_collumn
-                    BEQ SkipMoveLeft1           ; If player_collumn is 0, skip the decrement
-
-                    DEC player_collumn        ; Decrement player_collumn (move left)
-                    LDA #LEFT_D                ; Update the local direction to LEFT
-                    STA player_dir
-                    RTS                        ; Return from subroutine
-
-                SkipMoveLeft1:
-                    ;RIGHT NOT POSSIBLE
-                    jmp right_not_possible
-
-            FORWARDS_BOTTOM_PASSABLE: 
-            ;----------------------------------------------
-            ;MOVING FORWARDS IS POSSIBLE, SO WE DO
-            ;----------------------------------------------
-
-            LDA player_row            ; Load the value of player_row
-            CMP #29                   ; Compare player_row with 29
-            BEQ SkipMoveDown        ; If player_row is 29, skip the increment
-
-            INC player_row            ; Increment player_row (move down)
-            LDA #BOTTOM_D             ; Update the local direction to BOTTOM
-            STA player_dir
-            RTS                        ; Return from subroutine
-
-            SkipMoveDown:
-            ;MOVING FORWARDS NOT POSSIBLE
-            jmp moving_forward_not_possible_row2
-
-
-    LEFT_TILE_PASSABLE_REL_BOTTOM: 
-    ;-----------------------------------------------
-    ;LEFT TILE IS PASSABLE, SO WE MOVE THERE
-    ;-----------------------------------------------
-            LDA player_collumn        ; Load the value of player_collumn
-            CMP #31                   ; Compare player_collumn with 31
-            BEQ SkipMoveRight1         ; If it's 31, skip the increment
-
-            INC player_collumn        ; Increment player_collumn (move right)
-            LDA #RIGHT_D              ; Update the local direction to RIGHT
-            STA player_dir
-            RTS                        ; Return from subroutine
-
-            SkipMoveRight1:
-                ;LEFT TILE NOT PASSABLE
-                jmp AFTER_BRANCH3
-
-    DIRECTION_IS_RIGHT: 
-    ;if direction is right then check top tile
-        lda player_row
-        sec
-        sbc #1
-        sta temp_player_row
-
-        get_map_tile_state temp_player_row, player_collumn ;passable (0) non passable (!0)
-
-        bne :+                          
-        jmp AFTER_BRANCH2             
+        INC temp_col
+        
+        @front_wall_top: 
+        LDA player_row
+        CMP #MAP_START_ROW
+        BNE :+
+            INC player_dir
+            RTS
         :
-        jmp LEFT_TILE_PASSABLE_REL_RIGHT
-        AFTER_BRANCH2:
-        ;-------------------------------------------------------
-        ;LEFT TILE NOT PASSABLE, CHECK IF WE CAN MOVE FORWARDS
-        ;------------------------------------------------------
-            lda player_collumn
-            clc 
-            adc #1 ;tile to the top is row - 1
-            sta temp_player_collumn; rotate local direction to the left
-            get_map_tile_state player_row, temp_player_collumn ; a register now holds passable (!0) or non passable (0)
 
-            bne FORWARDS_RIGHT_PASSABLE
-            moving_forward_not_possible1: 
-            ;---------------------------------------------------------------
-            ;MOVING FORWARDS NOT POSSIBLE, SO WE CHECK IF RIGHT IS POSSIBLE
-            ;---------------------------------------------------------------
-                lda player_row
-                clc
-                adc #1 ;tile to the right is collumn + 1
-                sta temp_player_row; 
-                get_map_tile_state temp_player_row, player_collumn ; a register now holds passable (!0) or non passable (0)
-
-                bne RIGHT_RIGHT_PASSABLE
-                    ;---------------------------------
-                    ;RIGHT NOT POSSIBLE, SO WE ROTATE
-                    ;---------------------------------
-                    right_not_possible3:
-                    dec player_dir
-                    rts
-
-                RIGHT_RIGHT_PASSABLE:
-                    ;--------------------------------
-                    ;RIGHT POSSIBLE, SO MOVE RIGHT
-                    ;--------------------------------
-                    LDA player_row          
-                    CMP #29                   
-                    BEQ SkipMoveDown2          
-
-                    INC player_row            
-                    LDA #BOTTOM_D             
-                    STA player_dir
-                    RTS                        
-
-                SkipMoveDown2:
-                    ; RIGHT NOT POSSIBLE 
-                    jmp right_not_possible3
-
-            FORWARDS_RIGHT_PASSABLE: 
-            ;----------------------------------------------
-            ;MOVING FORWARDS IS POSSIBLE, SO WE DO
-            ;----------------------------------------------
-
-                LDA player_collumn        ; Load the value of player_collumn
-                CMP #31                   ; Compare player_collumn with 31
-                BEQ SkipMoveRight2         ; If it's 31, skip the increment
-
-                INC player_collumn        ; Increment player_collumn (move right)
-                LDA #RIGHT_D              ; Update the local direction to RIGHT
-                STA player_dir
-                RTS                        ; Return from subroutine
-
-            SkipMoveRight2:
-             ; MOVING FORWARD IS NOT POSSIBLE 
-             jmp moving_forward_not_possible1
-
-        LEFT_TILE_PASSABLE_REL_RIGHT: 
-            ;---------------------------------
-            ;LEFT TILE PASSABLE
-            ;---------------------------------
-            ;move left relative to direction (up in rasterspace)
-
-            LDA player_row            ; Load the value of player_row
-            BEQ SkipMoveForwardRow2        ; If player_row is 0, skip the decrement
-
-            DEC player_row            ; Decrement player_row (move forward)
-            LDA #TOP_D                 ; Update the local direction to TOP
-            STA player_dir
-            RTS                        ; Return from subroutine
-
-        SkipMoveForwardRow2:
-        ; LEFT TILE NOT PASSABLE
-            jmp AFTER_BRANCH2
-
-    DIRECTION_IS_LEFT: 
-    ;if direction is left then check bottom tile
-        lda player_row
-        clc
-        adc #1
-        sta temp_player_row
-
-        get_map_tile_state temp_player_row, player_collumn ; passable(0) non passable(!0)
-
-        bne :+                          
-        jmp AFTER_BRANCH             
+        ; check front wall
+        DEC temp_row
+        get_map_tile_state temp_row, temp_col
+        BEQ :+
+            DEC player_row
+            RTS
         :
-        jmp LEFT_TILE_PASSABLE_REL_LEFT 
-        AFTER_BRANCH:
-        ;-------------------------------------------------------
-        ;LEFT TILE NOT PASSABLE, CHECK IF WE CAN MOVE FORWARDS
-        ;------------------------------------------------------
-            lda player_collumn
-            sec 
-            sbc #1 ;tile to the top is col - 1
-            sta temp_player_collumn; rotate local direction to the left
-            get_map_tile_state player_row, temp_player_collumn ; a register now holds passable (!0) or non passable (0)
+        INC player_dir
+        RTS
 
-            bne FORWARDS_LEFT_PASSABLE
-            moving_forward_not_possible:
-            ;---------------------------------------------------------------
-            ;MOVING FORWARDS NOT POSSIBLE, SO WE CHECK IF RIGHT IS POSSIBLE
-            ;---------------------------------------------------------------
-                lda player_row
-                sec
-                sbc #1 
-                sta temp_player_row; 
-                get_map_tile_state temp_player_row, player_collumn ; a register now holds passable (!0) or non passable (0)
+    @RIGHT: 
+        CMP #RIGHT_D      
+        BEQ :+
+            JMP @BOTTOM
+        :
 
-                bne RIGHT_LEFT_PASSABLE
-                    ;---------------------------------
-                    ;RIGHT NOT POSSIBLE, SO WE ROTATE
-                    ;---------------------------------
-                    right_not_possible2:
-                    dec player_dir
-                    rts
+        LDA player_collumn
+        STA temp_col
+        
+        LDA player_row
+        STA temp_row
 
-                RIGHT_LEFT_PASSABLE:
-                    ;--------------------------------
-                    ;RIGHT POSSIBLE, SO MOVE RIGHT
-                    ;--------------------------------
-                    
-                    LDA player_row            ; Load the value of player_row
-                    BEQ SkipMoveForwardRow3        ; If player_row is 0, skip the decrement
+        CMP #MAP_START_ROW
+        BNE :+
+            JMP @front_wall_right
+        :
 
-                    DEC player_row            ; Decrement player_row (move forward)
-                    LDA #TOP_D                 ; Update the local direction to TOP
-                    STA player_dir
-                    RTS                        ; Return from subroutine
+        DEC temp_row
 
-                    SkipMoveForwardRow3:
-                    ;RIGHT NOT POSSIBLE
-                    jmp right_not_possible2
-            FORWARDS_LEFT_PASSABLE: 
-            ;----------------------------------------------
-            ;MOVING FORWARDS IS POSSIBLE, SO WE DO
-            ;----------------------------------------------
+        ; check left wall
+        get_map_tile_state temp_row, temp_col
+        BEQ :+
+            ; LDA #TOP_D
+            ; STA player_dir
+            DEC player_dir
 
-                LDA player_collumn        ; Load the value of player_collumn
-                BEQ SkipMoveLeft2           ; If player_collumn is 0, skip the decrement
+            DEC player_row
+            RTS
+        :
 
-                DEC player_collumn        ; Decrement player_collumn (move left)
-                LDA #LEFT_D                ; Update the local direction to LEFT
-                STA player_dir
-                RTS                        ; Return from subroutine
+        INC temp_row
+        
+        @front_wall_right: 
+        LDA player_collumn
+        CMP #31
+        BNE :+
+            INC player_dir
+            RTS
+        :
 
-        SkipMoveLeft2:
-                ;MOVING FORWARDS NOT POSSIBLE
-                jmp moving_forward_not_possible
+        ; check front wall
+        INC temp_col
+        get_map_tile_state temp_row, temp_col
+        BEQ :+
+            INC player_collumn
+            RTS
+        :
+        INC player_dir
+        RTS
+    
+    @BOTTOM: 
+        CMP #BOTTOM_D 
+        BEQ :+
+            JMP @LEFT
+        :
+        
+        LDA player_row
+        STA temp_row
 
-        LEFT_TILE_PASSABLE_REL_LEFT:
-            ;--------------------------- 
-            ;LEFT TILE PASSABLE
-            ;----------------------------
-            ;move left relative to direction (bottom in rasterspace)
-            LDA player_row            ; Load the value of player_row
-            CMP #29                   ; Compare player_row with 29
-            BEQ SkipMoveDown3          ; If player_row is 29, skip the increment
+        LDA player_collumn
+        STA temp_col
 
-            INC player_row            
-            LDA #BOTTOM_D             
-            STA player_dir
-            RTS                        ;
+        CMP #31
+        BNE :+
+            JMP @front_wall_bottom
+        :
+        ; check left wall
+        INC temp_col
 
-            SkipMoveDown3:
-            ; LEFT TILE NOT PASSABLE
-            jmp AFTER_BRANCH
+        get_map_tile_state temp_row, temp_col
+        BEQ :+
+            ; LDA #RIGHT_D
+            ; STA player_dir  
+            DEC player_dir
+            
+            INC player_collumn
+            RTS
+        :
 
+        DEC temp_col
+        
+        @front_wall_bottom: 
+        LDA player_row
+        CMP #MAP_END_ROW
+        BNE :+
+            INC player_dir
+            RTS
+        :
 
+        ; check front wall
+        INC temp_row
+        get_map_tile_state temp_row, temp_col
+        BEQ :+
+            INC player_row
+            RTS
+        :
+        INC player_dir
+        RTS
 
+    @LEFT: 
+        CMP #LEFT_D      
+        BEQ :+
+            RTS
+        :
+        
+        LDA player_row
+        STA temp_row
 
+        LDA player_collumn
+        STA temp_col
+        CMP #31
+        BNE :+
+            JMP @front_wall_left
+        :
+
+        INC temp_row
+
+        ; check left wall
+        get_map_tile_state temp_row, temp_col
+        BEQ :+
+            ; LDA #BOTTOM_D
+            ; STA player_dir  
+            DEC player_dir
+            INC player_row
+            RTS
+        :
+
+        DEC temp_row
+        
+        @front_wall_left: 
+        LDA player_collumn
+        CMP #MAP_START_COL
+        BNE :+
+            INC player_dir
+            RTS
+        :
+
+        ; check front wall
+        DEC temp_col
+        get_map_tile_state temp_row, temp_col
+        BEQ :+
+            DEC player_collumn
+            RTS
+        :
+        INC player_dir
+        RTS
 .endproc
