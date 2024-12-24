@@ -26,21 +26,42 @@
         STA temp_row
 
         LDA player_collumn
+
+        LDA scroll_x
+        LSR
+        LSR
+        LSR
+        CLC
+        ADC player_collumn
+
         STA temp_col
 
         CMP #MAP_START_COL
         BNE :+
             JMP @front_wall_top
         :
+
         ; check left wall
         DEC temp_col
 
         get_map_tile_state temp_row, temp_col
-        BEQ :+
+        BEQ :++
             LDA #LEFT_D
             STA player_dir  
-         ;   DEC player_dir
             DEC player_collumn
+
+            LDA player_collumn
+            CMP #CAMERA_START_SCROLL_LEFT
+            BCC :+
+                LDA scroll_x
+                CMP #0
+                BEQ :+
+                    SEC
+                    SBC #8
+                    STA scroll_x
+                    INC player_collumn
+            :
+
             RTS
         :
 
@@ -71,6 +92,14 @@
         :
 
         LDA player_collumn
+
+        LDA scroll_x
+        LSR
+        LSR
+        LSR
+        CLC
+        ADC player_collumn
+
         STA temp_col
         
         LDA player_row
@@ -86,8 +115,6 @@
         ; check left wall
         get_map_tile_state temp_row, temp_col
         BEQ :+
-            ; LDA #TOP_D
-            ; STA player_dir
             DEC player_dir
 
             DEC player_row
@@ -98,7 +125,7 @@
         
         @front_wall_right: 
         LDA player_collumn
-        CMP #31
+        CMP #MAP_END_COL 
         BNE :+
             INC player_dir
             RTS
@@ -107,8 +134,20 @@
         ; check front wall
         INC temp_col
         get_map_tile_state temp_row, temp_col
-        BEQ :+
+        BEQ :++
             INC player_collumn
+
+            LDA player_collumn
+            CMP #CAMERA_START_SCROLL_RIGHT 
+            BCC :+
+                LDA scroll_x
+                CMP #248
+                BEQ :+
+                    CLC
+                    ADC #8
+                    STA scroll_x
+                    DEC player_collumn
+            :
             RTS
         :
         INC player_dir
@@ -124,9 +163,17 @@
         STA temp_row
 
         LDA player_collumn
+
+        LDA scroll_x
+        LSR
+        LSR
+        LSR
+        CLC
+        ADC player_collumn
+
         STA temp_col
 
-        CMP #31
+        CMP #MAP_END_COL
         BNE :+
             JMP @front_wall_bottom
         :
@@ -134,12 +181,22 @@
         INC temp_col
 
         get_map_tile_state temp_row, temp_col
-        BEQ :+
-            ; LDA #RIGHT_D
-            ; STA player_dir  
+        BEQ :++
             DEC player_dir
             
             INC player_collumn
+
+            LDA player_collumn
+            CMP #CAMERA_START_SCROLL_RIGHT 
+            BCC :+
+                LDA scroll_x
+                CMP #248
+                BEQ :+
+                    CLC
+                    ADC #8
+                    STA scroll_x
+                    DEC player_collumn
+            :
             RTS
         :
 
@@ -173,8 +230,16 @@
         STA temp_row
 
         LDA player_collumn
+
+        LDA scroll_x
+        LSR
+        LSR
+        LSR
+        CLC
+        ADC player_collumn
+
         STA temp_col
-        CMP #31
+        CMP #MAP_END_COL
         BNE :+
             JMP @front_wall_left
         :
@@ -184,8 +249,6 @@
         ; check left wall
         get_map_tile_state temp_row, temp_col
         BEQ :+
-            ; LDA #BOTTOM_D
-            ; STA player_dir  
             DEC player_dir
             INC player_row
             RTS
@@ -205,8 +268,21 @@
         ; check front wall
         DEC temp_col
         get_map_tile_state temp_row, temp_col
-        BEQ :+
+        BEQ :++
             DEC player_collumn
+
+            LDA player_collumn
+            CMP #CAMERA_START_SCROLL_LEFT
+            BCC :+
+                LDA scroll_x
+                CMP #0
+                BEQ :+
+                    SEC
+                    SBC #8
+                    STA scroll_x
+                    INC player_collumn
+            :
+
             RTS
         :
         LDA #TOP_D
