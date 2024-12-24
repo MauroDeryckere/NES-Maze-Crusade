@@ -29,6 +29,7 @@
     ADC a_val
     STA a_val
     STA frontier_row
+    STA end_row
 
     ; col
     ; temporarily guarantee uneven col to ensure end border is always at left side.
@@ -42,6 +43,7 @@
     :
     LDA b_val
     STA frontier_col
+    STA end_col
 
     ;set the even col flag (new system always has an even row)
     LDA #0
@@ -49,14 +51,14 @@
 
     LDA frontier_col
     CMP #0
-    BEQ end_col ;when zero were even  
+    BEQ end_col_check ;when zero were even  
 
     modulo frontier_col, #2
     CMP #0
-    BEQ end_col
+    BEQ end_col_check
         LDA #1
         STA odd_frontiers
-    end_col:
+    end_col_check:
 
     set_map_tile a_val, b_val
 

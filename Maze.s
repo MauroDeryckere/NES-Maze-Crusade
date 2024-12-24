@@ -313,7 +313,7 @@ irq:
                 ; Have we started the algorithm yet? if not, execute the start function once
                 LDA has_started
                 CMP #0
-                BNE :+
+                BNE :+++
                     LDA #0
                     STA player_movement_delay_ct
                     ;------------------------
@@ -329,6 +329,21 @@ irq:
                     JSR play_sound_effect
 
                     JSR start_prims_maze
+
+                    : ;loop
+                    LDA end_col
+                    CMP #20
+                    BCC :+
+
+                    LDA scroll_x
+                    CLC
+                    ADC #8
+                    STA scroll_x
+
+                    DEC end_col
+                    JMP :-
+                    :
+                    
                     LDA #1
                     STA has_started
                 :
@@ -340,15 +355,16 @@ irq:
                     JMP mainloop
                 :
 
-                LDA frame_counter
-                AND #%00000001
+                LDA scroll_x
+                CMP #248
                 BEQ :+
                     INC scroll_x
                 :
+
                 JSR run_prims_maze ; whether or not the algorithm is finished is stored in the A register (0 when not finished)
                 JSR run_prims_maze ; whether or not the algorithm is finished is stored in the A register (0 when not finished)
 
-                ; BROKEN TILES ANIMATION
+            ; BROKEN TILES ANIMATION
                 LDA player_movement_delay_ct
                 CMP #GENERATION_ANIMATION_DELAY
                 BEQ :+
@@ -402,6 +418,10 @@ irq:
                 BNE NOT_END_GEN
 
                 LDA frontier_listQ1_size
+                BNE NOT_END_GEN
+
+                LDA scroll_x
+                CMP #248
                 BNE NOT_END_GEN
 
                 ; Has the maze finished generating?
