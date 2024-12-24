@@ -21,76 +21,71 @@
     modulo random_seed, #27 ; 27 because we dont want row 0 and dont want row 28 (28 + 1 == 29 -> uneven + 1 == out of bounds (30))
 
     ; dont include row 0
-    STA a_val
-    INC a_val
-    modulo a_val, #2
+    STA start_row
+    INC start_row
+    modulo start_row, #2
     
     CLC
-    ADC a_val
-    STA a_val
-    STA frontier_row
-    STA end_row
+    ADC start_row
+    STA start_row
 
     ; col
     ; temporarily guarantee uneven col to ensure end border is always at left side.
     JSR random_number_generator
     modulo random_seed, #30 ; dont include 31 - out of bounds when increasing
-    STA b_val
-    modulo b_val, #2
+    STA start_col
+    modulo start_col, #2
     CMP #0
     BNE :+
-        INC b_val
+        INC start_col
     :
-    LDA b_val
-    STA frontier_col
-    STA end_col
 
     ;set the even col flag (new system always has an even row)
     LDA #0
     STA odd_frontiers
 
-    LDA frontier_col
+    LDA start_col
     CMP #0
     BEQ end_col_check ;when zero were even  
 
-    modulo frontier_col, #2
+    modulo start_col, #2
     CMP #0
     BEQ end_col_check
         LDA #1
         STA odd_frontiers
     end_col_check:
 
-    set_map_tile a_val, b_val
+    set_map_tile start_row, start_col
 
-    add_to_changed_tiles_buffer frontier_row, frontier_col, #BROKEN_WALL_TILE
+    add_to_changed_tiles_buffer start_row, start_col, #BROKEN_WALL_TILE
 
-    LDA frontier_row
+    LDA start_row
     JSR enqueue
-    LDA frontier_col
+    LDA start_col
     JSR enqueue
 
-    access_map_frontier_neighbor #LEFT_D, frontier_row, frontier_col
+    access_map_frontier_neighbor #LEFT_D, start_row, start_col
     CMP #0 
     BNE TopN
 
     JSR add_cell
 
     TopN: ;top neighbor
-        access_map_frontier_neighbor #TOP_D, frontier_row, frontier_col
+        access_map_frontier_neighbor #TOP_D, start_row, start_col
         CMP #0 
         BNE RightN
 
         JSR add_cell
 
     RightN: ;right neighbor
-        access_map_frontier_neighbor #RIGHT_D, frontier_row, frontier_col
+        access_map_frontier_neighbor #RIGHT_D, start_row, start_col
         CMP #0 
         BNE BottomN
 
         JSR add_cell
 
     BottomN: ;bottom neighbor
-        access_map_frontier_neighbor #BOTTOM_D, frontier_row, frontier_col
+        access_map_frontier_neighbor #BOTTOM_D, start_row, start_col
         CMP #0
         BNE End
 

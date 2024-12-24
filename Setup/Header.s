@@ -73,6 +73,10 @@
     is_backtracking:        .res 1 ; is BFS currently backtracking the path (internal) - will be set to FF when end is reached
 
     
+    ; Start tile of the maze
+    start_row: 				.res 1
+    start_col:				.res 1    
+
     ; End tile of the maze
     end_row: 				.res 1
     end_col:				.res 1

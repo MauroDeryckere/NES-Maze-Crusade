@@ -330,9 +330,9 @@ irq:
 
                     JSR start_prims_maze
 
+                    LDX start_col
                     : ;loop
-                    LDA end_col
-                    CMP #20
+                    CPX #20
                     BCC :+
 
                     LDA scroll_x
@@ -340,7 +340,7 @@ irq:
                     ADC #8
                     STA scroll_x
 
-                    DEC end_col
+                    DEX
                     JMP :-
                     :
                     
