@@ -124,7 +124,7 @@
                 STA player_movement_delay_ct
 
                 LDA player_collumn
-                CMP #8
+                CMP #CAMERA_START_SCROLL_LEFT
                 BCS :+
                     LDA scroll_x
                     BEQ :+
@@ -174,7 +174,7 @@
                 STA player_movement_delay_ct
 
                 LDA player_collumn
-                CMP #24
+                CMP #CAMERA_START_SCROLL_RIGHT
                 BCC :+
                     LDA scroll_x
                     CMP #248

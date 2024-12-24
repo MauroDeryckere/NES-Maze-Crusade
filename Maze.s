@@ -340,6 +340,11 @@ irq:
                     JMP mainloop
                 :
 
+                LDA frame_counter
+                AND #%00000001
+                BEQ :+
+                    INC scroll_x
+                :
                 JSR run_prims_maze ; whether or not the algorithm is finished is stored in the A register (0 when not finished)
                 JSR run_prims_maze ; whether or not the algorithm is finished is stored in the A register (0 when not finished)
 
@@ -421,15 +426,21 @@ irq:
                         LDA #0
                         STA player_movement_delay_ct
 
-                        JSR display_map_nametable_1
-
+                        LDA #0
+                        STA scroll_x
+                        
                         JMP mainloop
                     :
+                    ;reset player movement delay since we used it for the animation
+                    LDA #0
+                    STA player_movement_delay_ct
+
                     ; start auto solving
                     LDA #GAMEMODE_SOLVING
                     STA current_game_mode
 
-                    JSR display_map_nametable_1
+                    LDA #0
+                    STA scroll_x
 
                 NOT_END_GEN: 
                 JMP mainloop

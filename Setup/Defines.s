@@ -137,6 +137,10 @@ DEBUG_MODE = 0
     MAP_COLUMNS = 63 ; last row is an empty border (due to the way prims generation works)
     MAP_END_COL =  MAP_START_COL + MAP_COLUMNS - 1
 
+; CAMERA INFO - PRIMS MAZE LVLS
+    CAMERA_START_SCROLL_LEFT = (SCREEN_COLS / 2) - 6
+    CAMERA_START_SCROLL_RIGHT = (SCREEN_COLS / 2) + 6
+
 ; TILES
     WALL_TILE = 0
     FRONTIER_WALL_TILE = 1
