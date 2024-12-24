@@ -13,22 +13,6 @@
         ; :
         ;     add_to_changed_tiles_buffer player_row, player_collumn, #2 
         ; _skip: 
-
-    ;MAKE SURE LOCAL DIRECTION IS WITHIN RANGE 0-3
-        LDA player_dir
-        CMP #$FF        ; Check if A went below 0 (will become $FF due to underflow)
-        BNE :+          ; If not $FF, skip wrapping
-        LDA #$03        ; Wrap around to 3 if A is $FF
-        STA player_dir
-        : ;skip  wrap
-
-        LDA player_dir
-        CMP #4
-        BNE :+
-            LDA #0
-            STA player_dir
-        :
-
    
     ;DIRECTION SWITCH CASE
     LDA player_dir
@@ -53,10 +37,9 @@
 
         get_map_tile_state temp_row, temp_col
         BEQ :+
-            ; LDA #LEFT_D
-            ; STA player_dir  
-            DEC player_dir
-
+            LDA #LEFT_D
+            STA player_dir  
+         ;   DEC player_dir
             DEC player_collumn
             RTS
         :
@@ -214,7 +197,8 @@
         LDA player_collumn
         CMP #MAP_START_COL
         BNE :+
-            INC player_dir
+            LDA #TOP_D
+            STA player_dir
             RTS
         :
 
@@ -225,6 +209,7 @@
             DEC player_collumn
             RTS
         :
-        INC player_dir
+        LDA #TOP_D
+        STA player_dir
         RTS
 .endproc

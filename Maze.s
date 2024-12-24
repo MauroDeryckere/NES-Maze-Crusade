@@ -639,6 +639,13 @@ irq:
                 @LFR_SOLVE: 
                     CMP #1 ;LFR
                     BNE @END_SOLVE_MODES
+
+                    modulo frame_counter, #LHR_DELAY
+                    CMP #0
+                    BEQ :+
+                        JMP mainloop
+                    :
+
                     JSR left_hand_rule
 
                     ; are we in hard mode?

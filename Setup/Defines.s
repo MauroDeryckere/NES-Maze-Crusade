@@ -109,6 +109,7 @@ DEBUG_MODE = 0
 ; SETUP
     GENERATION_ANIMATION_DELAY = 35
     PLAYER_MOVEMENT_DELAY = 5 ;sets the delay for player movement (==  movement speed)
+    LHR_DELAY = 5
     MAZE_GENERATION_SPEED = 1 ;how much is maze generation slowed down
     SCORE_DIGIT_OFFSET = 232
 
