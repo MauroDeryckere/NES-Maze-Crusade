@@ -627,6 +627,8 @@ irq:
                     CMP #0 ;BFS
                     BNE @LFR_SOLVE
 
+                    JSR update_player_position
+
                     JSR play_when_backtracking
 
                     JSR step_BFS
@@ -634,8 +636,6 @@ irq:
                     LDA is_backtracking
                     CMP #$FF                 
                     BEQ @SOLVE_END_REACHED
-                    
-                    JSR update_player_position
 
                     JMP @END_SOLVE_MODES
                 @LFR_SOLVE: 
@@ -674,8 +674,24 @@ irq:
                     LDA #0
                     STA sound_played2
 
-                    add_score #100
 
+                    LDA player_row
+                    CMP end_row
+                    BNE :+
+
+                    LDA scroll_x
+                    LSR
+                    LSR
+                    LSR
+                    STA temp
+                    LDA player_collumn
+                    CLC
+                    ADC temp
+                    CMP end_col
+                    BNE :+
+
+                    add_score #100
+                    
                     ; back to generating
                     LDA #GAMEMODE_GENERATING
                     STA current_game_mode
@@ -683,7 +699,7 @@ irq:
                     STA has_started
 
                     JSR reset_generation
-
+                    : ;end label
                     JMP mainloop
 .endproc
 ;*****************************************************************
