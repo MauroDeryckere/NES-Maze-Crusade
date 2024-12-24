@@ -146,11 +146,6 @@
     ; Testing
     testvar:                .res 1
 
-    ;SOLVING ALGORITHM VARIABLES
-    ; LHR algoritm
-    temp_player_collumn:    .res 1
-    temp_player_row:        .res 1
-
     ; BFS algorithm
     move_count:             .res 1
     ; nodes_left_layer:       .res 1
