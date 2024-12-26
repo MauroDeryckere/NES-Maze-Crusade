@@ -32,10 +32,10 @@
     JSR init_BFS
 
     ; add start row and col to queue
-    LDA start_row
+    LDA player_row
     STA frontier_row
     JSR enqueue
-    LDA start_col
+    LDA player_collumn
     STA frontier_col
     JSR enqueue
 

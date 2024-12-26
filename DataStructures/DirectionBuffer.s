@@ -7,6 +7,9 @@
 .macro calculate_offset_directions Row, Column
     ;Calculate the base address of the row (Row * 8)
     LDA Row
+    SEC
+    SBC #1
+    
     ASL             ;== times 2
     ASL             ;== times 4
     ASL             ;== times 8

@@ -436,9 +436,9 @@
         add_to_changed_tiles_buffer #1, temp, #PATH_TILE_1
         LDA #1
         STA player_row
-        STA start_col
-        LDA temp
         STA start_row
+        LDA temp
+        STA start_col
         STA player_collumn
 
         JMP END_STARTPOS
