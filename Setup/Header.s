@@ -3,7 +3,7 @@
 .segment "HEADER"
     INES_MAPPER = 0 ; 0 = NROM
     INES_MIRROR = 1 ; 0 = horizontal mirror/1 = vertical
-    INES_SRAM = 1 ; 1 = battery save at $6000-7FFF
+    INES_SRAM = 0 ; 1 = battery save at $6000-7FFF
 
     .byte 'N', 'E', 'S', $1A ; ID
     .byte $02 ; 16 KB program bank count
@@ -41,7 +41,7 @@
     gamepad_released:       .res 2 ; released this frame
 
     ;scrolling
-    scroll_x:               .res 1 
+    scroll_x:               .res 1 ; current nametable x croll
 
     ;gameplay flags
     odd_frontiers: 			.res 1 ; was the maze generated with odd or even frontier rows and columns
@@ -71,14 +71,11 @@
 
     has_started:            .res 1  ; internal flag to show whether or not a mode has started, used to only execute the start function once 
     is_backtracking:        .res 1 ; is BFS currently backtracking the path (internal) - will be set to FF when end is reached
-
     
-    ; Start tile of the maze
-    start_row: 				.res 1
+    ; MAZE positions
+    start_row: 				.res 1 ; Start tile of the maze
     start_col:				.res 1    
-
-    ; End tile of the maze
-    end_row: 				.res 1
+    end_row: 				.res 1 ; End tile of the maze
     end_col:				.res 1
 
     ;graphics buffers
@@ -86,11 +83,12 @@
 
     changed_tiles_buffer: 	.res CHANGED_TILES_BUFFER_SIZE ;changed tiles this frame - used for graphics during vblank 
 
-    low_byte: 				.res 1
+    low_byte: 				.res 1 ; used for temporary calculations using high / low bytes 
     high_byte: 				.res 1
 
-    ;frontier list specific
-    frontier_listQ1_size:	.res 1 ; | Internal use for frontier list, do not overwrite
+    ; frontier list specific
+    frontier_list_size:	    .res 1 ; current size of the frontier list
+                                   ; Internal use for frontier list, do not overwrite
 
     ;temporary values used in macros, ... - have to check when you use these in other routines if they arent used anywhere internally
     x_val:					.res 1 ;x and y value stored in zero page for fast accesss when it's necessary to store these
@@ -99,30 +97,24 @@
     a_val: 					.res 1
     b_val: 					.res 1
 
-    paddr:              	.res 2 ; 16-bit address pointer
+    temp_row:				.res 1
+    temp_col:				.res 1
 
+    paddr:              	.res 2 ; 16-bit address pointer
     temp_address:			.res 1
 
-    ;temp vals used for prims algorithm loop - only used during the generation loop so possible to overwrite outside of the loop
-    frontier_offset:		.res 1
-
+    ;temp vals used for prims algorithm loop - only used during a step of prims in the generation loop so possible to overwrite outside of the loop
     frontier_row:			.res 1
     frontier_col:			.res 1
+    temp_frontier_row:		.res 1
+    temp_frontier_col:		.res 1
 
-    used_direction:			.res 1
-
-    temp_row:				.res 1
-    temp_row_2:				.res 1
-    temp_col:				.res 1
-    temp_col_2:				.res 1
     temp: 					.res 1
-    temp_2: 				.res 1
 
     ;PLAYER VARIABLES
-    player_dir:             .res 1
-
-    player_row: 			.res 1
-    player_collumn: 		.res 1
+    player_dir:                 .res 1
+    player_row: 			    .res 1
+    player_collumn: 		    .res 1
     player_movement_delay_ct:   .res 1 ; also used for animation during generation
 
     ; Score | HHLL - 0000 up to 9999 score
@@ -132,9 +124,6 @@
     ; Queue ptrs
     queue_head:             .res 1
     queue_tail:             .res 1
-
-    ; Testing
-    testvar:                .res 1
 
     ; BFS algorithm
     move_count:             .res 1

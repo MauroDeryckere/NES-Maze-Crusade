@@ -50,42 +50,42 @@
     LDX #$FF
     TXS
 
-wait_vblank:
-    BIT PPU_STATUS
-    BPL wait_vblank
+    wait_vblank:
+        BIT PPU_STATUS
+        BPL wait_vblank
 
-    LDA #0
-    LDX #0
+        LDA #0
+        LDX #0
 
-clear_ram:
-    STA $0000, x
-    STA $0100, x
-    STA $0200, x
-    STA $0300, x
-    STA $0400, x
-    STA $0500, x
-    STA $0600, x
-    STA $0700, x
-    INX
-    BNE clear_ram
+    clear_ram:
+        STA $0000, x
+        STA $0100, x
+        STA $0200, x
+        STA $0300, x
+        STA $0400, x
+        STA $0500, x
+        STA $0600, x
+        STA $0700, x
+        INX
+        BNE clear_ram
 
-    LDA #255
-    LDX #0
+        LDA #255
+        LDX #0
 
-clear_oam:
-    STA oam, x
-    INX
-    INX
-    INX
-    INX
-    BNE clear_oam
+    clear_oam:
+        STA oam, x
+        INX
+        INX
+        INX
+        INX
+        BNE clear_oam
 
-wait_vblank2:
-    BIT PPU_STATUS
-    BPL wait_vblank2
+    wait_vblank2:
+        BIT PPU_STATUS
+        BPL wait_vblank2
 
-    LDA #%10001000
-    STA PPU_CONTROL
+        LDA #%10001000
+        STA PPU_CONTROL
 
     JMP main
 .endproc

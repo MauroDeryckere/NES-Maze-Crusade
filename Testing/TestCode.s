@@ -78,9 +78,9 @@
 
 
     JSR dequeue
-    STA testvar
+   ; STA testvar
     JSR dequeue
-    STA testvar
+   ; STA testvar
 
     LDA #4
     JSR enqueue

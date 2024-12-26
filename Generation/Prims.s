@@ -97,19 +97,15 @@
 .endproc
 
 .proc run_prims_maze
-    LDA frontier_listQ1_size ; if empty end algorithm
+    LDA frontier_list_size ; if empty end algorithm
     BNE :+
         ;return with FF in A reg to show we are done with algorithm
         LDA #$FF
         RTS ;early return if finished
     :
 
-    ;useful for debugging but not necessary for algorithm    
-    ; LDA #%11111111
-    ; STA used_direction
-
     ;step one of the agorithm: pick a random frontier cell of the list
-    get_random_frontier_tile ;returns col and row in x and y reg respectively | page and offset are maintained in a and b val
+    get_random_frontier_tile ;returns col and row in x and y reg respectively offset is maintained in b val
     
     ;store row and col in zero page to use in the access function.
     STX frontier_col
@@ -117,8 +113,7 @@
 
     ;store b val in a new value since b will be overwritten in the access map neighbor function
     LDA b_val
-    STA frontier_offset
-
+    PHA
 
     ;pick a random neighbor of the frontier cell that's in state passage
     ;start a counter for the amt of dirs we can use on temp val (since its not used in any of the macros we call during this section)
@@ -126,7 +121,8 @@
     STA temp
 
     access_map_frontier_neighbor #TOP_D, frontier_row, frontier_col
-    CMP #1 ;we want something in state passage
+    CMP #1
+    ; we want something in state passage
     BNE :+
         ;valid cell, Jump to next step
         LDA #TOP_D
@@ -134,7 +130,8 @@
         INC temp
     : ;right
     access_map_frontier_neighbor #RIGHT_D, frontier_row, frontier_col
-    CMP #1 ;we want something in state passage
+    CMP #1
+    ; we want something in state passage
     BNE :+
         ;valid cell, Jump to next step
         LDA #RIGHT_D
@@ -143,7 +140,8 @@
 
     : ;bottom
     access_map_frontier_neighbor #BOTTOM_D, frontier_row, frontier_col
-    CMP #1 ;we want something in state passage
+    CMP #1
+    ; we want something in state passage
     BNE :+
         ;valid cell, Jump to next step
         LDA #BOTTOM_D
@@ -151,7 +149,8 @@
         INC temp        
     : ;left
     access_map_frontier_neighbor #LEFT_D, frontier_row, frontier_col
-    CMP #1 ;we want something in state passage
+    CMP #1
+    ; we want something in state passage
     BNE :+
         ;valid cell, Jump to next step
         LDA #LEFT_D
@@ -167,66 +166,65 @@
     LDX temp
     ;the direction idx we want to use is stored in A
     STA temp
-    dirloop: 
-        PLA
-        
+    @dirloop: 
+        PLA  
         DEX 
 
         CPX temp
         BNE :+
-            STA used_direction
+            STA a_val ; used direction
         :
 
         CPX #0
-        BNE dirloop
+        BNE @dirloop
 
     ;calculate the cell between picked frontier and passage cell and set this to a passage 
-    nextstep: 
-    LDA used_direction
-    CMP #TOP_D
-    BNE :+
-        LDA frontier_row
-        STA temp_row
-        DEC temp_row
+    @pick_frontier: 
+        LDA a_val ; used direction
+        CMP #TOP_D
+        BNE :+
+            LDA frontier_row
+            STA temp_frontier_row
+            DEC temp_frontier_row
 
-        LDA frontier_col
-        STA temp_col
-        JMP nextnextstep
+            LDA frontier_col
+            STA temp_frontier_col
+            JMP nextnextstep
 
-    :; right
-    CMP #RIGHT_D
-    BNE :+
-        LDA frontier_row
-        STA temp_row
+        :; right
+        CMP #RIGHT_D
+        BNE :+
+            LDA frontier_row
+            STA temp_frontier_row
 
-        LDA frontier_col
-        STA temp_col
-        INC temp_col
-        JMP nextnextstep
+            LDA frontier_col
+            STA temp_frontier_col
+            INC temp_frontier_col
+            JMP nextnextstep
 
-    :; bottom
-    CMP #BOTTOM_D
-    BNE :+
-        LDA frontier_row
-        STA temp_row
-        INC temp_row
+        :; bottom
+        CMP #BOTTOM_D
+        BNE :+
+            LDA frontier_row
+            STA temp_frontier_row
+            INC temp_frontier_row
 
-        LDA frontier_col
-        STA temp_col
-        JMP nextnextstep
+            LDA frontier_col
+            STA temp_frontier_col
+            JMP nextnextstep
 
-    : ;left
-    CMP #LEFT_D
-    BNE :+
-        LDA frontier_row
-        STA temp_row
+        : ;left
+        CMP #LEFT_D
+        BNE :+
+            LDA frontier_row
+            STA temp_frontier_row
 
-        LDA frontier_col
-        STA temp_col
-        DEC temp_col
-        JMP nextnextstep
-    :
-    ;wont reach this label in algorithm but useful for debugging 
+            LDA frontier_col
+            STA temp_frontier_col
+            DEC temp_frontier_col
+            JMP nextnextstep
+        :
+        ;wont reach this label in algorithm but useful for debugging 
     
 
     nextnextstep: 
@@ -236,12 +234,12 @@
         ; ADC #PATH_TILE_1
         ; STA temp
 
-        set_map_tile temp_row, temp_col
-        add_to_changed_tiles_buffer temp_row, temp_col, #BROKEN_WALL_TILE
+        set_map_tile temp_frontier_row, temp_frontier_col
+        add_to_changed_tiles_buffer temp_frontier_row, temp_frontier_col, #BROKEN_WALL_TILE
 
-        LDA temp_row
+        LDA temp_frontier_row
         JSR enqueue
-        LDA temp_col
+        LDA temp_frontier_col
         JSR enqueue
 
 
@@ -253,14 +251,14 @@
         :
 
         ;if exists check
-        STY temp_row        
-        STX temp_col
-        exists_in_Frontier temp_row, temp_col
+        STY temp_frontier_row        
+        STX temp_frontier_col
+        exists_in_Frontier temp_frontier_row, temp_frontier_col
         CPX #1
         BEQ TopN 
 
-        LDY temp_row
-        LDX temp_col
+        LDY temp_frontier_row
+        LDX temp_frontier_col
 
         JSR add_cell
 
@@ -272,14 +270,14 @@
         :
 
         ;if exists check
-        STY temp_row        
-        STX temp_col
-        exists_in_Frontier temp_row, temp_col
+        STY temp_frontier_row        
+        STX temp_frontier_col
+        exists_in_Frontier temp_frontier_row, temp_frontier_col
         CPX #1
         BEQ RightN 
 
-        LDY temp_row
-        LDX temp_col
+        LDY temp_frontier_row
+        LDX temp_frontier_col
 
         JSR add_cell
 
@@ -291,14 +289,14 @@
         :
 
         ;if exists check
-        STY temp_row        
-        STX temp_col
-        exists_in_Frontier temp_row, temp_col
+        STY temp_frontier_row        
+        STX temp_frontier_col
+        exists_in_Frontier temp_frontier_row, temp_frontier_col
         CPX #1
         BEQ BottomN
 
-        LDY temp_row
-        LDX temp_col
+        LDY temp_frontier_row
+        LDX temp_frontier_col
 
         JSR add_cell
 
@@ -310,14 +308,14 @@
         :
 
         ;if exists check
-        STY temp_row        
-        STX temp_col
-        exists_in_Frontier temp_row, temp_col
+        STY temp_frontier_row        
+        STX temp_frontier_col
+        exists_in_Frontier temp_frontier_row, temp_frontier_col
         CPX #1
         BEQ end
 
-        LDY temp_row
-        LDX temp_col
+        LDY temp_frontier_row
+        LDX temp_frontier_col
 
         JSR add_cell
     end: 
@@ -325,20 +323,21 @@
     ;remove the chosen frontier cell from the list
     set_map_tile frontier_row, frontier_col
     JSR random_number_generator
-    modulo random_seed, #02
+    modulo random_seed, #PATH_TILES_AMOUNT
     CLC
     ADC #PATH_TILE_1
     STA temp
 
     add_to_changed_tiles_buffer frontier_row, frontier_col, temp
-
     ;enqueue these to be updated as an "animation"
     ; LDA frontier_row
     ; JSR enqueue
     ; LDA frontier_col
     ; JSR enqueue
 
-    remove_from_Frontier frontier_offset
+    PLA 
+    STA temp
+    remove_from_Frontier temp
 
     ;return with 0 in A reg to show we are not done with algorithm yet
     LDA #0
@@ -362,16 +361,16 @@
         AND #%00000001
         BEQ :+
             LDA #2
-            STA temp_row
+            STA temp_frontier_row
             JMP rowloop_bottom
         :
         LDA #1 
-        STA temp_row
+        STA temp_frontier_row
         JMP rowloop_top
     :
     ; pick a column start pos if uneven
     LDA #0
-    STA temp_row
+    STA temp_frontier_row
 
     LDA odd_frontiers
     ;are cols odd
@@ -467,7 +466,7 @@
 
 ; END POSITION
     ; depending on the chosen start pos (top or bottom)    
-    LDA temp_row
+    LDA temp_frontier_row
     CMP #0
     BNE :+
         JMP skip_col_option
@@ -479,7 +478,7 @@
     BEQ :++
         ; 1 means row generation, pick the correct one
         skip_col_option: 
-        LDA temp_row
+        LDA temp_frontier_row
         CMP #1
         BEQ :+
             JMP top_row_end 

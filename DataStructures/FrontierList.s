@@ -11,14 +11,13 @@
     TAX
 
     ;row
-    LDA FRONTIER_LISTQ1, X
+    LDA FRONTIER_LIST_ADDRESS, X
     TAY
     INX
 
     ;col
-    LDA FRONTIER_LISTQ1, X
+    LDA FRONTIER_LIST_ADDRESS, X
     TAX
-
 .endmacro
 
 ;returns whether or not the row and col pair exist in the frontier list in the X register (1 found, 0 not found)
@@ -29,7 +28,7 @@
     .local loop_p0
     loop_p0:        
         LDX temp
-        CPX frontier_listQ1_size
+        CPX frontier_list_size
         BNE :+
             LDX #0
             STX temp
@@ -68,7 +67,7 @@
 ; basically uses the "swap and pop" technique of a vector in C++
 .macro remove_from_Frontier offset
     ; Calculate the address of the last item in the list
-    LDA frontier_listQ1_size
+    LDA frontier_list_size
 
     TAX
     DEX ;decrease size by 1 before multiplying (otherwise we will go out of bounds since size 1 == index 0 )
@@ -77,11 +76,11 @@
     ASL
     TAX ;calculated address offset for last item in X
 
-    LDA FRONTIER_LISTQ1, X ; store last items in temp values
+    LDA FRONTIER_LIST_ADDRESS, X ; store last items in temp values
     STA a_val
 
     INX
-    LDA FRONTIER_LISTQ1, X ; store last items in temp values
+    LDA FRONTIER_LIST_ADDRESS, X ; store last items in temp values
     STA b_val
 
     ; Calculate the address to be removed
@@ -90,14 +89,14 @@
     TAX
 
     LDA a_val
-    STA FRONTIER_LISTQ1, X
+    STA FRONTIER_LIST_ADDRESS, X
     INX 
     LDA b_val
-    STA FRONTIER_LISTQ1, X
+    STA FRONTIER_LIST_ADDRESS, X
 
 
     ; in case you want to replace the garbage at end with FF for debugging (clear values)
-    LDA frontier_listQ1_size
+    LDA frontier_list_size
 
     TAX
     DEX ;decrease size by 1 before multiplying (otherwise we will go out of bounds since size 1 == index 0 )
@@ -107,33 +106,33 @@
     TAX ;calculated address offset for last item in X
 
     LDA #$FF
-    STA FRONTIER_LISTQ1, X 
+    STA FRONTIER_LIST_ADDRESS, X 
     INX
     LDA #$FF
-    STA FRONTIER_LISTQ1, X
+    STA FRONTIER_LIST_ADDRESS, X
     ; ------------------------------------------------------------------------------------
 
 
-    DEC frontier_listQ1_size
+    DEC frontier_list_size
 .endmacro
 
 ;Defintion of row and col can be found in the map buffer section.
 .macro add_to_Frontier Row, Col
-    ;multiply current size of Q1 by 2, 2 bytes required per element in list
-    LDA frontier_listQ1_size
+    ;multiply current size of frontier list by 2, 2 bytes required per element in list
+    LDA frontier_list_size
     ASL
 
-    CMP #%11111110      ;check if it should be added to Q1 or not
+    CMP #%11111110      ;check if it should be added or not (is list full)
     BEQ :+
         
         TAX
         LDA Row
-        STA FRONTIER_LISTQ1, X
+        STA FRONTIER_LIST_ADDRESS, X
         INX
         LDA Col
-        STA FRONTIER_LISTQ1, X
+        STA FRONTIER_LIST_ADDRESS, X
 
-        INC frontier_listQ1_size   
+        INC frontier_list_size   
     :
 .endmacro
 ;*****************************************************************
@@ -144,7 +143,7 @@
     JSR random_number_generator
 
     ;clamp the offset
-    modulo random_seed, frontier_listQ1_size
+    modulo random_seed, frontier_list_size
     STA b_val
 
     access_Frontier b_val

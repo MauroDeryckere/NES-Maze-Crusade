@@ -417,7 +417,7 @@ irq:
                 CMP #1
                 BNE NOT_END_GEN
 
-                LDA frontier_listQ1_size
+                LDA frontier_list_size
                 BNE NOT_END_GEN
 
                 LDA scroll_x

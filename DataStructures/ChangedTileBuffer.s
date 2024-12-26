@@ -1,33 +1,20 @@
 ; Vblank buffer contains the row and column of the tile on the background
-
 ; Stores 3 bytes per tile, high byte of location low byte of location and the tile from the tilesheet we're using.
-
-
-; no longer using this version 
-; ; Only tiles from the first 4 rows (0-3) and first 8 cols (0-7) can currently be set using this macro.
-; ; Internal info:
-; ; F: flag bit - not in use currently other than to check if it is an invalid or valid IDX in the buffer
-; ; T: tile bit
-; ; R: background row bit
-; ; C: background col bit
-; ; Row: FTTR RRRR
-; ; Col: TTTC CCCC
 ;*****************************************************************
 .macro add_to_changed_tiles_buffer Row, Col, TileID
     LDA Row
-    STA temp_row_2
+    STA temp_row
 
-    LDA TileID
-    STA temp_2
+    LDX TileID
 
     LDA Col
-    STA temp_col_2
+    STA temp_col
 
     CMP #32
     BCC n0
         SEC
         SBC #32
-        STA temp_col_2
+        STA temp_col
        
         JSR add_to_changed_tiles_buffer_n1
         JMP return
@@ -61,7 +48,7 @@
     @add_vals:
         LDA #0
         STA high_byte
-        LDA temp_row_2
+        LDA temp_row
         STA low_byte
         
         CLC
@@ -83,14 +70,13 @@
         
         ;col
         INY
-        LDA temp_col_2
+        LDA temp_col
         ADC low_byte 
         STA changed_tiles_buffer, Y
 
         ;tile Id
         INY
-        LDA temp_2
-        STA changed_tiles_buffer, Y
+        STX changed_tiles_buffer, Y
 
         RTS
 .endproc
@@ -115,7 +101,7 @@
     @add_vals:
         LDA #0
         STA high_byte
-        LDA temp_row_2
+        LDA temp_row
         STA low_byte
         
         CLC
@@ -137,14 +123,13 @@
         
         ;col
         INY
-        LDA temp_col_2
+        LDA temp_col
         ADC low_byte 
         STA changed_tiles_buffer, Y
 
         ;tile Id
         INY
-        LDA temp_2
-        STA changed_tiles_buffer, Y
+        STX changed_tiles_buffer, Y
 
         RTS
 .endproc

@@ -87,7 +87,7 @@ DEBUG_MODE = 0
     MAZE_BUFFER_SIZE = 116 * 2
 
 ; FRONTIER LIST
-    FRONTIER_LISTQ1 = MAZE_BUFFER + MAZE_BUFFER_SIZE
+    FRONTIER_LIST_ADDRESS = MAZE_BUFFER + MAZE_BUFFER_SIZE
     FRONTIER_LIST_CAPACITY = 255 ; capacity is more than enough, can be reduced if necessary
 
 ; VISITED CELLS BUFFER | doubles as visibility buffer
