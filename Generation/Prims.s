@@ -347,7 +347,7 @@
 
 .proc calculate_prims_start_end
 ; START POSITION
-    ; chosen side for start stored in temp_row
+    ; chosen side for start stored in temp_frontier_row
     ; 0: col
     ; 1: top row
     ; 2: bottom row
