@@ -3,7 +3,7 @@
 .segment "HEADER"
     INES_MAPPER = 0 ; 0 = NROM
     INES_MIRROR = 1 ; 0 = horizontal mirror/1 = vertical
-    INES_SRAM = 0 ; 1 = battery save at $6000-7FFF
+    INES_SRAM = 1 ; 1 = battery save at $6000-7FFF
 
     .byte 'N', 'E', 'S', $1A ; ID
     .byte $02 ; 16 KB program bank count
