@@ -392,26 +392,27 @@
     CMP #4
     BEQ :+++
 
-    ldx #0 
+    LDX curr_oam_byte
 
     ;SPRITE 0
-    lda player_row ;Y coordinate
+    LDA player_row ;Y coordinate
     ASL
     ASL
     ASL
-    sta oam, x
-    inx
+    STA oam, X
+    INX
 
-    CLC
     LDA #$D0   ;tile pattern index
+    CLC
     ADC player_dir
 
-    sta oam, x
-    inx 
+    STA oam, X
+    INX 
+ 
+    LDA #%00000000 ;flip bits to set certain sprite attributes
+    STA oam, X
+    INX
 
-    lda #%00000000 ;flip bits to set certain sprite attributes
-    sta oam, x
-    inx
     
     LDA player_collumn   ;X coordinate
     ASL
@@ -428,9 +429,11 @@
         CLC
         TAY
     :
+
     TYA
-    STA oam, x
-    ;INX to go to the next sprite location 
+    STA oam, X
+    INX
+    STX curr_oam_byte
 
     RTS
 
@@ -443,9 +446,14 @@
 
 ;simply hides the sprite off screen
 .proc hide_player_sprite
-    LDX #0          ; Start at the first byte of the OAM (sprite 0 Y-coordinate)
+    LDX curr_oam_byte
     LDA #$F0        ; Y-coordinate off-screen
-    STA oam, x      ; Write to OAM
+    STA oam, X      ; Write to OAM
+
+    INC curr_oam_byte
+    INC curr_oam_byte
+    INC curr_oam_byte
+    INC curr_oam_byte
     RTS
 .endproc
 
@@ -524,21 +532,26 @@
     ADC #64        ; get correct tile ID  
     TAY
 
+    LDX curr_oam_byte
     LDA #0 ;Y coordinate
-    STA oam, x
-    INX
+    STA oam, X
+    INC curr_oam_byte
 
+    LDX curr_oam_byte
     TYA
-    STA oam, x
-    INX 
+    STA oam, X
+    INC curr_oam_byte 
 
+    LDX curr_oam_byte
     LDA #%00000001 ;flip bits to set certain sprite attributes
-    STA oam, x
-    INX
+    STA oam, X
+    INC curr_oam_byte
 
+
+    LDX curr_oam_byte
     LDA temp   ;X coordinate
-    STA oam, x
-    INX 
+    STA oam, X
+    INC curr_oam_byte 
 
     RTS
 .endproc

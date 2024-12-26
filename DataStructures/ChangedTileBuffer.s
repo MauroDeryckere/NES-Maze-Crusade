@@ -64,7 +64,6 @@
         ROL high_byte
 
         LDA #NAME_TABLE_0_ADDRESS_HIGH ;add high byte
-        CLC
         ADC high_byte
         STA changed_tiles_buffer, Y
         
@@ -117,7 +116,6 @@
         ROL high_byte
 
         LDA #NAME_TABLE_1_ADDRESS_HIGH ;add high byte
-        CLC
         ADC high_byte
         STA changed_tiles_buffer, Y
         

@@ -57,16 +57,14 @@ irq:
         ;increase again when 0
         INC frame_counter
     :
-
+    
     LDA #0
     STA checked_this_frame
 
     JSR draw_background
-    JSR draw_player_sprite
     
     LDA current_game_mode
     BEQ @draw_start_screen
-    JSR display_score
     JMP @skip_start_screen
     
 @draw_start_screen:
@@ -101,8 +99,6 @@ irq:
         CPX #32
         BCC @loop
 
-
-    ; ; write current scroll and control settings
     ; LDA scroll_x ; Set horizontal scroll to 8 pixels
     ; STA $2005    ; First write to $2005 (X offset)
     ; LDA #0 
@@ -118,6 +114,7 @@ irq:
     ; NoSwitch:
     ; STA scroll_x ; Update the scroll position
 
+    ; write current scroll and control settings
 	LDA scroll_x
 	STA PPU_VRAM_ADDRESS1
     LDA #0
@@ -134,6 +131,9 @@ irq:
 	; flag PPU update complete
 	LDX #0
 	STX nmi_ready
+
+    ; reset the oam byte counter
+    STX curr_oam_byte 
     
 	; restore registers and return
 	PLA
@@ -287,6 +287,7 @@ irq:
                 :
 
                 JSR step_title_update
+                JSR draw_player_sprite
     
             JMP mainloop
 
@@ -343,7 +344,7 @@ irq:
                     DEX
                     JMP :-
                     :
-                    
+
                     LDA #1
                     STA has_started
                 :
@@ -363,6 +364,9 @@ irq:
 
                 JSR run_prims_maze ; whether or not the algorithm is finished is stored in the A register (0 when not finished)
                 JSR run_prims_maze ; whether or not the algorithm is finished is stored in the A register (0 when not finished)
+
+                JSR draw_player_sprite
+                JSR display_score
 
             ; BROKEN TILES ANIMATION
                 LDA player_movement_delay_ct
@@ -509,6 +513,9 @@ irq:
                     JSR update_visibility
                 :
 
+                JSR draw_player_sprite
+                JSR display_score
+
                 ; Has the player reached the end?
                     LDA player_row
                     CMP end_row
@@ -615,7 +622,6 @@ irq:
                             JSR display_clear_map
                             JSR start_hard_mode
                     :
-
                     LDA #1
                     STA has_started 
                 :
@@ -667,13 +673,18 @@ irq:
                         BNE @END_SOLVE_MODES
 
                     JMP @SOLVE_END_REACHED
-                @END_SOLVE_MODES: 
+                @END_SOLVE_MODES:
+                    JSR draw_player_sprite
+                    JSR display_score
+
                     JMP mainloop
                 
                 @SOLVE_END_REACHED: 
                     LDA #0
                     STA sound_played2
 
+                    JSR draw_player_sprite
+                    JSR display_score
 
                     LDA player_row
                     CMP end_row

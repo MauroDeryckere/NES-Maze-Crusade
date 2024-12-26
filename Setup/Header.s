@@ -40,9 +40,6 @@
     gamepad_pressed:        .res 2 ; pressed this frame
     gamepad_released:       .res 2 ; released this frame
 
-    ;scrolling
-    scroll_x:               .res 1 ; current nametable x croll
-
     ;gameplay flags
     odd_frontiers: 			.res 1 ; was the maze generated with odd or even frontier rows and columns
     checked_this_frame:     .res 1 ; has code been executed during this frame
@@ -60,28 +57,37 @@
                                     ; 000: unused, can be used later on
 
 
-    current_game_mode:      .res 1  ; internal mode that's currently running
-                                    ; 0: Start Screen
-                                    ; 1: Generating
-                                    ; 2: Playing game 
-                                    ; 3: Running Solving algorithm
-                                    ; 4: Nothing (paused)
-
+    current_game_mode:          .res 1  ; internal mode that's currently running
+                                        ; 0: Start Screen
+                                        ; 1: Generating
+                                        ; 2: Playing game 
+                                        ; 3: Running Solving algorithm
+                                        ; 4: Nothing (paused)
     gamemode_store_for_paused:  .res 1 ; stores previous curr_game_mode when pausing 
 
     has_started:            .res 1  ; internal flag to show whether or not a mode has started, used to only execute the start function once 
-    is_backtracking:        .res 1 ; is BFS currently backtracking the path (internal) - will be set to FF when end is reached
     
+    ;PLAYER VARIABLES
+    player_dir:                 .res 1
+    player_row: 			    .res 1
+    player_collumn: 		    .res 1
+    player_movement_delay_ct:   .res 1 ; also used for animation during generation
+
+    ;scrolling
+    scroll_x:                   .res 1 ; current nametable x croll
+
     ; MAZE positions
     start_row: 				.res 1 ; Start tile of the maze
     start_col:				.res 1    
     end_row: 				.res 1 ; End tile of the maze
     end_col:				.res 1
 
-    ;graphics buffers
+    ; GRAPHICS
     should_clear_buffer: 	.res 1
-
     changed_tiles_buffer: 	.res CHANGED_TILES_BUFFER_SIZE ;changed tiles this frame - used for graphics during vblank 
+
+    curr_oam_byte:          .res 1 ; used to maintain the current oam offset, allows flickering when more than 8 sprites are in a line and is easier to stop / start drawing certain sprites.
+                                   ; should be reset at start of every frame
 
     low_byte: 				.res 1 ; used for temporary calculations using high / low bytes 
     high_byte: 				.res 1
@@ -111,16 +117,6 @@
 
     temp: 					.res 1
 
-    ;PLAYER VARIABLES
-    player_dir:                 .res 1
-    player_row: 			    .res 1
-    player_collumn: 		    .res 1
-    player_movement_delay_ct:   .res 1 ; also used for animation during generation
-
-    ; Score | HHLL - 0000 up to 9999 score
-    score_low:              .res 1
-    score_high:             .res 1
-
     ; Queue ptrs
     queue_head:             .res 1
     queue_tail:             .res 1
@@ -129,10 +125,14 @@
     move_count:             .res 1
     ; nodes_left_layer:       .res 1
     ; nodes_next_layer:       .res 1
+    is_backtracking:        .res 1 ; is BFS currently backtracking the path (internal) - will be set to FF when end is reached
 
     ;Score
     added_high:             .res 1
     added_low:              .res 1 ;these 2 are to make sure add score works correctly
+    ; Score | HHLL - 0000 up to 9999 score
+    score_low:              .res 1
+    score_high:             .res 1
 
     ;AUDIO
     temp_sound:             .res 1
