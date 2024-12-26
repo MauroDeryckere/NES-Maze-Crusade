@@ -41,14 +41,14 @@
         STA frontier_row
         DEC frontier_row
 
-        is_visited frontier_row, temp_col
+        is_visited frontier_row, temp_frontier_col
         BEQ :+
             JMP below
         :
 
-        set_visited frontier_row, temp_col
+        set_visited frontier_row, temp_frontier_col
 
-        get_map_tile_state frontier_row, temp_col
+        get_map_tile_state frontier_row, temp_frontier_col
         BEQ a_wall
             JSR random_number_generator
             modulo random_seed, #PATH_TILES_AMOUNT
@@ -56,10 +56,10 @@
             ADC #PATH_TILE_1
             STA temp
 
-            add_to_changed_tiles_buffer frontier_row, temp_col, temp
+            add_to_changed_tiles_buffer frontier_row, temp_frontier_col, temp
         JMP below
         a_wall: 
-            add_to_changed_tiles_buffer frontier_row, temp_col, #WALL_TILE
+            add_to_changed_tiles_buffer frontier_row, temp_frontier_col, #WALL_TILE
     below:
         LDA player_row
         CMP #MAP_END_ROW
@@ -70,27 +70,27 @@
         STA frontier_row
         INC frontier_row
 
-        is_visited frontier_row, temp_col
+        is_visited frontier_row, temp_frontier_col
         BEQ :+
             JMP left
         :
 
-        set_visited frontier_row, temp_col
+        set_visited frontier_row, temp_frontier_col
 
-        get_map_tile_state frontier_row, temp_col
+        get_map_tile_state frontier_row, temp_frontier_col
         BEQ b_wall
             JSR random_number_generator
             modulo random_seed, #PATH_TILES_AMOUNT
             CLC
             ADC #PATH_TILE_1
             STA temp
-            add_to_changed_tiles_buffer frontier_row, temp_col, temp
+            add_to_changed_tiles_buffer frontier_row, temp_frontier_col, temp
         JMP left
         b_wall: 
-            add_to_changed_tiles_buffer frontier_row, temp_col, #WALL_TILE
+            add_to_changed_tiles_buffer frontier_row, temp_frontier_col, #WALL_TILE
     
     left: 
-        LDA temp_col
+        LDA temp_frontier_col
         CMP #MAP_START_COL
         BNE :+
            JMP right
