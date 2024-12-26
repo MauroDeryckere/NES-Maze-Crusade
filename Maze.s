@@ -220,6 +220,10 @@ irq:
         ;   INPUT    ;
         ;------------;
         INC random_seed  ; Change the random seed as many times as possible per frame
+        LDA random_seed 
+        BNE :+
+            INC random_seed ; ensure its non zero
+        :
         JSR gamepad_poll ; poll input as often as possible
 
         ; newly pressed buttons: not held last frame, and held now
