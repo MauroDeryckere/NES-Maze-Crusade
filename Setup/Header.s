@@ -83,20 +83,8 @@
 
     ;graphics buffers
     should_clear_buffer: 	.res 1
-    ; nametable 0
-    changed_tiles_buffer: 	.res 40 ;changed tiles this frame - used for graphics during vblank 
-                                    ; layout: row, col, row, col; FF by default 
-                                    ; first bit of the row is a flag bit
-                                    ; bit 2 and 3 of row == row in the spritesheet
-                                    ; first 3 bits of col == col in spritesheet
-    ; nametable 1
-    changed_tiles_buffer2: 	.res 40 ;changed tiles this frame - used for graphics during vblank 
-                                    ; layout: row, col, row, col; FF by default 
-                                    ; first bit of the row is a flag bit
-                                    ; bit 2 and 3 of row == row in the spritesheet
-                                    ; first 3 bits of col == col in spritesheet
 
-
+    changed_tiles_buffer: 	.res CHANGED_TILES_BUFFER_SIZE ;changed tiles this frame - used for graphics during vblank 
 
     low_byte: 				.res 1
     high_byte: 				.res 1

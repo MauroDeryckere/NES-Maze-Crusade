@@ -76,7 +76,7 @@ DEBUG_MODE = 0
     SCREEN_ROWS = 30
     SCREEN_COLS = 32
 
-; DURING TITLE SCREEN
+; ONLY DURING TITLE SCREEN
     ; 3 offset for size variables
     START_SCREEN_BUFFER_1 = $0320 + 3
     START_SCREEN_BUFFER_2 = $41F + 3
@@ -104,14 +104,15 @@ DEBUG_MODE = 0
     QUEUE_CAPACITY = 201; the maximum capacity of the queue - actual  available size is capacity - 1
 
 ; CHANGED TILES BUFFER
-    CHANGED_TILES_BUFFER_SIZE = 40
+    CHANGED_TILES_BUFFER_SIZE = 60
 
 ; SETUP
-    GENERATION_ANIMATION_DELAY = 35
+    GENERATION_ANIMATION_DELAY = 35 ; start the broken tiles animation after x amt of frames
     PLAYER_MOVEMENT_DELAY = 5 ;sets the delay for player movement (==  movement speed)
-    LHR_DELAY = 5
+    LHR_DELAY = 5 ; slow down the LHR by x amount of frames per step
     MAZE_GENERATION_SPEED = 1 ;how much is maze generation slowed down
-    SCORE_DIGIT_OFFSET = 232
+
+    SCORE_DIGIT_OFFSET = 232 ; x axis offset right-most number of score display
 
 ; GAMEMODE MASKS
     ; 000G HSSS
