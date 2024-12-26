@@ -219,34 +219,35 @@ irq:
         ;------------;
         ;   INPUT    ;
         ;------------;
-        INC random_seed  ; Change the random seed as many times as possible per frame
-        LDA random_seed 
-        BNE :+
-            INC random_seed ; ensure its non zero
-        :
-        JSR gamepad_poll ; poll input as often as possible
+        @INPUT: 
+            INC random_seed  ; Change the random seed as many times as possible per frame
+            LDA random_seed 
+            BNE :+
+                INC random_seed ; ensure its non zero
+            :
+            JSR gamepad_poll ; poll input as often as possible
 
-        ; newly pressed buttons: not held last frame, and held now
-        LDA gamepad_prev
-        EOR #%11111111
-        AND gamepad
-        STA gamepad_pressed
+            ; newly pressed buttons: not held last frame, and held now
+            LDA gamepad_prev
+            EOR #%11111111
+            AND gamepad
+            STA gamepad_pressed
 
-        LDA gamepad_prev + 1
-        EOR #%11111111
-        AND gamepad + 1
-        STA gamepad_pressed + 1
+            LDA gamepad_prev + 1
+            EOR #%11111111
+            AND gamepad + 1
+            STA gamepad_pressed + 1
 
-        ; newly released buttons: not held now, and held last frame
-        LDA gamepad
-        EOR #%11111111
-        AND gamepad_prev
-        STA gamepad_released
+            ; newly released buttons: not held now, and held last frame
+            LDA gamepad
+            EOR #%11111111
+            AND gamepad_prev
+            STA gamepad_released
 
-        LDA gamepad + 1
-        EOR #%11111111
-        AND gamepad_prev + 1
-        STA gamepad_released + 1
+            LDA gamepad + 1
+            EOR #%11111111
+            AND gamepad_prev + 1
+            STA gamepad_released + 1
 
         LDA current_game_mode
         ;------------;
@@ -291,7 +292,7 @@ irq:
                 :
 
                 JSR step_title_update
-                JSR draw_player_sprite
+                JSR draw_player_sprite ; player sprite is used in the titlescreen
     
             JMP mainloop
 
@@ -349,9 +350,13 @@ irq:
                     JMP :-
                     :
 
+                    JSR hide_player_sprite
+
                     LDA #1
                     STA has_started
                 :
+
+                JSR display_score
 
                 ;slow down generation if necessary
                 modulo frame_counter, #MAZE_GENERATION_SPEED
@@ -369,10 +374,7 @@ irq:
                 JSR run_prims_maze ; whether or not the algorithm is finished is stored in the A register (0 when not finished)
                 JSR run_prims_maze ; whether or not the algorithm is finished is stored in the A register (0 when not finished)
 
-                JSR draw_player_sprite
-                JSR display_score
-
-            ; BROKEN TILES ANIMATION
+                ; BROKEN TILES ANIMATION
                 LDA player_movement_delay_ct
                 CMP #GENERATION_ANIMATION_DELAY
                 BEQ :+
@@ -492,6 +494,7 @@ irq:
                 JSR poll_clear_buffer ; clear buffer if necessary
 
                 JSR update_player_position
+                JSR draw_player_sprite
 
                 ; Have we started the game yet? if not, execute the start function once
                 LDA has_started
@@ -508,6 +511,7 @@ irq:
                     LDA #1
                     STA has_started ;set started to 1 so that we start drawing the sprite
                 :
+                JSR display_score
                 
                 ; are we in hard mode?
                 LDA input_game_mode
@@ -516,9 +520,6 @@ irq:
                 BEQ :+
                     JSR update_visibility
                 :
-
-                JSR draw_player_sprite
-                JSR display_score
 
                 ; Has the player reached the end?
                     LDA player_row
@@ -630,6 +631,8 @@ irq:
                     STA has_started 
                 :
 
+                JSR display_score
+
                 ; execute one step of the algorithm
                 LDA input_game_mode
                 AND #SOLVE_MODE_MASK
@@ -638,6 +641,7 @@ irq:
                     BNE @LFR_SOLVE
 
                     JSR update_player_position
+                    JSR draw_player_sprite
 
                     JSR play_when_backtracking
 
@@ -659,6 +663,7 @@ irq:
                     :
 
                     JSR left_hand_rule
+                    JSR draw_player_sprite
 
                     ; are we in hard mode?
                     LDA input_game_mode
@@ -671,28 +676,7 @@ irq:
                     ; check if player reached end
                     LDA player_row
                     CMP end_row
-                        BNE @END_SOLVE_MODES
-                    LDA player_collumn 
-                    CMP end_col
-                        BNE @END_SOLVE_MODES
-
-                    JMP @SOLVE_END_REACHED
-                @END_SOLVE_MODES:
-                    JSR draw_player_sprite
-                    JSR display_score
-
-                    JMP mainloop
-                
-                @SOLVE_END_REACHED: 
-                    LDA #0
-                    STA sound_played2
-
-                    JSR draw_player_sprite
-                    JSR display_score
-
-                    LDA player_row
-                    CMP end_row
-                    BNE :+
+                    BNE @END_SOLVE_MODES
 
                     LDA scroll_x
                     LSR
@@ -703,7 +687,15 @@ irq:
                     CLC
                     ADC temp
                     CMP end_col
-                    BNE :+
+                    BNE @END_SOLVE_MODES
+
+                    JMP @SOLVE_END_REACHED
+                @END_SOLVE_MODES:
+                    JMP mainloop
+                
+                @SOLVE_END_REACHED: 
+                    LDA #0
+                    STA sound_played2
 
                     add_score #100
                     
@@ -714,7 +706,6 @@ irq:
                     STA has_started
 
                     JSR reset_generation
-                    : ;end label
                     JMP mainloop
 .endproc
 ;*****************************************************************
