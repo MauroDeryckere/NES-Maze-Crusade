@@ -29,7 +29,7 @@
     CLC
     ADC player_collumn
 
-    STA temp_col
+    STA temp_frontier_col
 
     above:
         LDA player_row
@@ -120,7 +120,7 @@
             add_to_changed_tiles_buffer player_row, frontier_col, #WALL_TILE
 
     right: 
-        LDA temp_col
+        LDA temp_frontier_col
         CMP #MAP_END_ROW
         BNE :+
             JMP end
