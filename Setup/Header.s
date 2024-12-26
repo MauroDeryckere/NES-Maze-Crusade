@@ -97,11 +97,11 @@
     a_val: 					.res 1
     b_val: 					.res 1
 
-    temp_row:				.res 1
+    temp_row:				.res 1 ; used in add_to_changed_tiles_buffer
     temp_col:				.res 1
 
     paddr:              	.res 2 ; 16-bit address pointer
-    temp_address:			.res 1
+    temp_address:			.res 1 ; temporary offset
 
     ;temp vals used for prims algorithm loop - only used during a step of prims in the generation loop so possible to overwrite outside of the loop
     frontier_row:			.res 1
