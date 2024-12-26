@@ -14,21 +14,20 @@
 ; ; Col: TTTC CCCC
 ;*****************************************************************
 .macro add_to_changed_tiles_buffer Row, Col, TileID
-    
     LDA Row
-    STA temp_row
+    STA temp_row_2
 
     LDA TileID
-    STA temp
+    STA temp_2
 
     LDA Col
-    STA temp_col
+    STA temp_col_2
 
     CMP #32
     BCC n0
         SEC
         SBC #32
-        STA temp_col
+        STA temp_col_2
        
         JSR add_to_changed_tiles_buffer_n1
         JMP return
@@ -62,7 +61,7 @@
     @add_vals:
         LDA #0
         STA high_byte
-        LDA temp_row
+        LDA temp_row_2
         STA low_byte
         
         CLC
@@ -84,13 +83,13 @@
         
         ;col
         INY
-        LDA temp_col
+        LDA temp_col_2
         ADC low_byte 
         STA changed_tiles_buffer, Y
 
         ;tile Id
         INY
-        LDA temp
+        LDA temp_2
         STA changed_tiles_buffer, Y
 
         RTS
@@ -116,7 +115,7 @@
     @add_vals:
         LDA #0
         STA high_byte
-        LDA temp_row
+        LDA temp_row_2
         STA low_byte
         
         CLC
@@ -138,13 +137,13 @@
         
         ;col
         INY
-        LDA temp_col
+        LDA temp_col_2
         ADC low_byte 
         STA changed_tiles_buffer, Y
 
         ;tile Id
         INY
-        LDA temp
+        LDA temp_2
         STA changed_tiles_buffer, Y
 
         RTS

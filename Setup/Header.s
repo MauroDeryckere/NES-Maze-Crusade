@@ -112,7 +112,9 @@
     used_direction:			.res 1
 
     temp_row:				.res 1
+    temp_row_2:				.res 1
     temp_col:				.res 1
+    temp_col_2:				.res 1
     temp: 					.res 1
     temp_2: 				.res 1
 
