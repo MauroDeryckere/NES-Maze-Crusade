@@ -30,6 +30,9 @@
     ppu_ctl0:		    	.res 1 ; PPU Control Register 2 Value
     ppu_ctl1:		    	.res 1 ; PPU Control Register 2 Value
 
+    ; HUD sprite 0 hitcheck stuff
+    hit_check_enabled:      .res 1 ; do we need to "block" the lines before sprite 0
+
     frame_counter: 			.res 1
 
     random_seed:			.res 1 ; Initial seed value | Used internally for random function, do not overwrite
@@ -75,6 +78,7 @@
 
     ;scrolling
     scroll_x:                   .res 1 ; current nametable x croll
+    last_scroll_x:              .res 1 ; last frame nametable x croll
 
     ; MAZE positions
     start_row: 				.res 1 ; Start tile of the maze

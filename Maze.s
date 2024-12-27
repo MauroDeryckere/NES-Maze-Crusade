@@ -9,6 +9,7 @@
 .include "DataStructures/StartScreenBuffer.s"
 .include "DataStructures/VisitedBuffer.s"
 
+.include "Graphics/HUD.s"
 .include "Graphics/Graphics.s"
 
 .include "Util/Util.s"
@@ -47,9 +48,9 @@ irq:
     PHA
     TYA
     PHA
-    
-    BIT PPU_STATUS
 
+    BIT PPU_STATUS
+    
     ;increase our frame counter (one vblank occurs per frame)
     INC frame_counter
     LDA frame_counter
@@ -65,6 +66,7 @@ irq:
     
     LDA current_game_mode
     BEQ @draw_start_screen
+    JSR display_hp_bar
     JMP @skip_start_screen
     
 @draw_start_screen:
@@ -75,6 +77,8 @@ irq:
     :   
         JSR draw_title_settings
 @skip_start_screen:
+
+
 
     ; transfer sprite OAM data using DMA
 	LDX #0
@@ -99,27 +103,12 @@ irq:
         CPX #32
         BCC @loop
 
-    ; LDA scroll_x ; Set horizontal scroll to 8 pixels
-    ; STA $2005    ; First write to $2005 (X offset)
-    ; LDA #0 
-    ; STA $2005
+    ; Reset the scroll (necessary for the split scroll to work)
 
-    ; ; Check if we need to switch nametables
-    ; LDA scroll_x
-    ; CLC
-    ; ADC #1     ; Increment X scroll by 8 pixels
-    ; BCC NoSwitch ; If less than 256, no nametable switch needed
-    ; INC $2000    ; Switch to the next nametable
-
-    ; NoSwitch:
-    ; STA scroll_x ; Update the scroll position
-
-    ; write current scroll and control settings
-	LDA scroll_x
 	STA PPU_VRAM_ADDRESS1
     LDA #0
 	STA PPU_VRAM_ADDRESS1
-	
+
     LDA ppu_ctl0
 	STA PPU_CONTROL
 	LDA ppu_ctl1
@@ -143,6 +132,27 @@ irq:
 	TAX
 	PLA
 
+    ; this essentialy makes this function x amount of scanlines longer (depending on the position of the Sprite 0) 
+    ; instead of just waiting additional logic could be executed here given that it doesnt take so long the PPU gets past the point you wish to split screen.
+    ; Some mappers allow scanline interupts and could be a "better solution" but the current HUD is limited to some top rows so it is not necessary to switch to a different mapper.
+    
+    LDA hit_check_enabled
+    BEQ @skip_check
+
+    @Sprite0ClearWait: 
+        BIT $2002
+        BVS @Sprite0ClearWait
+
+    @Sprite0Wait: 
+        BIT $2002
+        BVC @Sprite0Wait
+
+    @skip_check: 
+        ; write current scroll and control settings
+        LDA scroll_x
+        STA PPU_VRAM_ADDRESS1
+        LDA #0
+        STA PPU_VRAM_ADDRESS1
 	RTI
 .endproc
 ;*****************************************************************
@@ -160,7 +170,7 @@ irq:
         CPX #32
         BCC palette_loop
 
-    ;clear stuff
+    ; clear stuff
     JSR ppu_off
     JSR clear_nametable_0
     JSR clear_nametable_1
@@ -172,23 +182,23 @@ irq:
     LDA #1
     STA frame_counter
     ; 0% n == 0, we want to stick in the 1-255 range for our framecounter so that the delays are never off e.g 255%5 , next frame 0%5
+    ; this does mean that when you do things every other frame (checkin last bit) result could be slightly off
 
     ;set an initial randomseed value - must be non zero
     LDA #$10
     STA random_seed
 
-    ;start with startscreen
+    ; start with startscreen "gamemode"
     LDA #0
     STA current_game_mode
+    ; reset has started flag
     STA has_started
-            
-    ;run test code
-    ;JSR test_frontier 
-    ;JSR test_queue
 
     ; display arrows instead of just red cells
     LDA #1 
     STA display_BFS_directions
+
+    ; audio initialisations
 
     ;-----------------------------------------
     ;INITIALIZE MUSIC
@@ -205,6 +215,38 @@ irq:
     ldy #.hibyte(sounds)
     jsr famistudio_sfx_init
 
+    ; scrolling / camera stuff
+    ; Y pos
+    LDX #0
+    LDA #6
+    STA oam, X
+
+    ; Tile ID
+    INX
+    LDA #WALL_TILE
+    STA oam, X
+
+    ; attributes
+    INX 
+    LDA #0
+    STA oam, X
+
+    ; X pos
+    INX 
+    LDA #80
+    STA oam, X
+
+
+    ; disabled by default
+    LDA #0
+    STA hit_check_enabled
+    STA scroll_x
+
+
+    ; run test code if testing
+    ;JSR test_frontier 
+    ;JSR test_queue
+
     RTS
 .endproc
 ;*****************************************************************
@@ -215,8 +257,11 @@ irq:
 .segment "CODE"
 .proc main
     JSR init
-
+    
     mainloop:
+
+
+
         ;------------;
         ;   INPUT    ;
         ;------------;
@@ -311,7 +356,9 @@ irq:
             ; ONCE PER FRAME
             LDA checked_this_frame
             CMP #1
-            BEQ mainloop
+            BNE :+
+                JMP mainloop
+            :
                 LDA #1
                 STA checked_this_frame ; set flag so that we only do this once per frame
 
@@ -350,8 +397,6 @@ irq:
                     DEX
                     JMP :-
                     :
-
-                    JSR hide_player_sprite
 
                     LDA #1
                     STA has_started
@@ -494,17 +539,20 @@ irq:
             BEQ @SOLVING
                 LDA #1
                 STA checked_this_frame ; set flag so that we only do this once per frame
-                
                 JSR poll_clear_buffer ; clear buffer if necessary
 
                 JSR update_player_position
                 JSR draw_player_sprite
+
+                JSR add_hp_bar_to_changed_tiles
 
                 ; Have we started the game yet? if not, execute the start function once
                 LDA has_started
                 CMP #0
                 BNE :+ 
 
+                    LDA #1
+                    STA hit_check_enabled
                     ;------------------------
                     ;PLAY TITLE SCREEN MUSIC
                     ;------------------------

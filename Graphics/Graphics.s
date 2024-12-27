@@ -413,7 +413,7 @@
     ASL
     TAY
 
-    ; 4 pixel offset in totlescreen
+    ; 4 pixel offset in titlescreen
     LDA current_game_mode
     CMP #0
     BNE :+
@@ -427,7 +427,6 @@
     TYA
     STA oam, X
     INX
-    STX curr_oam_byte
     RTS
 
 .endproc
@@ -435,9 +434,8 @@
 ;simply hides the sprite off screen
 .proc hide_player_sprite
     LDX #OAM_PLAYER_BYTE_START
-    LDA #$F0        ; Y-coordinate off-screen
-    STA oam, X      ; Write to OAM
-
+    LDA #$FE       ; Y-coordinate off-screen
+    STA oam, X      ; Write to OAM  
     RTS
 .endproc
 
@@ -458,6 +456,7 @@
 
     skip_modulo:
 
+    LDX #OAM_SCORE_BYTE_START
     JSR draw_digit
     CLC
     LDA temp
@@ -471,6 +470,7 @@
 
     divide10 score_low
 
+    LDX #OAM_SCORE_BYTE_START + 4
     JSR draw_digit
     CLC
     LDA temp
@@ -490,6 +490,7 @@
 
     skip_modulo2:
 
+    LDX #OAM_SCORE_BYTE_START + 8
     JSR draw_digit
     CLC
     LDA temp
@@ -503,6 +504,7 @@
 
     divide10 score_high
 
+    LDX #OAM_SCORE_BYTE_START + 12
     JSR draw_digit   
     RTS
 .endproc
@@ -514,7 +516,6 @@
     ADC #64        ; get correct tile ID  
     TAY
 
-    LDX curr_oam_byte 
     LDA #0 ;Y coordinate
     STA oam, X
     INX
@@ -531,7 +532,6 @@
     LDA temp   ;X coordinate
     STA oam, X
     INX
-    STX curr_oam_byte 
 
     RTS
 .endproc
@@ -683,14 +683,15 @@
 
 ; .endproc
 
+; #BLACK_TILE = deciml 16
 top_border:
     .byte $83, $82, $82, $82, $82, $82, $82, $82, $82, $86, 0
 play_text:
-    .byte $81, $48, $48, "p", "l", "a", "y", $48, $48, $85, 0
+    .byte $81, 16, 16, "p", "l", "a", "y", 16, 16, $85, 0
 auto_text:
-    .byte $81, $48, $48, "a", "u", "t", "o", $48, $7A, $85, 0
+    .byte $81, 16, 16, "a", "u", "t", "o", 16, $7A, $85, 0
 hard_text:
-    .byte $81, $48, $48, "h", "a", "r", "d", $48, $7A, $85, 0
+    .byte $81, 16, 16, "h", "a", "r", "d", 16, $7A, $85, 0
 bottom_border:
     .byte $84, $87, $87, $87, $87, $87, $87, $87, $87, $88, 0
 

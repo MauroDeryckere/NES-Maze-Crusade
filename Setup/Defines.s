@@ -53,6 +53,8 @@ DEBUG_MODE = 0
     OBJ_CLIP = $10 ; clip objects
     OBJ_ON = $14 ; turn objects on
 
+    SPRITE_0 = %00100000
+
 ; APU Registers
     APU_DM_CONTROL = $4010 ; APU Delta Modulation Control Register (Write)
     APU_CLOCK = $4015 ; APU Sound/Vertical Clock Signal Register (Read/Write)
@@ -148,6 +150,10 @@ DEBUG_MODE = 0
     FRONTIER_WALL_TILE = 1
     BROKEN_WALL_TILE = 17
 
+    HP_BAR_LEFT = $30
+    HP_BAR_WIDTH = 4
+    HP_BAR_FILLED_LEFT = HP_BAR_LEFT + HP_BAR_WIDTH
+
     BLACK_TILE = 16
     HUD_BG_TILE = 18
 
@@ -159,8 +165,14 @@ DEBUG_MODE = 0
     PATH_TILE_END_R = 6
 
 ; OAM
-    OAM_PLAYER_BYTE_START = 0 ; player is always at byte 0 - 4
-    OAM_PLAYER_BYTE_END = 4 ; player is always at byte 0 - 4
+    OAM_HUD_SPRITE_ZERO = 0
+    OAM_HUD_SPRITE_ZERO_END = 4
+
+    OAM_SCORE_BYTE_START = OAM_HUD_SPRITE_ZERO_END
+    OAM_SCORE_BYTE_END = OAM_SCORE_BYTE_START + 4 * 4
+
+    OAM_PLAYER_BYTE_START = OAM_SCORE_BYTE_END 
+    OAM_PLAYER_BYTE_END = OAM_PLAYER_BYTE_START = 4 
 
 ; DIRECTIONS
     TOP_D = 0
