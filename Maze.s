@@ -473,6 +473,9 @@ irq:
                     LDA #0
                     STA scroll_x
 
+                    LDA #1
+                    STA checked_this_frame
+
                 NOT_END_GEN: 
                 JMP mainloop
 
@@ -561,6 +564,10 @@ irq:
                     LDA #GAMEMODE_GENERATING 
                     STA current_game_mode
                     JSR reset_generation
+
+                    LDA #1
+                    STA checked_this_frame
+
                 JMP mainloop
 
         ;---------;
@@ -705,6 +712,9 @@ irq:
                     STA current_game_mode
                     LDA #0
                     STA has_started
+
+                    LDA #1
+                    STA checked_this_frame
 
                     JSR reset_generation
                     JMP mainloop
