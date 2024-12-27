@@ -514,23 +514,20 @@
     ADC #64        ; get correct tile ID  
     TAY
 
-    LDX curr_oam_byte
+    LDX curr_oam_byte 
     LDA #0 ;Y coordinate
     STA oam, X
     INX
 
-    LDX curr_oam_byte
     TYA
     STA oam, X
     INX 
 
-    LDX curr_oam_byte
     LDA #%00000001 ;flip bits to set certain sprite attributes
     STA oam, X
     INX
 
 
-    LDX curr_oam_byte
     LDA temp   ;X coordinate
     STA oam, X
     INX

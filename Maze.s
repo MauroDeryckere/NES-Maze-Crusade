@@ -657,7 +657,7 @@ irq:
                     CMP #1 ;LFR
                     BNE @END_SOLVE_MODES
 
-                    modulo frame_counter, #1
+                    modulo frame_counter, #LHR_DELAY
                     CMP #0
                     BEQ :+
                         JMP mainloop
