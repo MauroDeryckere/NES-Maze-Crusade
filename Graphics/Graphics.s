@@ -385,16 +385,9 @@
 ; populate oam buffer with player sprite
 .segment "CODE"
 .proc draw_player_sprite
-    ; only show sprite when not in generating mode or paused mode
-    LDA current_game_mode
-    CMP #1
-    BEQ :++
-    CMP #4
-    BEQ :+++
+    ;SPRITE 0 - player
+    LDX #OAM_PLAYER_BYTE_START
 
-    LDX curr_oam_byte
-
-    ;SPRITE 0
     LDA player_row ;Y coordinate
     ASL
     ASL
@@ -420,6 +413,7 @@
     ASL
     TAY
 
+    ; 4 pixel offset in totlescreen
     LDA current_game_mode
     CMP #0
     BNE :+
@@ -434,33 +428,21 @@
     STA oam, X
     INX
     STX curr_oam_byte
-
-    RTS
-
-    :
-    JSR hide_player_sprite
-    :
     RTS
 
 .endproc
 
 ;simply hides the sprite off screen
 .proc hide_player_sprite
-    LDX curr_oam_byte
+    LDX #OAM_PLAYER_BYTE_START
     LDA #$F0        ; Y-coordinate off-screen
     STA oam, X      ; Write to OAM
 
-    INC curr_oam_byte
-    INC curr_oam_byte
-    INC curr_oam_byte
-    INC curr_oam_byte
     RTS
 .endproc
 
 ;display the score
 .proc display_score
-    LDX #4
-
     LDA #SCORE_DIGIT_OFFSET
     STA temp
     
@@ -535,23 +517,24 @@
     LDX curr_oam_byte
     LDA #0 ;Y coordinate
     STA oam, X
-    INC curr_oam_byte
+    INX
 
     LDX curr_oam_byte
     TYA
     STA oam, X
-    INC curr_oam_byte 
+    INX 
 
     LDX curr_oam_byte
     LDA #%00000001 ;flip bits to set certain sprite attributes
     STA oam, X
-    INC curr_oam_byte
+    INX
 
 
     LDX curr_oam_byte
     LDA temp   ;X coordinate
     STA oam, X
-    INC curr_oam_byte 
+    INX
+    STX curr_oam_byte 
 
     RTS
 .endproc

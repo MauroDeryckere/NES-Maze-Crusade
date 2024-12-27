@@ -133,6 +133,7 @@ irq:
 	STX nmi_ready
 
     ; reset the oam byte counter
+    LDX #OAM_PLAYER_BYTE_END
     STX curr_oam_byte 
     
 	; restore registers and return
@@ -656,7 +657,7 @@ irq:
                     CMP #1 ;LFR
                     BNE @END_SOLVE_MODES
 
-                    modulo frame_counter, #LHR_DELAY
+                    modulo frame_counter, #1
                     CMP #0
                     BEQ :+
                         JMP mainloop

@@ -158,6 +158,10 @@ DEBUG_MODE = 0
     PATH_TILE_END_L = 5
     PATH_TILE_END_R = 6
 
+; OAM
+    OAM_PLAYER_BYTE_START = 0 ; player is always at byte 0 - 4
+    OAM_PLAYER_BYTE_END = 4 ; player is always at byte 0 - 4
+
 ; DIRECTIONS
     TOP_D = 0
     RIGHT_D = 1
