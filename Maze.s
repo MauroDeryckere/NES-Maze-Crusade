@@ -104,7 +104,7 @@ irq:
         BCC @loop
 
     ; Reset the scroll (necessary for the split scroll to work)
-
+    LDA #0
 	STA PPU_VRAM_ADDRESS1
     LDA #0
 	STA PPU_VRAM_ADDRESS1
@@ -236,7 +236,6 @@ irq:
     LDA #80
     STA oam, X
 
-
     ; disabled by default
     LDA #0
     STA hit_check_enabled
@@ -259,9 +258,6 @@ irq:
     JSR init
     
     mainloop:
-
-
-
         ;------------;
         ;   INPUT    ;
         ;------------;
@@ -550,9 +546,6 @@ irq:
                 LDA has_started
                 CMP #0
                 BNE :+ 
-
-                    LDA #1
-                    STA hit_check_enabled
                     ;------------------------
                     ;PLAY TITLE SCREEN MUSIC
                     ;------------------------
@@ -861,6 +854,8 @@ irq:
 
     LDA #0
     STA scroll_x
+    LDA #1
+    STA hit_check_enabled
 
     RTS
 .endproc
@@ -873,6 +868,10 @@ irq:
         JSR display_clear_map
         JSR start_hard_mode
     :
+
+    LDA #1
+    STA hit_check_enabled
+
     RTS
 .endproc 
 ;*****************************************************************
