@@ -12,9 +12,6 @@
     add_to_changed_tiles_buffer player_row, player_collumn, x_val
     ; add_to_changed_tiles_buffer end_row, end_col, x_val
 
-    LDA #0
-    STA should_clear_buffer
-
     JSR clear_visited_buffer
 .endproc
 
@@ -121,7 +118,7 @@
 
     right: 
         LDA temp_frontier_col
-        CMP #MAP_END_ROW
+        CMP #MAP_END_COL
         BNE :+
             JMP end
         :
