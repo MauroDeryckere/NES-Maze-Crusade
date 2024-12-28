@@ -355,29 +355,28 @@
 .proc draw_background
     ;update the map tiles
     LDY #0
-    maploop: 
+     @maploop: 
         ;row
-        LDA changed_tiles_buffer, y
+        LDA changed_tiles_buffer, Y
         CMP #$FF ;end of buffer check
-        BEQ done 
+        BEQ @done 
         STA PPU_VRAM_ADDRESS2
         
         ;col
         INY
-        LDA changed_tiles_buffer, y
+        LDA changed_tiles_buffer, Y
         STA PPU_VRAM_ADDRESS2
 
         ;tile
         INY
-        LDA changed_tiles_buffer, y
+        LDA changed_tiles_buffer, Y
         STA PPU_VRAM_IO
       
         INY
         CPY #CHANGED_TILES_BUFFER_SIZE
-        BNE maploop    
-    done: 
-        LDA #1
-        STA should_clear_buffer
+        BNE @maploop    
+    @done: 
+        JSR clear_changed_tiles_buffer
     RTS
 
 .endproc
@@ -442,7 +441,7 @@
 ;display the score
 .proc display_score
     LDA #SCORE_DIGIT_OFFSET
-    STA temp
+    STA low_byte
     
     LDA score_low
 
@@ -459,10 +458,10 @@
     LDX #OAM_SCORE_BYTE_START
     JSR draw_digit
     CLC
-    LDA temp
+    LDA low_byte
     SEC
     SBC #8
-    STA temp    
+    STA low_byte    
 
     LDA score_low
     SEC
@@ -473,10 +472,10 @@
     LDX #OAM_SCORE_BYTE_START + 4
     JSR draw_digit
     CLC
-    LDA temp
+    LDA low_byte
     SEC
     SBC #8
-    STA temp
+    STA low_byte
     
     LDA score_high
 
@@ -493,10 +492,10 @@
     LDX #OAM_SCORE_BYTE_START + 8
     JSR draw_digit
     CLC
-    LDA temp
+    LDA low_byte
     SEC
     SBC #8
-    STA temp    
+    STA low_byte    
 
     LDA score_high
     SEC
@@ -529,7 +528,7 @@
     INX
 
 
-    LDA temp   ;X coordinate
+    LDA low_byte   ;X coordinate
     STA oam, X
     INX
 

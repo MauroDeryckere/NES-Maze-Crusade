@@ -157,12 +157,13 @@
 ;*****************************************************************
 .segment "RODATA"
     default_palette:
-    .byte $0F,$16,$1C,$2C ; bg0 purple/pink
-    .byte $0F,$17,$27,$37 ; bg1 orange
-    .byte $0F,$01,$11,$21 ; bg2 blue
-    .byte $0F,$00,$10,$30 ; bg3 greyscale
-    .byte $0F,$1D,$20,$10 ; sp0
-    .byte $0F,$17,$27,$37 ; sp1 orange
-    .byte $0F,$1B,$2B,$3B ; sp2 teal
-    .byte $0F,$12,$22,$32 ; sp3 marine
+        .byte $0F,$16,$1C,$2C ; bg0: Maze color | Red, Teal, Cyan  
+        .byte $0F,$0F,$0F,$0F ; bg1: Currently unused
+        .byte $0F,$0F,$0F,$0F ; bg2: Currently unused
+        .byte $0F,$0F,$0F,$0F ; bg3: Currently unused
+        
+        .byte $0F,$1D,$20,$10 ; sp0: 
+        .byte $0F,$17,$27,$37 ; sp1: 
+        .byte $0F,$1B,$2B,$3B ; sp2: 
+        .byte $0F,$12,$22,$32 ; sp3: 
 ;*****************************************************************

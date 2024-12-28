@@ -320,7 +320,7 @@ irq:
             BEQ mainloop
                 LDA #1
                 STA checked_this_frame ; set flag so that we only do this once per frame
-                JSR poll_clear_buffer ; clear buffer if necessary
+          ;      JSR poll_clear_buffer ; clear buffer if necessary
 
                 ; Have we started the start screen yet? if not, execute the start function once
                 LDA has_started
@@ -358,7 +358,7 @@ irq:
                 LDA #1
                 STA checked_this_frame ; set flag so that we only do this once per frame
 
-                JSR poll_clear_buffer ; clear buffer if necessary
+               ;  JSR poll_clear_buffer ; clear buffer if necessary
 
                 ; Have we started the algorithm yet? if not, execute the start function once
                 LDA has_started
@@ -431,40 +431,42 @@ irq:
                     :
 
                     JSR dequeue
-                    STA temp_row
+                    STA frontier_row
 
                     JSR dequeue
-                    STA temp_col
+                    STA frontier_col
 
                     JSR random_number_generator
-                    modulo random_seed, #03
+                    modulo random_seed, #PATH_TILES_AMOUNT
                     CLC
                     ADC #PATH_TILE_1
                     STA temp
 
-                    add_to_changed_tiles_buffer temp_row, temp_col, temp
-
+                    add_to_changed_tiles_buffer frontier_row, frontier_col, temp
 
                     JSR is_empty
                     CMP #1
-                    BEQ SKIP_DEQ
+                    BNE :+
+                        JMP SKIP_DEQ
+                    :
 
                     JSR dequeue
-                    STA temp_row
+                    STA frontier_row
 
                     JSR dequeue
-                    STA temp_col
+                    STA frontier_col
 
                     JSR random_number_generator
-                    modulo random_seed, #03
+                    modulo random_seed, #PATH_TILES_AMOUNT
                     CLC
                     ADC #PATH_TILE_1
                     STA temp
 
-                    add_to_changed_tiles_buffer temp_row, temp_col, temp
+                    add_to_changed_tiles_buffer frontier_row, frontier_col, temp
                     SKIP_DEQ: 
             ; -------------------------------------------------------------
 
+                ; Has the maze finished generating?
                 JSR is_empty
                 CMP #1
                 BNE NOT_END_GEN
@@ -476,9 +478,6 @@ irq:
                 CMP #248
                 BNE NOT_END_GEN
 
-                ; Has the maze finished generating?
-                ; CMP #0
-                ; BEQ :++
                 END_GEN:                     
                     JSR calculate_prims_start_end
 
@@ -514,9 +513,6 @@ irq:
                     LDA #0
                     STA scroll_x
 
-                    LDA #1
-                    STA checked_this_frame
-
                 NOT_END_GEN: 
                 JMP mainloop
 
@@ -535,7 +531,7 @@ irq:
             BEQ @SOLVING
                 LDA #1
                 STA checked_this_frame ; set flag so that we only do this once per frame
-                JSR poll_clear_buffer ; clear buffer if necessary
+           ;     JSR poll_clear_buffer ; clear buffer if necessary
 
                 JSR update_player_position
                 JSR draw_player_sprite
@@ -631,7 +627,7 @@ irq:
                 LDA #1
                 STA checked_this_frame ; set flag so that we only do this once per frame
 
-                JSR poll_clear_buffer ; clear buffer if necessary
+              ;  JSR poll_clear_buffer ; clear buffer if necessary
 
                 ; Have we started the solving algorithm yet? if not, execute the start function once
                 LDA has_started

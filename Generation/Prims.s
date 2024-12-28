@@ -111,72 +111,76 @@
     STX frontier_col
     STY frontier_row
 
-    ;store b val in a new value since b will be overwritten in the access map neighbor function
+    ;store b val (offset) in a new value since b will be overwritten in the access map neighbor function
     LDA b_val
     PHA
 
     ;pick a random neighbor of the frontier cell that's in state passage
-    ;start a counter for the amt of dirs we can use on temp val (since its not used in any of the macros we call during this section)
+    ;start a counter for the amt of dirs we can use in temp val (since its not used in any of the macros we call during this section)
     LDA #0
-    STA temp
+    STA temp_frontier_col
 
+    LDA #$FF
+    ; directions buffer is not in use rn so okay to use for this purpose
+    STA DIRECTIONS_ADDRESS + 100
+    STA DIRECTIONS_ADDRESS + 101
+    STA DIRECTIONS_ADDRESS + 102
+    STA DIRECTIONS_ADDRESS + 103
+    
     access_map_frontier_neighbor #TOP_D, frontier_row, frontier_col
     CMP #1
     ; we want something in state passage
     BNE :+
-        ;valid cell, Jump to next step
         LDA #TOP_D
-        PHA ;push direction on stack
-        INC temp
+        STA DIRECTIONS_ADDRESS + 100
     : ;right
     access_map_frontier_neighbor #RIGHT_D, frontier_row, frontier_col
     CMP #1
     ; we want something in state passage
     BNE :+
-        ;valid cell, Jump to next step
         LDA #RIGHT_D
-        PHA ;push direction on stack
-        INC temp
-
+        STA DIRECTIONS_ADDRESS + 101
     : ;bottom
     access_map_frontier_neighbor #BOTTOM_D, frontier_row, frontier_col
     CMP #1
     ; we want something in state passage
     BNE :+
-        ;valid cell, Jump to next step
         LDA #BOTTOM_D
-        PHA ;push direction on stack
-        INC temp        
+        STA DIRECTIONS_ADDRESS + 102
     : ;left
     access_map_frontier_neighbor #LEFT_D, frontier_row, frontier_col
     CMP #1
     ; we want something in state passage
     BNE :+
-        ;valid cell, Jump to next step
         LDA #LEFT_D
-        PHA ;push direction on stack
-        INC temp
-    
-    ;pick a random direction based on the temp counter
-    :
-    JSR random_number_generator
-    modulo random_seed, temp ;stores val in A reg
-    
-    ;the total amt of pulls from stack is stored in X    
-    LDX temp
-    ;the direction idx we want to use is stored in A
-    STA temp
-    @dirloop: 
-        PLA  
-        DEX 
+        STA DIRECTIONS_ADDRESS + 103
+    : ;end
 
-        CPX temp
-        BNE :+
-            STA a_val ; used direction
-        :
+    ;some pseudo randomisation
+    LDA frame_counter
+    AND #%00000001
+    BEQ @skip_0
 
-        CPX #0
-        BNE @dirloop
+    LDY #103
+    @dir_loop_0: 
+        LDA DIRECTIONS_ADDRESS, y
+        DEY
+        CMP #$FF
+        BEQ @dir_loop_0
+
+    JMP @skip_1
+    @skip_0: 
+
+    LDY #100
+    @dir_loop: 
+        LDA DIRECTIONS_ADDRESS, y
+        INY
+        CMP #$FF
+        BEQ @dir_loop
+
+    @skip_1: 
+
+    STA a_val
 
     ;calculate the cell between picked frontier and passage cell and set this to a passage 
     @pick_frontier: 

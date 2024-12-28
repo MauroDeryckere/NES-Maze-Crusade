@@ -39,7 +39,6 @@
     SBC modulus
     CMP modulus
     BCS :-
-
 .endmacro
 
 .macro multiply10 value
