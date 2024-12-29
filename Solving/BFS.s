@@ -236,7 +236,7 @@
         LDA #1
         STA is_backtracking
 
-        add_to_changed_tiles_buffer end_row, end_col, #5
+        add_to_changed_tiles_buffer end_row, end_col, #PATH_TILE_END
 
         LDA end_row
         STA frontier_row
@@ -263,7 +263,7 @@
         DEC frontier_col
 
         end_step_1: 
-            add_to_changed_tiles_buffer frontier_row, frontier_col, #5
+            add_to_changed_tiles_buffer frontier_row, frontier_col, #PATH_TILE_END
             RTS
 
         skip_initial_step: 
@@ -300,7 +300,7 @@
             DEC frontier_col
 
         @end_step: 
-            add_to_changed_tiles_buffer frontier_row, frontier_col, #5
+            add_to_changed_tiles_buffer frontier_row, frontier_col, #PATH_TILE_END
             RTS
 .endproc
 

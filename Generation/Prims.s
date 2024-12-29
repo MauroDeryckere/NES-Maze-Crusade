@@ -327,7 +327,7 @@
     ;remove the chosen frontier cell from the list
     set_map_tile frontier_row, frontier_col
     JSR random_number_generator
-    modulo random_seed, #PATH_TILES_AMOUNT
+    AND #%00000011 ; 0-3
     CLC
     ADC #PATH_TILE_1
     STA temp
@@ -508,7 +508,7 @@
         BEQ colloop_ue
 
         set_map_tile temp, #0
-        add_to_changed_tiles_buffer temp, #0, #PATH_TILE_END_R
+        add_to_changed_tiles_buffer temp, #0, #PATH_TILE_END
         
         LDA temp
         STA end_row
@@ -538,7 +538,7 @@
         BEQ colloop_e
 
         set_map_tile temp, #31
-        add_to_changed_tiles_buffer temp, #31, #PATH_TILE_END_L
+        add_to_changed_tiles_buffer temp, #31, #PATH_TILE_END
 
         LDA temp
         STA end_row
@@ -569,7 +569,7 @@
             BEQ rowloop_top_end
 
             set_map_tile #1, temp
-            add_to_changed_tiles_buffer #1, temp, #PATH_TILE_END_R
+            add_to_changed_tiles_buffer #1, temp, #PATH_TILE_END
             LDA #1
             STA end_row
             LDA temp
@@ -598,7 +598,7 @@
             BEQ rowloop_bottom_end
 
             set_map_tile #29, temp
-            add_to_changed_tiles_buffer #29, temp, #PATH_TILE_END_L
+            add_to_changed_tiles_buffer #29, temp, #PATH_TILE_END
             LDA #29
             STA end_row
             LDA temp

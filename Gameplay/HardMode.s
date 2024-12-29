@@ -133,11 +133,15 @@
 
         set_visited player_row, frontier_col
 
-
         get_map_tile_state player_row, frontier_col
         BEQ r_wall
             JSR random_number_generator
-            modulo random_seed, #PATH_TILES_AMOUNT
+            AND #%00000011 ; 0 - 3
+            CMP #3
+            BNE :+
+                SEC
+                SBC #1
+            :
             CLC
             ADC #PATH_TILE_1
             STA temp

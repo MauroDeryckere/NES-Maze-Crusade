@@ -133,19 +133,8 @@
 .endproc
 
 .segment "CODE"
-.proc poll_clear_buffer
-    LDA should_clear_buffer
-    BEQ :+
-        JSR clear_changed_tiles_buffer
-        LDA #0
-        STA should_clear_buffer
-    :
-    RTS
-.endproc
-
 .proc clear_changed_tiles_buffer
     LDY #0
-    
     @loop: 
         LDA #$FF
         STA changed_tiles_buffer, Y

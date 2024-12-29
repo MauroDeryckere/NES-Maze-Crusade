@@ -258,15 +258,11 @@ irq:
     JSR init
     
     mainloop:
+        INC random_seed  ; Change the random seed as many times as possible per frame (this results in more randomness)
         ;------------;
         ;   INPUT    ;
         ;------------;
         @INPUT: 
-            INC random_seed  ; Change the random seed as many times as possible per frame
-            LDA random_seed 
-            BNE :+
-                INC random_seed ; ensure its non zero
-            :
             JSR gamepad_poll ; poll input as often as possible
 
             ; newly pressed buttons: not held last frame, and held now
@@ -437,7 +433,7 @@ irq:
                     STA frontier_col
 
                     JSR random_number_generator
-                    modulo random_seed, #PATH_TILES_AMOUNT
+                    AND #%00000011
                     CLC
                     ADC #PATH_TILE_1
                     STA temp
@@ -457,7 +453,7 @@ irq:
                     STA frontier_col
 
                     JSR random_number_generator
-                    modulo random_seed, #PATH_TILES_AMOUNT
+                    AND #%00000011
                     CLC
                     ADC #PATH_TILE_1
                     STA temp

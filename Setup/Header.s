@@ -87,7 +87,6 @@
     end_col:				.res 1
 
     ; GRAPHICS
-    should_clear_buffer: 	.res 1
     changed_tiles_buffer: 	.res CHANGED_TILES_BUFFER_SIZE ;changed tiles this frame - used for graphics during vblank 
 
     curr_oam_byte:          .res 1 ; used to maintain the current oam offset, allows flickering when more than 8 sprites are in a line and is easier to stop / start drawing certain sprites.
@@ -162,8 +161,8 @@
         .byte $0F,$0F,$0F,$0F ; bg2: Currently unused
         .byte $0F,$0F,$0F,$0F ; bg3: Currently unused
         
-        .byte $0F,$1D,$20,$10 ; sp0: 
-        .byte $0F,$17,$27,$37 ; sp1: 
-        .byte $0F,$1B,$2B,$3B ; sp2: 
-        .byte $0F,$12,$22,$32 ; sp3: 
+        .byte $0F,$1D,$20,$10 ; sp0: Player | Black, White, Light gray
+        .byte $0F,$17,$27,$37 ; sp1: Score | Dark Orange, Orange, Yellow
+        .byte $0F,$0F,$0F,$0F ; sp2: Currently unused
+        .byte $0F,$0F,$0F,$0F ; sp3: Currently unused
 ;*****************************************************************

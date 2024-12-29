@@ -1,22 +1,17 @@
-;*****************************************************************
-; Simple Random number generation
-;*****************************************************************
+; Simple Pseudo Random number generation
+; takes the current random seed and adjusts it based on the current frame
+; if this adjustment happens to be 0 its incremented to ensure we never end up with a random seed of 0 (may cause issues in same cases)
 .segment "CODE"
 .proc random_number_generator
     @RNG:
-        LDA random_seed  ; Load the current seed
+        LDA random_seed
+        EOR frame_counter ; XOR with a feedback value
+
         BNE :+
+        ; If the random seed is 0 -> increase to 1
             INC random_seed ; ensure its non zero
         :
-
-        set_Carry_to_highest_bit_A ;to make sure the rotation happens properly (makes odd numbers possible)
-        ROL             ; Shift left
-        BCC @NoXor       ; Branch if no carry
-        EOR #$B4        ; XOR with a feedback value (tweak as needed)
-
-    @NoXor:
         STA random_seed  ; Store the new seed
-        RTS             ; Return
+    RTS
 
 .endproc
-;*****************************************************************
