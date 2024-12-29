@@ -9,8 +9,10 @@
 .include "DataStructures/StartScreenBuffer.s"
 .include "DataStructures/VisitedBuffer.s"
 
-.include "Graphics/HUD.s"
 .include "Graphics/Graphics.s"
+.include "Graphics/HUD.s"
+.include "Graphics/OamSprites.s"
+.include "Graphics/PlayerGraphics.s"
 
 .include "Util/Util.s"
 
@@ -310,13 +312,12 @@ irq:
             CMP #GAMEMODE_TITLE_SCREEN
             BNE mainloop
 
-            ; ONCE PER FRAME
+        ; ONCE PER FRAME
             LDA checked_this_frame
             CMP #1
             BEQ mainloop
                 LDA #1
                 STA checked_this_frame ; set flag so that we only do this once per frame
-          ;      JSR poll_clear_buffer ; clear buffer if necessary
 
                 ; Have we started the start screen yet? if not, execute the start function once
                 LDA has_started
@@ -345,7 +346,7 @@ irq:
 
             JSR pause_logic ; check if we should pause
 
-            ; ONCE PER FRAME
+        ; ONCE PER FRAME
             LDA checked_this_frame
             CMP #1
             BNE :+
@@ -353,8 +354,6 @@ irq:
             :
                 LDA #1
                 STA checked_this_frame ; set flag so that we only do this once per frame
-
-               ;  JSR poll_clear_buffer ; clear buffer if necessary
 
                 ; Have we started the algorithm yet? if not, execute the start function once
                 LDA has_started
@@ -419,7 +418,6 @@ irq:
                     INC player_movement_delay_ct
                     JMP mainloop
                 :
-                
                     JSR is_empty
                     CMP #1
                     BNE :+
@@ -521,16 +519,16 @@ irq:
 
             JSR pause_logic ; check if we should pause
 
-            ; ONCE PER FRAME
+        ; ONCE PER FRAME
             LDA checked_this_frame
             CMP #1
             BEQ @SOLVING
                 LDA #1
                 STA checked_this_frame ; set flag so that we only do this once per frame
-           ;     JSR poll_clear_buffer ; clear buffer if necessary
 
                 JSR update_player_position
                 JSR draw_player_sprite
+                JSR update_oam
 
                 JSR add_hp_bar_to_changed_tiles
 
@@ -548,6 +546,7 @@ irq:
                     LDA #1
                     STA has_started ;set started to 1 so that we start drawing the sprite
                 :
+
                 JSR display_score
                 
                 ; are we in hard mode?
@@ -622,8 +621,6 @@ irq:
             :
                 LDA #1
                 STA checked_this_frame ; set flag so that we only do this once per frame
-
-              ;  JSR poll_clear_buffer ; clear buffer if necessary
 
                 ; Have we started the solving algorithm yet? if not, execute the start function once
                 LDA has_started

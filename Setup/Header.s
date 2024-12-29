@@ -60,23 +60,23 @@
                                     ; 000: unused, can be used later on
 
 
-    current_game_mode:          .res 1  ; internal mode that's currently running
-                                        ; 0: Start Screen
-                                        ; 1: Generating
-                                        ; 2: Playing game 
-                                        ; 3: Running Solving algorithm
-                                        ; 4: Nothing (paused)
+    current_game_mode:      .res 1  ; internal mode that's currently running
+                                    ; 0: Start Screen
+                                    ; 1: Generating
+                                    ; 2: Playing game 
+                                    ; 3: Running Solving algorithm
+                                    ; 4: Nothing (paused)
     gamemode_store_for_paused:  .res 1 ; stores previous curr_game_mode when pausing 
 
     has_started:            .res 1  ; internal flag to show whether or not a mode has started, used to only execute the start function once 
     
-    ;PLAYER VARIABLES
+    ; PLAYER VARIABLES
     player_dir:                 .res 1
     player_row: 			    .res 1
     player_collumn: 		    .res 1
     player_movement_delay_ct:   .res 1 ; also used for animation during generation
 
-    ;scrolling
+    ; SCROLLING
     scroll_x:                   .res 1 ; current nametable x croll
     last_scroll_x:              .res 1 ; last frame nametable x croll
 
@@ -88,7 +88,6 @@
 
     ; GRAPHICS
     changed_tiles_buffer: 	.res CHANGED_TILES_BUFFER_SIZE ;changed tiles this frame - used for graphics during vblank 
-
     curr_oam_byte:          .res 1 ; used to maintain the current oam offset, allows flickering when more than 8 sprites are in a line and is easier to stop / start drawing certain sprites.
                                    ; should be reset at start of every frame
 
@@ -137,7 +136,10 @@
     score_low:              .res 1
     score_high:             .res 1
 
-    ;AUDIO
+    ; Map specific
+
+
+    ; AUDIO
     temp_sound:             .res 1
     sfx_channel:            .res 1
     sound_played:           .res 1

@@ -307,21 +307,16 @@
 .proc visit_tile
     STX temp
     set_visited frontier_row, frontier_col
-    LDA display_BFS_directions
-    CMP #1
-    BNE :+
-        LDX temp
-        CPX #4 ; means theres no direction
-        BEQ :+
-            LDA temp
-            CLC
-            ADC #32
-            STA temp
-            add_to_changed_tiles_buffer frontier_row, frontier_col, temp
 
+    LDA temp
+    CMP #4 ; 4 means no direction 
+    BNE :+
         RTS
     :
-        add_to_changed_tiles_buffer frontier_row, frontier_col, #3
+    CLC
+    ADC #32
+    STA temp
+    add_to_changed_tiles_buffer frontier_row, frontier_col, temp
     RTS
 .endproc
 
