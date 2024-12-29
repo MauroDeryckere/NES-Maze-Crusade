@@ -4,12 +4,13 @@
 .segment "CODE"
 .proc start_hard_mode
     JSR random_number_generator
-    modulo random_seed, #PATH_TILES_AMOUNT
+    AND #%00000011 ; 0-3
     CLC
     ADC #PATH_TILE_1
     STA x_val
-
     add_to_changed_tiles_buffer player_row, player_collumn, x_val
+
+    ; In case we want the end to be visible for debugging purposes
     ; add_to_changed_tiles_buffer end_row, end_col, x_val
 
     JSR clear_visited_buffer
@@ -48,7 +49,8 @@
         get_map_tile_state frontier_row, temp_frontier_col
         BEQ a_wall
             JSR random_number_generator
-            modulo random_seed, #PATH_TILES_AMOUNT
+            AND #%00000011 ; 0 - 3
+            
             CLC
             ADC #PATH_TILE_1
             STA temp
@@ -77,7 +79,8 @@
         get_map_tile_state frontier_row, temp_frontier_col
         BEQ b_wall
             JSR random_number_generator
-            modulo random_seed, #PATH_TILES_AMOUNT
+            AND #%00000011 ; 0 - 3
+            
             CLC
             ADC #PATH_TILE_1
             STA temp
@@ -107,7 +110,8 @@
         get_map_tile_state player_row, frontier_col
         BEQ l_wall
             JSR random_number_generator
-            modulo random_seed, #PATH_TILES_AMOUNT
+            AND #%00000011 ; 0 - 3
+            
             CLC
             ADC #PATH_TILE_1
             STA temp
@@ -137,11 +141,7 @@
         BEQ r_wall
             JSR random_number_generator
             AND #%00000011 ; 0 - 3
-            CMP #3
-            BNE :+
-                SEC
-                SBC #1
-            :
+
             CLC
             ADC #PATH_TILE_1
             STA temp

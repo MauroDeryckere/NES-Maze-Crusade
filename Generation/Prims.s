@@ -326,6 +326,7 @@
 
     ;remove the chosen frontier cell from the list
     set_map_tile frontier_row, frontier_col
+    
     JSR random_number_generator
     AND #%00000011 ; 0-3
     CLC
