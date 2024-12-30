@@ -86,7 +86,7 @@ DEBUG_MODE = 0
 
 ; MAP BUFFER
     MAZE_BUFFER = $0320
-    MAZE_BUFFER_SIZE = 116 * 2
+    MAZE_BUFFER_SIZE = 120 * 2
 
 ; FRONTIER LIST
     FRONTIER_LIST_ADDRESS = MAZE_BUFFER + MAZE_BUFFER_SIZE
@@ -111,7 +111,7 @@ DEBUG_MODE = 0
 ; SETUP
     GENERATION_ANIMATION_DELAY = 35 ; start the broken tiles animation after x amt of frames
     PLAYER_MOVEMENT_DELAY = 5 ;sets the delay for player movement (==  movement speed)
-    LHR_DELAY = 2 ; slow down the LHR by x amount of frames per step
+    LHR_DELAY = 4; slow down the LHR by x amount of frames per step
     MAZE_GENERATION_SPEED = 1 ;how much is maze generation slowed down
 
     SCORE_DIGIT_OFFSET = 232 ; x axis offset right-most number of score display
@@ -126,7 +126,7 @@ DEBUG_MODE = 0
     BFS_MODE_MASK               = %00000000
     LHR_MODE_MASK               = %00000001
 
-    GAMEMODE_TITLE_SCREEN = 0
+    GAMEMODE_TITLE_SCREEN = 10
     GAMEMODE_GENERATING = 1
     GAMEMODE_PLAYING = 2
     GAMEMODE_SOLVING = 3

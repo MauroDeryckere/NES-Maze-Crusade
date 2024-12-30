@@ -15,7 +15,7 @@
     NOT_GAMEPAD_DOWN: 
         LDA gamepad_pressed            
         AND #PAD_U           
-        BEQ NOT_GAMEPAD_UP
+        BEQ @NOT_GAMEPAD_UP
             LDA player_row
             CMP #18
             BEQ :+
@@ -25,18 +25,18 @@
 
     ; SELECTION
     @SELECTION: 
-        NOT_GAMEPAD_UP: 
+        @NOT_GAMEPAD_UP: 
         LDA gamepad_pressed     
         AND #PAD_SELECT
-        BEQ NOT_GAMEPAD_SELECT
+        BEQ @NOT_GAMEPAD_SELECT
 
-        CheckAndPlaySound:
+        @CheckAndPlaySound:
             LDA sound_played   ; Check if sound has already been played
-            BEQ PlaySoundOnce  ; If not, play the sound
+            BEQ @PlaySoundOnce  ; If not, play the sound
 
-            JMP Resume         ; continue if already played
+            JMP @Resume         ; continue if already played
 
-        PlaySoundOnce:
+        @PlaySoundOnce:
             ; PLAY START SOUND
             LDA #FAMISTUDIO_SFX_CH1
             STA sfx_channel
@@ -47,46 +47,42 @@
             LDA #$01
             STA sound_played
 
-        Resume:
+        @Resume:
             LDA #0
             STA sound_played ;reset sound_played flag
 
             LDA player_row
             CMP #18
-            BNE NOT_PLAY
-                JMP EXIT_SCREEN
+            BNE @NOT_PLAY
+                JMP @EXIT_SCREEN
 
-        NOT_PLAY: 
+        @NOT_PLAY: 
             LDA player_row
             CMP #19
-            BNE NOT_AUTO
+            BNE @NOT_AUTO
                 LDA input_game_mode
                 EOR #%00010000
                 STA input_game_mode
-                JMP NOT_GAMEPAD_SELECT
-        NOT_AUTO:
+                JMP @NOT_GAMEPAD_SELECT
+        @NOT_AUTO:
             LDA player_row
             CMP #20
-            BNE NOT_HARD
+            BNE @NOT_HARD
                 LDA input_game_mode
                 EOR #%00001000
                 STA input_game_mode
-                JMP NOT_GAMEPAD_SELECT
-        NOT_HARD:
+                JMP @NOT_GAMEPAD_SELECT
+        @NOT_HARD:
     ;---------------------------
-    NOT_GAMEPAD_SELECT: 
-        ; reset direction since moving row changes it
-        LDA #RIGHT_D
-        STA player_dir
-
+    @NOT_GAMEPAD_SELECT: 
         ; start btn
         LDA gamepad_pressed
         AND #PAD_START
-        BNE EXIT_SCREEN
+        BNE @EXIT_SCREEN
 
         RTS
 
-    EXIT_SCREEN:
+    @EXIT_SCREEN:
         ;PLAY START SOUND
         LDA #FAMISTUDIO_SFX_CH1
         STA sfx_channel

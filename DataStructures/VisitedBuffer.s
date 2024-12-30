@@ -2,15 +2,13 @@
 ; Map buffer - visited list 
 ; Used in the BFS to track which cells have been visited and haven't been.
 ; Also used as a buffer to track which cells are visible to the player or not in hard mode 
-; to ensure we only update newly visible tiles in the background
+; To ensure we only update newly visible tiles in the background
+
+; The "Object" (see. documentation Map Buffer) for this buffer are torches. 
 ;*****************************************************************
 .macro calculate_offset_and_mask_visited Row, Column
     ;Calculate the base address of the row (Row * 4)
     LDA Row
-
-    ; Decrease row by 1 - top border is empty so row 1 is actually row 0 in the buffer
-    SEC
-    SBC #1
 
     ASL             ;== times 2
     ASL             ;== times 2

@@ -31,7 +31,7 @@
 
     ; 4 pixel offset in titlescreen
     LDA current_game_mode
-    CMP #0
+    CMP #GAMEMODE_TITLE_SCREEN
     BNE :+
         TYA
         SEC

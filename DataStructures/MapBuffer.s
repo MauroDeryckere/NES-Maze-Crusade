@@ -1,10 +1,20 @@
 ;*****************************************************************
 ; Map buffer macros
 ;*****************************************************************
-;Example: 
+; every tile corresponds with one bit; wall or path
+; Example: 
 ;Column: 0123 4567  89...
 ; Row 0: 0000 0000  0000 0000   0000 0000   0000 0000   0000 0000
 ; Row 1: 0000 0000  0000 0000   0000 0000   0000 0000   0000 0000
+;...
+
+; Additional info is stored at the edges of the map buffer in the following way: 
+; T means an object is stored in that row / column this way we know the object is stored in [1, 0], ...
+;Column: 0123 4567  89...                                           Last column
+; Row 0: T000 0000  0000 0000   0000 0000   0000 0000   0T00 0000   0 (unused)
+
+; Row 1: 0000 0000  0000 0000   0000 0000   0000 0000   0000 0000   T
+; Row 2: 0000 0000  0000 0000   0000 0000   0000 0000   0000 0000   0
 ;...
 
 ;util macro to calculate the mask and address for a given tile
@@ -15,10 +25,6 @@
 .macro calculate_tile_offset_and_mask Row, Column
     ;Calculate the base address of the row (Row * 4)
     LDA Row
-
-    ; Decrease row by 1 - top border is empty so row 1 is actually row 0 in the buffer
-    SEC
-    SBC #1
 
     ASL             ;== times 2
     ASL             ;== times 2

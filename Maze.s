@@ -67,19 +67,20 @@ irq:
     JSR draw_background
     
     LDA current_game_mode
-    BEQ @draw_start_screen
-    JSR display_hp_bar
-    JMP @skip_start_screen
-    
-@draw_start_screen:
-    LDA has_started
-    CMP #1
-    BEQ :+
-        JSR display_Start_screen
-    :   
+    BNE @skip_start_screen
+        LDA has_started
+        CMP #1
+        BEQ :+
+            JSR display_Start_screen
+        :   
         JSR draw_title_settings
-@skip_start_screen:
+        JMP @skip_hud
 
+    @skip_start_screen: 
+
+
+    JSR display_hp_bar
+    @skip_hud: 
 
 
     ; transfer sprite OAM data using DMA
@@ -191,9 +192,10 @@ irq:
     STA random_seed
 
     ; start with startscreen "gamemode"
-    LDA #0
+    LDA #GAMEMODE_TITLE_SCREEN
     STA current_game_mode
     ; reset has started flag
+    LDA #0
     STA has_started
 
     ; display arrows instead of just red cells
@@ -290,27 +292,21 @@ irq:
             STA gamepad_released + 1
 
         LDA current_game_mode
-        ;------------;
-        ;   PAUSE    ;
-        ;------------;
-        @PAUSED: 
-            CMP #GAMEMODE_PAUSED
-            BNE @TITLESCREEN
-                JSR pause_logic
-                JMP mainloop
-
         ;-------------;
         ; TITLESCREEN ;
         ;-------------;
         @TITLESCREEN: 
-            CMP #GAMEMODE_TITLE_SCREEN
-            BNE @GENERATING
-            
-            ; as often as possible but after other logic if necessary
-            JSR title_screen_input_logic
             LDA current_game_mode
             CMP #GAMEMODE_TITLE_SCREEN
-            BNE mainloop
+            BNE @PAUSED            
+
+            JSR title_screen_input_logic
+            JSR draw_player_sprite ; player sprite is used in the titlescreen
+
+            LDA current_game_mode
+            CMP #GAMEMODE_TITLE_SCREEN
+            BNE @PAUSED
+
 
         ; ONCE PER FRAME
             LDA checked_this_frame
@@ -331,10 +327,15 @@ irq:
                 :
 
                 JSR step_title_update
-                JSR draw_player_sprite ; player sprite is used in the titlescreen
-    
             JMP mainloop
 
+        ;------------;
+        ;   PAUSE    ;
+        ;------------;
+        @PAUSED: 
+            JSR pause_logic
+
+        LDA current_game_mode  
         ;------------;
         ; GENERATING ;
         ;------------;
@@ -343,8 +344,6 @@ irq:
             BEQ :+
                 JMP PLAYING
             :
-
-            JSR pause_logic ; check if we should pause
 
         ; ONCE PER FRAME
             LDA checked_this_frame
@@ -358,7 +357,9 @@ irq:
                 ; Have we started the algorithm yet? if not, execute the start function once
                 LDA has_started
                 CMP #0
-                BNE :+++
+                BNE :+++  
+                    JSR hide_player_sprite
+
                     LDA #0
                     STA player_movement_delay_ct
                     ;------------------------
@@ -517,8 +518,6 @@ irq:
             CMP #GAMEMODE_PLAYING
             BNE @SOLVING
 
-            JSR pause_logic ; check if we should pause
-
         ; ONCE PER FRAME
             LDA checked_this_frame
             CMP #1
@@ -610,8 +609,6 @@ irq:
             BEQ :+
                 JMP mainloop
             :
-
-            JSR pause_logic ; check if we should pause
 
             ; ONCE PER FRAME
             LDA checked_this_frame
@@ -748,6 +745,8 @@ irq:
 
                     JSR reset_generation
                     JMP mainloop
+
+       ; RTS
 .endproc
 ;*****************************************************************
 
@@ -764,22 +763,22 @@ irq:
             RTS
     :
 
-    LDA gamepad_pressed
+    LDA gamepad_released
     AND #PAD_START
-    BEQ NOT_GAMEPAD_START
+    BEQ @NOT_GAMEPAD_START
 
     LDA current_game_mode
     CMP #GAMEMODE_PAUSED
     BNE @is_not_paused
         LDA gamemode_store_for_paused
         STA current_game_mode
-        JMP NOT_GAMEPAD_START            
+        JMP @NOT_GAMEPAD_START            
     @is_not_paused:
         STA gamemode_store_for_paused
         LDA #GAMEMODE_PAUSED
         STA current_game_mode
 
-    NOT_GAMEPAD_START:
+    @NOT_GAMEPAD_START:
 
     RTS
 .endproc

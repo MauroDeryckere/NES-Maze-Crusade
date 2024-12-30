@@ -14,6 +14,12 @@
         ;     add_to_changed_tiles_buffer player_row, player_collumn, #2 
         ; _skip: 
    
+
+    ; TOP_D = 0
+    ; RIGHT_D = 1
+    ; BOTTOM_D = 2
+    ; LEFT_D = 3
+
     ;DIRECTION SWITCH CASE
     LDA player_dir
     @TOP: 
@@ -52,7 +58,7 @@
 
             LDA player_collumn
             CMP #CAMERA_START_SCROLL_LEFT
-            BCC :+
+            BCS :+
                 LDA scroll_x
                 CMP #0
                 BEQ :+
@@ -82,7 +88,7 @@
             DEC player_row
             RTS
         :
-        INC player_dir
+        INC player_dir  
         RTS
 
     @RIGHT: 
@@ -198,7 +204,7 @@
                     DEC player_collumn
             :
             RTS
-        :
+        : 
 
         DEC temp_col
         
@@ -211,6 +217,8 @@
         :
 
         ; check front wall
+        LDA player_row
+        STA temp_row
         INC temp_row
         get_map_tile_state temp_row, temp_col
         BEQ :+
@@ -229,18 +237,17 @@
         LDA player_row
         STA temp_row
 
-        LDA player_collumn
-
         LDA scroll_x
         LSR
         LSR
         LSR
         CLC
         ADC player_collumn
-
         STA temp_col
+
         CMP #MAP_END_COL
         BNE :+
+            BRK
             JMP @front_wall_left
         :
 
@@ -249,6 +256,9 @@
         ; check left wall
         get_map_tile_state temp_row, temp_col
         BEQ :+
+            ; No left wall
+            ; could have reached a corner - check for this
+            
             DEC player_dir
             INC player_row
             RTS
@@ -260,6 +270,7 @@
         LDA player_collumn
         CMP #MAP_START_COL
         BNE :+
+            BRK
             LDA #TOP_D
             STA player_dir
             RTS
@@ -267,13 +278,13 @@
 
         ; check front wall
         DEC temp_col
-        get_map_tile_state temp_row, temp_col
+        get_map_tile_state player_row, temp_col
         BEQ :++
             DEC player_collumn
-
+            
             LDA player_collumn
             CMP #CAMERA_START_SCROLL_LEFT
-            BCC :+
+            BCS :+
                 LDA scroll_x
                 CMP #0
                 BEQ :+
@@ -282,7 +293,6 @@
                     STA scroll_x
                     INC player_collumn
             :
-
             RTS
         :
         LDA #TOP_D
