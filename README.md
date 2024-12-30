@@ -23,7 +23,7 @@ Players can enjoy the game on original NES hardware or through a compatible NES 
 ### Gamemodes
 
 - **Hard**: Hard mode stops displaying the maze once it's been generated and has has the player looking for their way out using a classic "Fog of War" system.
-- **Auto**: The auto gamemode disables player input (in hardmode) and uses solving algorithms to solve fhe maze. This allows you to sit back and enjoy the satisfying animation. Starting in auto mode with the hard flag enabled uses the Left Hand Rule solving algorithm, without it uses a Breadth First Search. In BFS mode it just shows you the optimal path and you still have to complete the maze yourself.
+- **Auto**: The auto gamemode disables player input (in hardmode) and uses solving algorithms to solve fhe maze. This allows you to sit back and enjoy the satisfying animation. Starting in auto mode with the hard flag enabled uses the Left Hand Rule solving algorithm, without it uses a Breadth First Search.
 
 ### Title Screen Controls
 
