@@ -5,14 +5,14 @@
     @UP_DOWN_MOVEMENT: 
         LDA gamepad_pressed     
         AND #PAD_D
-        BEQ NOT_GAMEPAD_DOWN 
+        BEQ @NOT_GAMEPAD_DOWN 
             LDA player_row
             CMP #20
             BEQ :+
                 INC player_row
             :
 
-    NOT_GAMEPAD_DOWN: 
+   @NOT_GAMEPAD_DOWN: 
         LDA gamepad_pressed            
         AND #PAD_U           
         BEQ @NOT_GAMEPAD_UP
