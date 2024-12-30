@@ -95,10 +95,10 @@
         LDA #0
         JSR stop_music
 
-        JSR tiny_delay_for_music
+       ; JSR tiny_delay_for_music
 
         ; reset the player movement delay and use it as an animation delay
-        LDA #1
+        LDA #0
         STA player_movement_delay_ct
 
         LDA #GAMEMODE_GENERATING
