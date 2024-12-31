@@ -149,7 +149,7 @@
     music_flag:             .res 1
 
     ; TESTING
-    ; test_var:               .res 1
+    test_var:               .res 1
 ;*****************************************************************
 
 .segment "OAM"

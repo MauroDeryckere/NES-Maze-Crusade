@@ -1,5 +1,5 @@
 
-;*****************************************************************
+.segment "CODE"
 .proc title_screen_input_logic
     ; UP/DOWN MOVEMENT OF SELECTION
     @UP_DOWN_MOVEMENT: 
@@ -108,7 +108,6 @@
         STA has_started
         
         JSR init_HUD
-        
         JSR reset_generation
 
     RTS

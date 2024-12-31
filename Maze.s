@@ -129,13 +129,6 @@ irq:
     ; reset the oam byte counter
     LDX #OAM_PLAYER_BYTE_END
     STX curr_oam_byte 
-    
-	; restore registers and return
-	PLA
-	TAY
-	PLA
-	TAX
-	PLA
 
     ; this essentialy makes this function x amount of scanlines longer (depending on the position of the Sprite 0) 
     ; instead of just waiting additional logic could be executed here given that it doesnt take so long the PPU gets past the point you wish to split screen.
@@ -158,6 +151,14 @@ irq:
         STA PPU_VRAM_ADDRESS1
         LDA #0
         STA PPU_VRAM_ADDRESS1
+
+	; restore registers and return
+	PLA
+	TAY
+	PLA
+	TAX
+	PLA
+
 	RTI
 .endproc
 ;*****************************************************************
@@ -299,21 +300,21 @@ irq:
             AND gamepad_prev + 1
             STA gamepad_released + 1
 
-        LDA current_game_mode
         ;-------------;
         ; TITLESCREEN ;
         ;-------------;
-        @TITLESCREEN: 
+        @TITLESCREEN:             
             LDA current_game_mode
             CMP #GAMEMODE_TITLE_SCREEN
-            BNE @PAUSED            
-
+            BNE @PAUSED
+            
             JSR title_screen_input_logic
             JSR draw_player_sprite ; player sprite is used in the titlescreen
 
             LDA current_game_mode
             CMP #GAMEMODE_TITLE_SCREEN
             BNE @PAUSED
+
 
         ; ONCE PER FRAME
             LDA checked_this_frame
