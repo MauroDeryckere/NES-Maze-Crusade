@@ -1,3 +1,4 @@
+.segment "CODE"
 .macro vram_set_address newaddress
     lda PPU_STATUS
     lda #>newaddress

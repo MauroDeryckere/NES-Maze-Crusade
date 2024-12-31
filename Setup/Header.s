@@ -78,7 +78,6 @@
 
     ; SCROLLING
     scroll_x:                   .res 1 ; current nametable x croll
-    last_scroll_x:              .res 1 ; last frame nametable x croll
 
     ; MAZE positions
     start_row: 				.res 1 ; Start tile of the maze
@@ -130,6 +129,9 @@
     is_backtracking:        .res 1 ; is BFS currently backtracking the path (internal) - will be set to FF when end is reached
 
     ;Score
+    score:                  .res 3 ; 3 bytes each storing 0-99 score
+    should_update_score:    .res 1 ; "dirty flag" for score, toggled when score changes
+    
     added_high:             .res 1
     added_low:              .res 1 ;these 2 are to make sure add score works correctly
     ; Score | HHLL - 0000 up to 9999 score
@@ -145,6 +147,9 @@
     sound_played:           .res 1
     sound_played2:          .res 1
     music_flag:             .res 1
+
+    ; TESTING
+    ; test_var:               .res 1
 ;*****************************************************************
 
 .segment "OAM"

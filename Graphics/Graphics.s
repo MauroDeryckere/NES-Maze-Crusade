@@ -92,14 +92,9 @@
 
 .segment "CODE"
 .proc clear_nametable_0
-    LDA PPU_STATUS 
-    LDA #NAME_TABLE_0_ADDRESS_HIGH
-    STA PPU_VRAM_ADDRESS2
-    LDA #NAME_TABLE_0_ADDRESS_LOW
-    STA PPU_VRAM_ADDRESS2
-
+    vram_set_address (NAME_TABLE_0_ADDRESS + 1 * 32 + 0) ; dont clear HUD row
     LDA #0
-    LDY #30
+    LDY #MAP_ROWS
     @rowloop:
         LDX #32
         @columnloop:
@@ -119,11 +114,7 @@
 .endproc
 
 .proc clear_nametable_1
-    LDA PPU_STATUS 
-    LDA #NAME_TABLE_1_ADDRESS_HIGH
-    STA PPU_VRAM_ADDRESS2
-    LDA #NAME_TABLE_1_ADDRESS_LOW
-    STA PPU_VRAM_ADDRESS2
+    vram_set_address (NAME_TABLE_1_ADDRESS + 1 * 32 + 0) ; dont clear HUD row
 
     LDA #0
     LDY #30
@@ -156,35 +147,6 @@
     ;since our wall tile is at idx 0, clearing the nametable is all that's required
     JSR clear_nametable_0
     JSR clear_nametable_1
-
-    ;afterwards display the hud line again
-    LDA #NAME_TABLE_0_ADDRESS_HIGH
-    STA PPU_VRAM_ADDRESS2
-    LDA #NAME_TABLE_0_ADDRESS_LOW
-    STA PPU_VRAM_ADDRESS2
-
-    LDA #HUD_BG_TILE
-    LDX #SCREEN_COLS
-
-    @loop_0: 
-        DEX
-        STA PPU_VRAM_IO
-        BNE @loop_0
-
-
-    LDA #NAME_TABLE_1_ADDRESS_HIGH
-    STA PPU_VRAM_ADDRESS2
-    LDA #NAME_TABLE_1_ADDRESS_LOW
-    STA PPU_VRAM_ADDRESS2
-
-    LDA #HUD_BG_TILE
-    LDX #SCREEN_COLS
-
-    @loop_1: 
-        DEX
-        STA PPU_VRAM_IO
-        BNE @loop_1
-
 
     JSR ppu_update
     RTS

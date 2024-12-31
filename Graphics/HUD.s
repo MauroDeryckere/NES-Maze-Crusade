@@ -1,4 +1,33 @@
 .segment "CODE"
+.proc init_HUD
+    JSR ppu_off
+    
+    vram_set_address (NAME_TABLE_0_ADDRESS)
+    LDX #SCREEN_COLS
+    LDA #HUD_BG_TILE
+    @loop: 
+        STA PPU_VRAM_IO
+        DEX
+        BNE @loop
+
+    vram_set_address (NAME_TABLE_1_ADDRESS)
+    LDX #SCREEN_COLS
+    LDA #HUD_BG_TILE
+    @loop2: 
+        STA PPU_VRAM_IO
+        DEX
+        BNE @loop2
+
+    LDA #1
+    STA should_update_score
+    JSR display_score
+
+    JSR init_hp_bar
+
+    JSR ppu_update
+    RTS
+.endproc
+
 .proc display_hp_bar
     ;TOOD
     
@@ -33,101 +62,54 @@
     RTS
 .endproc
 
-
-
 ;display the score
 .proc display_score
-    LDA #SCORE_DIGIT_OFFSET
-    STA low_byte
-    
-    LDA score_low
+    LDA should_update_score
+    BNE :+
+        RTS
+    :
+
+    vram_set_address (NAME_TABLE_0_ADDRESS + 0 * 32 + 15)
+
+    LDA score + 2
+    JSR dec99_to_bytes ; tens in X, ones in A
 
     CLC
-    CMP #$0A
-    BCC skip_modulo
+    ADC #$40
+    STA PPU_VRAM_IO
+    TXA
+    ADC #$40
+    STA PPU_VRAM_IO
 
-    modulo score_low, #$0A  ;skip modulo if smaller than 10
-
-    STA a_val               ;store remainder for later
-
-    skip_modulo:
-
-    LDX #OAM_SCORE_BYTE_START
-    JSR draw_digit
-    CLC
-    LDA low_byte
-    SEC
-    SBC #8
-    STA low_byte    
-
-    LDA score_low
-    SEC
-    SBC a_val
-
-    divide10 score_low
-
-    LDX #OAM_SCORE_BYTE_START + 4
-    JSR draw_digit
-    CLC
-    LDA low_byte
-    SEC
-    SBC #8
-    STA low_byte
-    
-    LDA score_high
+    LDA score + 1
+    JSR dec99_to_bytes ; tens in X, ones in A
 
     CLC
-    CMP #$0A
-    BCC skip_modulo2
+    ADC #$40
+    STA PPU_VRAM_IO
+    TXA
+    ADC #$40
+    STA PPU_VRAM_IO
 
-    modulo score_high, #$0A  ;skip modulo if smaller than 10
+    LDA score
+    JSR dec99_to_bytes ; tens in X, ones in A
 
-    STA a_val               ;store remainder for later
-
-    skip_modulo2:
-
-    LDX #OAM_SCORE_BYTE_START + 8
-    JSR draw_digit
     CLC
-    LDA low_byte
-    SEC
-    SBC #8
-    STA low_byte    
+    ADC #$40
+    STA PPU_VRAM_IO
+    TXA
+    ADC #$40
+    STA PPU_VRAM_IO
 
-    LDA score_high
-    SEC
-    SBC a_val
+    LDA #0
+    ADC #$40
+    STA PPU_VRAM_IO
+    STA PPU_VRAM_IO
 
-    divide10 score_high
+    LDA #0
+    STA should_update_score
 
-    LDX #OAM_SCORE_BYTE_START + 12
-    JSR draw_digit   
-    RTS
-.endproc
-
-;draws the digit stored in a reg
-.proc draw_digit
-    ;convert digit 0-9 to correct tile index
-    CLC
-    ADC #64        ; get correct tile ID  
-    TAY
-
-    LDA #0 ;Y coordinate
-    STA oam, X
-    INX
-
-    TYA
-    STA oam, X
-    INX 
-
-    LDA #%00000001 ;flip bits to set certain sprite attributes
-    STA oam, X
-    INX
-
-
-    LDA low_byte   ;X coordinate
-    STA oam, X
-    INX
+    vram_clear_address
 
     RTS
 .endproc

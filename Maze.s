@@ -1,9 +1,11 @@
 .include "Setup/Header.s"
 
+.include "Util/Util.s"
+.include "Util/Macros.s"
+
 .include "DataStructures/ChangedTileBuffer.s"
 .include "DataStructures/DirectionBuffer.s"
 .include "DataStructures/FrontierList.s"
-.include "DataStructures/Macros.s"
 .include "DataStructures/MapBuffer.s"
 .include "DataStructures/Queue.s"
 .include "DataStructures/StartScreenBuffer.s"
@@ -13,8 +15,6 @@
 .include "Graphics/HUD.s"
 .include "Graphics/OamSprites.s"
 .include "Graphics/PlayerGraphics.s"
-
-.include "Util/Util.s"
 
 .include "Testing/TestCode.s"
 
@@ -80,6 +80,7 @@ irq:
 
 
     JSR display_hp_bar
+    JSR display_score
     @skip_hud: 
 
 
@@ -191,6 +192,12 @@ irq:
     LDA #$10
     STA random_seed
 
+    ; "reset" score
+    LDA #0
+    STA score
+    STA score + 1
+    STA score + 2
+
     ; start with startscreen "gamemode"
     LDA #GAMEMODE_TITLE_SCREEN
     STA current_game_mode
@@ -237,7 +244,7 @@ irq:
 
     ; X pos
     INX 
-    LDA #80
+    LDA #200
     STA oam, X
 
     ; disabled by default
@@ -306,7 +313,6 @@ irq:
             LDA current_game_mode
             CMP #GAMEMODE_TITLE_SCREEN
             BNE @PAUSED
-
 
         ; ONCE PER FRAME
             LDA checked_this_frame
@@ -393,8 +399,6 @@ irq:
                     LDA #1
                     STA has_started
                 :
-
-                JSR display_score
 
                 ;slow down generation if necessary
                 modulo frame_counter, #MAZE_GENERATION_SPEED
@@ -545,8 +549,6 @@ irq:
                     LDA #1
                     STA has_started ;set started to 1 so that we start drawing the sprite
                 :
-
-                JSR display_score
                 
                 ; are we in hard mode?
                 LDA input_game_mode
@@ -578,7 +580,8 @@ irq:
                     LDA #0
                     STA has_started
 
-                    add_score #100
+                    LDA #10
+                    JSR add_score
 
                     ;------------------------
                     ;PLAY SOUND EFFECT AND STOP PREVIOUS
@@ -666,8 +669,6 @@ irq:
                     STA has_started 
                 :
 
-                JSR display_score
-
                 ; execute one step of the algorithm
                 LDA input_game_mode
                 AND #SOLVE_MODE_MASK
@@ -732,7 +733,8 @@ irq:
                     LDA #0
                     STA sound_played2
 
-                    add_score #100
+                    LDA #10
+                    JSR add_score 
                     
                     ; back to generating
                     LDA #GAMEMODE_GENERATING
@@ -835,7 +837,6 @@ irq:
     JSR clear_changed_tiles_buffer
     JSR clear_maze
 
-    JSR wait_frame
     JSR display_map_all_walls
 
     JSR clear_queue

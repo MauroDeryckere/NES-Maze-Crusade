@@ -106,7 +106,11 @@
         
         LDA #0                      
         STA has_started
+        
+        JSR init_HUD
+        
         JSR reset_generation
+
     RTS
 .endproc
 
