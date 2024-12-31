@@ -67,6 +67,7 @@ irq:
     JSR draw_background
     
     LDA current_game_mode
+    CMP #GAMEMODE_TITLE_SCREEN
     BNE @skip_start_screen
         LDA has_started
         CMP #1
