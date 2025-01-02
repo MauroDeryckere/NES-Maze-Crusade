@@ -351,272 +351,48 @@
 .endproc
 
 .proc calculate_prims_start_end
-; START POSITION
-    ; chosen side for start stored in temp_frontier_row
-    ; 0: col
-    ; 1: top row
-    ; 2: bottom row
-
-    ; randomly pick between top and bottom row and the col (depending on even / unven frontier start col)
-    JSR random_number_generator
-    AND #%00000001
-    BEQ :++
-        ; if even we'll pick from the 2 rows
+    ; very simple start and end for now, testing stuff
+    @startl: 
         JSR random_number_generator
-        AND #%00000001
-        BEQ :+
-            LDA #2
-            STA temp_frontier_row
-            JMP rowloop_bottom
-        :
-        LDA #1 
-        STA temp_frontier_row
-        JMP rowloop_top
-    :
-    ; pick a column start pos if uneven
-    LDA #0
-    STA temp_frontier_row
+        AND #%00011111
 
-    LDA odd_frontiers
-    ;are cols odd
-    BNE :+
-        JMP colloop_e_start
-    :
-
-    colloop_ue_start:
-        JSR random_number_generator
-        modulo random_seed, #28
         STA temp
-        INC temp ;exclude row 0
 
-        get_map_tile_state temp, #2 
-        BEQ colloop_ue_start
+        get_map_tile_state #MAP_START_ROW + 1, temp
+        BEQ @startl
 
-        set_map_tile temp, #0
-        add_to_changed_tiles_buffer temp, #0, #PATH_TILE_1
-        
-        LDA #0
+        set_map_tile #MAP_START_ROW, temp
+        add_to_changed_tiles_buffer #MAP_START_ROW, temp, #PATH_TILE_1
+
+        LDA temp
         STA player_collumn
         STA start_col
-        LDA temp
+        LDA #MAP_START_ROW
         STA player_row
         STA start_row
 
-        JMP END_STARTPOS
-
-    colloop_e_start:
+    @endl: 
         JSR random_number_generator
-        modulo random_seed, #28
+        AND #%00001111
+
         STA temp
-        INC temp ;exclude row 0
 
-        get_map_tile_state temp, #30
-        BEQ colloop_e_start
+        get_map_tile_state temp, #MAP_START_COL + 1
+        BEQ @endl
 
-        set_map_tile temp, #31
-        add_to_changed_tiles_buffer temp, #31, #PATH_TILE_1
-
-        LDA #31
-        STA player_collumn
-        STA start_col
-        LDA temp
-        STA start_row
-        STA player_row
-
-        JMP END_STARTPOS
-
-    ;uneven row means empty border at top
-    ;randomly generate a start tile until we find a valid one in row 2 (valid means a walkable tile below)
-    rowloop_top:
-        JSR random_number_generator
-        modulo random_seed, #29
-        STA temp
-        INC temp
-
-        get_map_tile_state #2, temp
-        BEQ rowloop_top
-
-        set_map_tile #1, temp
-        add_to_changed_tiles_buffer #1, temp, #PATH_TILE_1
-        LDA #1
-        STA player_row
-        STA start_row
-        LDA temp
-        STA start_col
-        STA player_collumn
-
-        JMP END_STARTPOS
-
-    ;use border at bottom 
-    ;randomly generate a start tile until we find a valid one in row 28 (valid means a walkable tile above)
-    rowloop_bottom:
-        JSR random_number_generator
-        modulo random_seed, #29
-        STA temp
-        INC temp
-
-        get_map_tile_state #28, temp
-        BEQ rowloop_bottom
-
-        set_map_tile #29, temp
-        add_to_changed_tiles_buffer #29, temp, #PATH_TILE_1
-
-        LDA #29
-        STA player_row
-        STA start_row
-        LDA temp
-        STA start_col
-        STA player_collumn
-    END_STARTPOS:
-
-; END POSITION
-    ; depending on the chosen start pos (top or bottom)    
-    LDA temp_frontier_row
-    CMP #0
-    BNE :+
-        JMP skip_col_option
-    : 
-
-    ; pick between remaining row and col generation
-    JSR random_number_generator
-    AND #%00000001
-    BEQ :++
-        ; 1 means row generation, pick the correct one
-        skip_col_option: 
-        LDA temp_frontier_row
-        CMP #1
-        BEQ :+
-            JMP top_row_end 
-        :
-        JMP bottom_row_end
-    :
-
-    ; 0 == col generation
-    col_check: 
-        LDA odd_frontiers
-        ;are cols odd
-        BNE :+
-            JMP colloop_e
-        :
-
-    colloop_ue:
-        JSR random_number_generator
-        modulo random_seed, #28
-        STA temp
-        INC temp ;exclude row 0
-
-        get_map_tile_state temp, #1 
-        BEQ colloop_ue
-
-        set_map_tile temp, #0
-        add_to_changed_tiles_buffer temp, #0, #PATH_TILE_END
-        
-        LDA temp
-        STA end_row
-
-        TAX
-        INX
-        STX temp
-        add_to_changed_tiles_buffer temp, #0, #FRONTIER_WALL_TILE
-
-        LDX end_row
-        DEX
-        STX temp
-        add_to_changed_tiles_buffer temp, #0, #FRONTIER_WALL_TILE
-
-        LDA #0
-        STA end_col
-
-        JMP end
-
-    colloop_e:
-        JSR random_number_generator
-        modulo random_seed, #28
-        STA temp
-        INC temp ;exclude row 0
-
-        get_map_tile_state temp, #30
-        BEQ colloop_e
-
-        set_map_tile temp, #31
-        add_to_changed_tiles_buffer temp, #31, #PATH_TILE_END
+        set_map_tile temp, #MAP_START_COL
+        add_to_changed_tiles_buffer temp, #MAP_START_COL, #PATH_TILE_END
 
         LDA temp
         STA end_row
-
-        TAX
-        INX
-        STX temp
-        add_to_changed_tiles_buffer temp, #31, #FRONTIER_WALL_TILE
-
-        LDX end_row
-        DEX
-        STX temp
-        add_to_changed_tiles_buffer temp, #31, #FRONTIER_WALL_TILE
-
-        LDA #31
+        LDA #MAP_START_COL
         STA end_col
-        
-        JMP end
 
-    top_row_end: 
-        rowloop_top_end:
-            JSR random_number_generator
-            modulo random_seed, #29
-            STA temp
-            INC temp
-
-            get_map_tile_state #2, temp
-            BEQ rowloop_top_end
-
-            set_map_tile #1, temp
-            add_to_changed_tiles_buffer #1, temp, #PATH_TILE_END
-            LDA #1
-            STA end_row
-            LDA temp
-            STA end_col
-
-            TAX
-            INX
-            STX temp
-            add_to_changed_tiles_buffer #1, temp, #FRONTIER_WALL_TILE
-
-            LDX end_col
-            DEX
-            STX temp
-            add_to_changed_tiles_buffer #1, temp, #FRONTIER_WALL_TILE
-
-            JMP end
-
-    bottom_row_end: 
-        rowloop_bottom_end:
-            JSR random_number_generator
-            modulo random_seed, #29
-            STA temp
-            INC temp
-
-            get_map_tile_state #28, temp
-            BEQ rowloop_bottom_end
-
-            set_map_tile #29, temp
-            add_to_changed_tiles_buffer #29, temp, #PATH_TILE_END
-            LDA #29
-            STA end_row
-            LDA temp
-            STA end_col
-
-            TAX
-            INX
-            STX temp
-            add_to_changed_tiles_buffer #29, temp, #FRONTIER_WALL_TILE
-
-            LDX end_col
-            DEX
-            STX temp
-            add_to_changed_tiles_buffer #29, temp, #FRONTIER_WALL_TILE
-
-
-    end: 
+        INC temp
+        add_to_changed_tiles_buffer temp, #MAP_START_COL, #FRONTIER_WALL_TILE
+        DEC temp
+        DEC temp
+        add_to_changed_tiles_buffer temp, #MAP_START_COL, #FRONTIER_WALL_TILE
     RTS
 .endproc
 ;*****************************************************************

@@ -231,7 +231,7 @@ irq:
     ; scrolling / camera stuff
     ; Y pos
     LDX #0
-    LDA #6
+    LDA #14 ; up until third row == blocked
     STA oam, X
 
     ; Tile ID

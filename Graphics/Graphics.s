@@ -92,11 +92,11 @@
 
 .segment "CODE"
 .proc clear_nametable_0
-    vram_set_address (NAME_TABLE_0_ADDRESS + 1 * 32 + 0) ; dont clear HUD row
+    vram_set_address (NAME_TABLE_0_ADDRESS + 3 * 32 + 0) ; dont clear HUD row
     LDA #0
     LDY #MAP_ROWS
     @rowloop:
-        LDX #32
+        LDX #SCREEN_COLS
         @columnloop:
             STA PPU_VRAM_IO
             DEX
@@ -114,12 +114,12 @@
 .endproc
 
 .proc clear_nametable_1
-    vram_set_address (NAME_TABLE_1_ADDRESS + 1 * 32 + 0) ; dont clear HUD row
+    vram_set_address (NAME_TABLE_1_ADDRESS + 3 * 32 + 0) ; dont clear HUD row
 
     LDA #0
-    LDY #30
+    LDY #MAP_ROWS
     @rowloop:
-        LDX #32
+        LDX #SCREEN_COLS
         @columnloop:
             STA PPU_VRAM_IO
             DEX
@@ -156,7 +156,7 @@
 .proc display_clear_map
     JSR ppu_off
     ; Set PPU address to nametable address
-    vram_set_address (NAME_TABLE_0_ADDRESS + 1 * 32 + 0)
+    vram_set_address (NAME_TABLE_0_ADDRESS + 3 * 32 + 0)
 
     LDA #BLACK_TILE ; clear tile
     LDY #MAP_ROWS
@@ -172,7 +172,7 @@
 
     vram_clear_address
 
-    vram_set_address (NAME_TABLE_1_ADDRESS + 1 * 32 + 0)
+    vram_set_address (NAME_TABLE_1_ADDRESS + 3 * 32 + 0)
 
     LDA #BLACK_TILE ; clear tile
     LDY #MAP_ROWS

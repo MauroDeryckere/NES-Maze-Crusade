@@ -2,21 +2,66 @@
 .proc init_HUD
     JSR ppu_off
     
+    ; Set the HUD attribute tables
+    vram_set_address (ATTRIBUTE_TABLE_0_ADDRESS)
+    LDY #SCREEN_COLS / 4
+    LDA #%00001111
+    @attloop: 
+        STA PPU_VRAM_IO  
+        DEY
+        BNE @attloop
+
+    vram_set_address (ATTRIBUTE_TABLE_1_ADDRESS)
+    LDY #SCREEN_COLS / 4
+    LDA #%00001111
+    @attloop2: 
+        STA PPU_VRAM_IO  
+        DEY
+        BNE @attloop2
+    ; ------------------------------
+
+    ; Set the HUD BG tiles
     vram_set_address (NAME_TABLE_0_ADDRESS)
-    LDX #SCREEN_COLS
+    LDY #MAP_START_ROW - 1
     LDA #HUD_BG_TILE
-    @loop: 
-        STA PPU_VRAM_IO
-        DEX
-        BNE @loop
+    @rloop:
+    LDX #SCREEN_COLS
+        @loop: 
+            STA PPU_VRAM_IO
+            DEX
+            BNE @loop
+        DEY
+        BNE @rloop
+
+    LDA #HUD_DIVIDOR_TILE
+    LDX #SCREEN_COLS
+        @loop_: 
+            STA PPU_VRAM_IO
+            DEX
+            BNE @loop_
 
     vram_set_address (NAME_TABLE_1_ADDRESS)
-    LDX #SCREEN_COLS
+    LDY #MAP_START_ROW - 1
     LDA #HUD_BG_TILE
-    @loop2: 
-        STA PPU_VRAM_IO
-        DEX
-        BNE @loop2
+    @rloop2: 
+    LDX #SCREEN_COLS
+        @loop2: 
+            STA PPU_VRAM_IO
+            DEX
+            BNE @loop2
+        DEY
+    BNE @rloop2
+
+    LDA #HUD_DIVIDOR_TILE
+    LDX #SCREEN_COLS
+        @loop2_: 
+            STA PPU_VRAM_IO
+            DEX
+            BNE @loop2_
+    ; -----------------------------------------
+
+
+
 
     LDA #1
     STA should_update_score

@@ -133,8 +133,8 @@ DEBUG_MODE = 0
     GAMEMODE_PAUSED = 4
 
 ; MAP INFO
-    MAP_START_ROW = 1 ; one row offset for the "HUD"
-    MAP_ROWS = 29
+    MAP_START_ROW = 3 ; one row offset for the "HUD"
+    MAP_ROWS = 27
     MAP_END_ROW = MAP_START_ROW + MAP_ROWS - 1 
     
     MAP_START_COL = 0
@@ -159,6 +159,7 @@ DEBUG_MODE = 0
     ;BG
     BLACK_TILE = 16
     HUD_BG_TILE = 18
+    HUD_DIVIDOR_TILE = 19
 
     ;PATH
     PATH_TILES_AMOUNT = 4
