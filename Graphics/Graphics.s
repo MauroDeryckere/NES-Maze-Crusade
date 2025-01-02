@@ -156,20 +156,11 @@
 .proc display_clear_map
     JSR ppu_off
     ; Set PPU address to nametable address
-    LDA #NAME_TABLE_0_ADDRESS_HIGH
-    STA PPU_VRAM_ADDRESS2
-    LDA #NAME_TABLE_0_ADDRESS_LOW
-    STA PPU_VRAM_ADDRESS2
-
-    LDA #HUD_BG_TILE
-    LDY #SCREEN_COLS
-    @top_loop:           
-        STA PPU_VRAM_IO ; Write tile to PPU data
-        DEY
-    BNE @top_loop
+    vram_set_address (NAME_TABLE_0_ADDRESS + 1 * 32 + 0)
 
     LDA #BLACK_TILE ; clear tile
     LDY #MAP_ROWS
+
     @rowloop:
         LDX #SCREEN_COLS
         @columnloop:
@@ -179,17 +170,9 @@
         DEY
         BNE @rowloop
 
-    LDA #NAME_TABLE_1_ADDRESS_HIGH
-    STA PPU_VRAM_ADDRESS2
-    LDA #NAME_TABLE_1_ADDRESS_LOW
-    STA PPU_VRAM_ADDRESS2
+    vram_clear_address
 
-    LDA #HUD_BG_TILE
-    LDY #SCREEN_COLS
-    @top_loop2:           
-        STA PPU_VRAM_IO ; Write tile to PPU data
-        DEY
-    BNE @top_loop2
+    vram_set_address (NAME_TABLE_1_ADDRESS + 1 * 32 + 0)
 
     LDA #BLACK_TILE ; clear tile
     LDY #MAP_ROWS
@@ -201,6 +184,8 @@
             BNE @columnloop2
         DEY
         BNE @rowloop2
+
+    vram_clear_address
 
     JSR ppu_update
 
