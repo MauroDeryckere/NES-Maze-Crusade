@@ -167,7 +167,7 @@
     : ;top check
     LDA Row
     CMP #MAP_START_ROW + 2
-    BCC :++++ ; row < 3
+    BCC :++++ ; <
     JMP :+++++ 
 
     : ;right check
