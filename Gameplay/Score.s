@@ -17,6 +17,7 @@
 
     SEC
     SBC #100
+    STA score
     INC score + 1
     LDA score + 1
     CMP #99

@@ -14,46 +14,12 @@
 .endproc  
 
 .proc start_prims_maze
-    ; step 0 of the maze generation, set a random cell as passage and calculate its frontier cells
-    JSR random_number_generator
-
-    ; ensure the row is always even so that there is a border at the bottom and top
-    modulo random_seed, #27 ; 27 because we dont want row 0 and dont want row 28 (28 + 1 == 29 -> uneven + 1 == out of bounds (30))
-
-    ; dont include row 0
-    STA start_row
-    INC start_row
-    modulo start_row, #2
+    ; TODO randomize
     
-    CLC
-    ADC start_row
+    LDA #6 ; has to be even
     STA start_row
-
-    ; col
-    ; temporarily guarantee even col to ensure end border is always at left side.
-    JSR random_number_generator
-    modulo random_seed, #30 ; dont include 31 - out of bounds when increasing
+    LDA #9 ; has to be uneven
     STA start_col
-    modulo start_col, #2
-    CMP #0
-    BNE :+
-        INC start_col
-    :
-
-    ;set the even col flag (new system always has an even row)
-    LDA #0
-    STA odd_frontiers
-
-    LDA start_col
-    CMP #0
-    BEQ end_col_check ;when zero were even  
-
-    modulo start_col, #2
-    CMP #0
-    BEQ end_col_check
-        LDA #1
-        STA odd_frontiers
-    end_col_check:
 
     set_map_tile start_row, start_col
 
@@ -356,17 +322,17 @@
         JSR random_number_generator
         AND #%00011111
 
-        STA temp
+        STA start_col
 
-        get_map_tile_state #MAP_START_ROW + 1, temp
+        get_map_tile_state #MAP_START_ROW + 1, start_col
         BEQ @startl
 
-        set_map_tile #MAP_START_ROW, temp
-        add_to_changed_tiles_buffer #MAP_START_ROW, temp, #PATH_TILE_1
+        set_map_tile #MAP_START_ROW, start_col
+        add_to_changed_tiles_buffer #MAP_START_ROW, start_col, #PATH_TILE_1
 
-        LDA temp
+        LDA start_col
         STA player_collumn
-        STA start_col
+
         LDA #MAP_START_ROW
         STA player_row
         STA start_row
@@ -375,24 +341,26 @@
         JSR random_number_generator
         AND #%00001111
 
-        STA temp
+        STA end_row
 
-        get_map_tile_state temp, #MAP_START_COL + 1
+        get_map_tile_state end_row, #MAP_START_COL + 1
         BEQ @endl
 
-        set_map_tile temp, #MAP_START_COL
-        add_to_changed_tiles_buffer temp, #MAP_START_COL, #PATH_TILE_END
+        set_map_tile end_row, #MAP_START_COL
+        add_to_changed_tiles_buffer end_row, #MAP_START_COL, #PATH_TILE_END
 
-        LDA temp
-        STA end_row
         LDA #MAP_START_COL
         STA end_col
 
-        INC temp
-        add_to_changed_tiles_buffer temp, #MAP_START_COL, #FRONTIER_WALL_TILE
-        DEC temp
-        DEC temp
-        add_to_changed_tiles_buffer temp, #MAP_START_COL, #FRONTIER_WALL_TILE
+        INC end_row
+        add_to_changed_tiles_buffer end_row, #MAP_START_COL, #FRONTIER_WALL_TILE
+        DEC end_row
+        BNE :+
+            RTS
+        :
+        DEC end_row
+        add_to_changed_tiles_buffer end_row, #MAP_START_COL, #FRONTIER_WALL_TILE
+        INC end_row
     RTS
 .endproc
 ;*****************************************************************

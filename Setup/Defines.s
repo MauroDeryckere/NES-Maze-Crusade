@@ -111,7 +111,7 @@ DEBUG_MODE = 0
 ; SETUP
     GENERATION_ANIMATION_DELAY = 35 ; start the broken tiles animation after x amt of frames
     PLAYER_MOVEMENT_DELAY = 5 ;sets the delay for player movement (==  movement speed)
-    LHR_DELAY = 4; slow down the LHR by x amount of frames per step
+    LHR_DELAY = 1; slow down the LHR by x amount of frames per step
     MAZE_GENERATION_SPEED = 1 ;how much is maze generation slowed down
 
     SCORE_DIGIT_OFFSET = 232 ; x axis offset right-most number of score display

@@ -3,8 +3,18 @@
     ; just simple test for now, torches will actually do something and be randomly generated later
 
     ; setup torch in map buffer
-    set_map_tile #0, #1
-    set_map_tile #8, #MAP_END_COL + 1
+    ; set_map_tile #0, #1
+    ; set_map_tile #8, #MAP_END_COL + 1
+
+    ; set_visited #8, #1
+    ; get_map_tile_state #8, #1
+    ; BEQ skip
+    ; add_to_changed_tiles_buffer #8, #1, #PATH_TILE_1
+    ; JMP skip_2
+    ; skip: 
+    ; add_to_changed_tiles_buffer #8, #1, #WALL_TILE
+    ; skip_2:
+    
 
     ; Torches / lamps
     LDX #OAM_PLAYER_BYTE_END

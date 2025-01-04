@@ -120,9 +120,11 @@
     JSR dec99_to_bytes ; tens in X, ones in A
 
     CLC
+    TAY
+    TXA
     ADC #$40
     STA PPU_VRAM_IO
-    TXA
+    TYA
     ADC #$40
     STA PPU_VRAM_IO
 
@@ -130,9 +132,11 @@
     JSR dec99_to_bytes ; tens in X, ones in A
 
     CLC
+    TAY
+    TXA
     ADC #$40
     STA PPU_VRAM_IO
-    TXA
+    TYA
     ADC #$40
     STA PPU_VRAM_IO
 
@@ -140,9 +144,11 @@
     JSR dec99_to_bytes ; tens in X, ones in A
 
     CLC
+    TAY
+    TXA
     ADC #$40
     STA PPU_VRAM_IO
-    TXA
+    TYA
     ADC #$40
     STA PPU_VRAM_IO
 

@@ -535,8 +535,6 @@ irq:
                 JSR draw_player_sprite
                 JSR update_oam
 
-                JSR add_hp_bar_to_changed_tiles
-
                 ; Have we started the game yet? if not, execute the start function once
                 LDA has_started
                 CMP #0
