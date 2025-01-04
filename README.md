@@ -13,8 +13,9 @@ Players can enjoy the game on original NES hardware or through a compatible NES 
    - [Title Screen Controls](#title-screen-controls)
    - [In-Game Controls](#in-game-controls)  
    - [Objective](#objective)  
-4. [Used Software](#used-software)  
-5. [References](#references)  
+4. [Used Software](#used-software)
+5. [Our Team](#our-team)
+6. [References](#references)  
    - [Sources](#sources)  
    - [Initial Project](#initial-project)  
 
