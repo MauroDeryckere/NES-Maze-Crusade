@@ -160,7 +160,6 @@
 
     LDA #BLACK_TILE ; clear tile
     LDY #MAP_ROWS
-
     @rowloop:
         LDX #SCREEN_COLS
         @columnloop:
@@ -185,10 +184,9 @@
         DEY
         BNE @rowloop2
 
-    vram_clear_address
+;    vram_clear_address
 
     JSR ppu_update
-
     RTS
 .endproc
 

@@ -99,7 +99,6 @@ irq:
 	STA PPU_VRAM_ADDRESS2
 	STX PPU_VRAM_ADDRESS2
 	LDX #0 ; transfer the 32 bytes to VRAM
-	LDX #0 ; transfer the 32 bytes to VRAM
 
     @loop:
         LDA palette, x
@@ -343,11 +342,11 @@ irq:
         @PAUSED: 
             JSR pause_logic
 
-        LDA current_game_mode  
         ;------------;
         ; GENERATING ;
         ;------------;
         @GENERATING: 
+            LDA current_game_mode
             CMP #GAMEMODE_GENERATING
             BEQ :+
                 JMP PLAYING
@@ -521,6 +520,7 @@ irq:
         ; PLAYING ;
         ;---------;
         PLAYING: 
+            LDA current_game_mode
             CMP #GAMEMODE_PLAYING
             BNE @SOLVING
 
@@ -608,6 +608,7 @@ irq:
         ; SOLVING ;
         ;---------;
         @SOLVING: 
+            LDA current_game_mode
             CMP #GAMEMODE_SOLVING
             BEQ :+
                 JMP mainloop

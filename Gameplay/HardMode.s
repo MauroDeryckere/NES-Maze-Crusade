@@ -7,13 +7,15 @@
     AND #%00000011 ; 0-3
     CLC
     ADC #PATH_TILE_1
-    STA x_val
-    add_to_changed_tiles_buffer player_row, player_collumn, x_val
+    STA temp
+    add_to_changed_tiles_buffer player_row, player_collumn, temp
 
     ; In case we want the end to be visible for debugging purposes
     ; add_to_changed_tiles_buffer end_row, end_col, x_val
 
     JSR clear_visited_buffer
+
+    RTS
 .endproc
 
 ; whenever the character moves in hard mode we should add any invible tiles to the changed tiles buffer 

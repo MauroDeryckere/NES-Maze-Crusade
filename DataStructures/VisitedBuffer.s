@@ -84,7 +84,7 @@
         CPX #VISITED_BUFFER_SIZE
         BNE @clear_cell
 
-        RTS
+    RTS
 .endproc
 
 ;*****************************************************************
