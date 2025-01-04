@@ -60,13 +60,13 @@
     TAX
     
     LDA y_val
-    :    
+    : ; loop
     ASL
     DEX
     BNE :-
 
     STA y_val
-    :
+    : ; return
 .endmacro
 
 ;loads the state for a given tile in the A register - 0 when not passable, or any bit is set when it is passable

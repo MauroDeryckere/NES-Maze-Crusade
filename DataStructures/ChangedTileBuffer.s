@@ -11,20 +11,18 @@
     STA temp_col
 
     CMP #32
-    BCC n0
+    BCC :+
         SEC
         SBC #32
         STA temp_col
        
         JSR add_to_changed_tiles_buffer_n1
-        JMP return
+        JMP :++
 
-    .local n0
-    n0:
+    :
         JSR add_to_changed_tiles_buffer_nO
         
-    .local return
-    return: 
+    :
 
 .endmacro
 ;*****************************************************************

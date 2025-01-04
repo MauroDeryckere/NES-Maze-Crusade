@@ -1,20 +1,11 @@
 .segment "CODE"
 .proc update_oam
-    ; just simple test for now, torches will actually do something and be randomly generated later
-
     ; setup torch in map buffer
     set_map_tile #0, #1
     set_map_tile #8, #MAP_END_COL + 1
 
-    set_visited #8, #1
-    get_map_tile_state #8, #1
-    BEQ skip
-    add_to_changed_tiles_buffer #8, #1, #PATH_TILE_1
-    JMP skip_2
-    skip: 
-    add_to_changed_tiles_buffer #8, #1, #WALL_TILE
-    skip_2:
-    
+    ; be randomly generated later
+    JSR update_torch_visibility
 
     ; Torches / lamps
     LDX #OAM_PLAYER_BYTE_END
@@ -54,6 +45,51 @@
     TYA
     STA oam, X
     INX
+
+    RTS
+.endproc
+
+.proc update_torch_visibility
+    ;torch tile
+    LDY #8
+    LDX #1
+    STY temp_row
+    STX temp_col
+    ; torch tile
+    JSR update_visibility_torch_dir
+
+    ; above
+    DEC temp_row
+    JSR update_visibility_torch_dir
+
+    ; left
+    INC temp_row
+    DEC temp_col
+    JSR update_visibility_torch_dir
+
+    ; right
+    INC temp_col
+    INC temp_col
+    JSR update_visibility_torch_dir
+
+    ; below
+    DEC temp_col
+    INC temp_row
+    JSR update_visibility_torch_dir
+
+    RTS
+.endproc
+
+.proc update_visibility_torch_dir
+    set_visited temp_row, temp_col
+    get_map_tile_state temp_row, temp_col
+
+    BEQ @skip
+    add_to_changed_tiles_buffer temp_row, temp_col, #PATH_TILE_1
+    JMP @skip_2
+    @skip: 
+    add_to_changed_tiles_buffer temp_row, temp_col, #WALL_TILE
+    @skip_2:
 
     RTS
 .endproc
