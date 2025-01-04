@@ -53,6 +53,17 @@ Navigate through the maze and reach the end to complete the level.
 - [Visual Studio Code](https://code.visualstudio.com/)
 - [Mesen](https://www.mesen.ca/) and [MesenX](https://github.com/NovaSquirrel/Mesen-X) (debugging and emulating)
 
+## Our Team
+
+**Programming:**
+- Mauro Deryckere
+  
+**Art:**
+- Ibe Vandendriessche
+  
+**Audio:**
+- Kaffeine
+
 ## References
 
 ### Sources
