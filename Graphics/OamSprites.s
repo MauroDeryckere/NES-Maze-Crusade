@@ -32,7 +32,7 @@
         @on_screen: 
 
         ;Y coordinate
-        LDA #64 
+        LDA #63 
         STA oam, X
         INX
 
@@ -361,13 +361,31 @@
     get_map_tile_state temp_row, temp_col
 
     BEQ @skip
+    ; todo randmise which path tile we use
     add_to_changed_tiles_buffer temp_row, temp_col, #PATH_TILE_1
     LDA #$FF
-    JMP @skip_2
+    JMP @return
     @skip: 
-    add_to_changed_tiles_buffer temp_row, temp_col, #WALL_TILE
-    LDA #0
-    @skip_2:
+        LDA temp_row
+        STA temp
+        CMP #MAP_END_ROW
+        BEQ @skip_half
+        INC temp
+
+        get_map_tile_state temp, temp_col
+        BEQ @skip_half
+        
+        add_to_changed_tiles_buffer temp_row, temp_col, #SIDE_WALL_HALF_TILE
+        LDA #0
+        JMP @return
+
+        @skip_half:
+        add_to_changed_tiles_buffer temp_row, temp_col, #SIDE_WALL_FULL_TILE
+        LDA #0
+        JMP @return
+
+
+    @return:
 
     RTS
 .endproc

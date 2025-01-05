@@ -60,7 +60,21 @@
             add_to_changed_tiles_buffer frontier_row, temp_frontier_col, temp
         JMP below
         a_wall: 
-            add_to_changed_tiles_buffer frontier_row, temp_frontier_col, #WALL_TILE
+            LDA frontier_row
+            CMP #MAP_END_ROW
+            BEQ @skip_a
+            STA temp
+            INC temp
+
+            get_map_tile_state temp, temp_frontier_col
+            BEQ @full_a
+
+            @skip_a: 
+                add_to_changed_tiles_buffer frontier_row, temp_frontier_col, #SIDE_WALL_HALF_TILE
+                JMP below
+
+            @full_a: 
+                add_to_changed_tiles_buffer frontier_row, temp_frontier_col, #SIDE_WALL_FULL_TILE
     below:
         LDA player_row
         CMP #MAP_END_ROW
@@ -89,7 +103,21 @@
             add_to_changed_tiles_buffer frontier_row, temp_frontier_col, temp
         JMP left
         b_wall: 
-            add_to_changed_tiles_buffer frontier_row, temp_frontier_col, #WALL_TILE
+            LDA frontier_row
+            CMP #MAP_END_ROW
+            BEQ @skip_b
+            STA temp
+            INC temp
+
+            get_map_tile_state temp, temp_frontier_col
+            BEQ @full_b
+
+            @skip_b: 
+                add_to_changed_tiles_buffer frontier_row, temp_frontier_col, #SIDE_WALL_HALF_TILE
+                JMP left
+
+            @full_b: 
+                add_to_changed_tiles_buffer frontier_row, temp_frontier_col, #SIDE_WALL_FULL_TILE
     
     left: 
         LDA temp_frontier_col
@@ -120,7 +148,22 @@
             add_to_changed_tiles_buffer player_row, frontier_col, temp
         JMP right
         l_wall: 
-            add_to_changed_tiles_buffer player_row, frontier_col, #WALL_TILE
+            LDA player_row
+            CMP #MAP_END_ROW
+            BEQ @skip_l
+            STA temp
+            INC temp
+
+            get_map_tile_state temp, frontier_col
+            BEQ @full_l
+
+            @skip_l: 
+                add_to_changed_tiles_buffer player_row, frontier_col, #SIDE_WALL_HALF_TILE
+                JMP right
+
+            @full_l: 
+                add_to_changed_tiles_buffer player_row, frontier_col, #SIDE_WALL_FULL_TILE
+
 
     right: 
         LDA temp_frontier_col
@@ -150,7 +193,22 @@
             add_to_changed_tiles_buffer player_row, frontier_col, temp
         JMP end
         r_wall: 
-            add_to_changed_tiles_buffer player_row, frontier_col, #WALL_TILE
+            LDA player_row
+            CMP #MAP_END_ROW
+            BEQ @skip_r
+            STA temp
+            INC temp
+
+            get_map_tile_state temp, frontier_col
+            BEQ @full_r
+
+            @skip_r: 
+                add_to_changed_tiles_buffer player_row, frontier_col, #SIDE_WALL_HALF_TILE
+                JMP end
+
+            @full_r: 
+                add_to_changed_tiles_buffer player_row, frontier_col, #SIDE_WALL_FULL_TILE
+
     end: 
 
     RTS

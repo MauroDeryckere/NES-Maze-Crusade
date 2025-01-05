@@ -230,9 +230,9 @@ irq:
     LDA #14 ; up until third row == blocked
     STA oam, X
 
-    ; Tile ID
+    ; Tile ID - can be replaced with something else we just need sprite 0 to be there to block the HUD 
     INX
-    LDA #WALL_TILE
+    LDA #TOPDOWN_WALL_TILE
     STA oam, X
 
     ; attributes

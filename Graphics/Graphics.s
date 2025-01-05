@@ -184,7 +184,7 @@
         DEY
         BNE @rowloop2
 
-;    vram_clear_address
+    vram_clear_address
 
     JSR ppu_update
     RTS
@@ -224,7 +224,7 @@
                     STA PPU_VRAM_IO
                     JMP :++
                 :
-                    LDA #WALL_TILE
+                    LDA #TOPDOWN_WALL_TILE ; todo select appropriate tile
                     STA PPU_VRAM_IO
                 :
                 LSR temp
@@ -277,7 +277,7 @@
                     STA PPU_VRAM_IO
                     JMP :++
                 :
-                    LDA #WALL_TILE
+                    LDA #TOPDOWN_WALL_TILE ; todo select appropriate tile
                     STA PPU_VRAM_IO
                 :
                 LSR temp

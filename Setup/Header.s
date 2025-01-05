@@ -132,7 +132,6 @@
     ; GAMEPLAY
     ; Map specific - may be moved to normal memory in future if necessary but since we have space in zero page, keep it here.
     num_torches:            .res 1 ; how many torches are there on the current map
-    torches_range:          .res 1 ; how far do our torches reach
     torches_buffer:         .res 2 ; Row, Col for all tourches
 
     ; AUDIO
@@ -163,7 +162,7 @@
         .byte $0F,$1D,$20,$10 ; bg3: HUD color | 
         
         .byte $0F,$1D,$20,$10 ; sp0: Player | Black, White, Light gray
-        .byte $0F,$17,$27,$37 ; sp1: Score | Dark Orange, Orange, Yellow
+        .byte $0F,$07,$16,$27 ; sp1: Torches | Brown, Orange, Yellow
         .byte $0F,$0F,$0F,$0F ; sp2: Currently unused
         .byte $0F,$0F,$0F,$0F ; sp3: Currently unused
 ;*****************************************************************
