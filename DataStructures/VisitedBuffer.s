@@ -3,8 +3,6 @@
 ; Used in the BFS to track which cells have been visited and haven't been.
 ; Also used as a buffer to track which cells are visible to the player or not in hard mode 
 ; To ensure we only update newly visible tiles in the background
-
-; The "Object" (see. documentation Map Buffer) for this buffer are torches. 
 ;*****************************************************************
 .macro calculate_offset_and_mask_visited Row, Column
     ;Calculate the base address of the row (Row * 4)

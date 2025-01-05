@@ -321,9 +321,7 @@
         CPY #CHANGED_TILES_BUFFER_SIZE
         BNE @maploop    
     @done: 
-        JSR clear_changed_tiles_buffer
     RTS
-
 .endproc
 
 ;*****************************************************************

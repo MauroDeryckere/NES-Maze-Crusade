@@ -44,10 +44,7 @@
     gamepad_released:       .res 2 ; released this frame
 
     ;gameplay flags
-    odd_frontiers: 			.res 1 ; was the maze generated with odd or even frontier rows and columns
     checked_this_frame:     .res 1 ; has code been executed during this frame
-
-    display_BFS_directions: .res 1 ;display directions instead of just 'red cells' for BFS field
 
     input_game_mode:        .res 1  ; game mode the game was started with
                                     ; 000G HSSS
@@ -128,18 +125,15 @@
     ; nodes_next_layer:       .res 1
     is_backtracking:        .res 1 ; is BFS currently backtracking the path (internal) - will be set to FF when end is reached
 
-    ;Score
+    ; SCORE
     score:                  .res 3 ; 3 bytes each storing 0-99 score
     should_update_score:    .res 1 ; "dirty flag" for score, toggled when score changes
     
-    added_high:             .res 1
-    added_low:              .res 1 ;these 2 are to make sure add score works correctly
-    ; Score | HHLL - 0000 up to 9999 score
-    score_low:              .res 1
-    score_high:             .res 1
-
-    ; Map specific
-
+    ; GAMEPLAY
+    ; Map specific - may be moved to normal memory in future if necessary but since we have space in zero page, keep it here.
+    num_torches:            .res 1 ; how many torches are there on the current map
+    torches_range:          .res 1 ; how far do our torches reach
+    torches_buffer:         .res 2 ; Row, Col for all tourches
 
     ; AUDIO
     temp_sound:             .res 1
@@ -149,7 +143,7 @@
     music_flag:             .res 1
 
     ; TESTING
-    test_var:               .res 1
+    ; test_var:               .res 1
 ;*****************************************************************
 
 .segment "OAM"

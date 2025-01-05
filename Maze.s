@@ -79,7 +79,6 @@ irq:
 
     @skip_start_screen: 
 
-
     JSR display_hp_bar
     JSR display_score
     @skip_hud: 
@@ -133,6 +132,9 @@ irq:
     ; instead of just waiting additional logic could be executed here given that it doesnt take so long the PPU gets past the point you wish to split screen.
     ; Some mappers allow scanline interupts and could be a "better solution" but the current HUD is limited to some top rows so it is not necessary to switch to a different mapper.
     
+    ; Clear buffer last since it does not have to be during vblank
+    JSR clear_changed_tiles_buffer
+
     LDA hit_check_enabled
     BEQ @skip_check
 
@@ -206,12 +208,7 @@ irq:
     LDA #0
     STA has_started
 
-    ; display arrows instead of just red cells
-    LDA #1 
-    STA display_BFS_directions
-
     ; audio initialisations
-
     ;-----------------------------------------
     ;INITIALIZE MUSIC
     ;-----------------------------------------

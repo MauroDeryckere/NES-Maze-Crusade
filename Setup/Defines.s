@@ -106,7 +106,7 @@ DEBUG_MODE = 0
     QUEUE_CAPACITY = 201; the maximum capacity of the queue - actual  available size is capacity - 1
 
 ; CHANGED TILES BUFFER
-    CHANGED_TILES_BUFFER_SIZE = 60
+    CHANGED_TILES_BUFFER_SIZE = 72
 
 ; SETUP
     GENERATION_ANIMATION_DELAY = 35 ; start the broken tiles animation after x amt of frames
