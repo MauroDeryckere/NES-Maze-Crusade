@@ -1,8 +1,55 @@
 .segment "CODE"
-.proc update_oam    
+.proc update_oam
+    ; reset the oam byte counter
+    LDX #OAM_PLAYER_BYTE_END
+    STX curr_oam_byte 
+
+    LDA current_game_mode
+    CMP #GAMEMODE_GENERATING
+    BEQ :+
+        JSR draw_player_sprite
+        JMP :++
+    :
+        JSR hide_player_sprite
+    :
+    
+    JSR clear_oam
+
+    LDA current_game_mode
+    CMP #GAMEMODE_PLAYING
+    BNE @skip_draw_calls
+        JSR draw_torches
+        JSR draw_chests
+    @skip_draw_calls: 
+
+    RTS
+.endproc
+
+.segment "CODE"
+; "clears" everything past cur_oam_byte 
+.proc clear_oam
+    LDA #255
     LDX curr_oam_byte
-    ; Torches / lamps
+    @clear_oam:
+        STA oam, X
+        INX
+        INX
+        INX
+        INX
+        BNE @clear_oam
+    RTS
+.endproc
+
+.segment "CODE"
+.proc draw_torches
+
+    LDA num_torches
+    BNE @torch_loop
+    RTS
+
+     ; Torches / lamps
     @torch_loop:
+    LDX curr_oam_byte
         ; calculate x pos first to know if this torch is off screen
         LDA #8
         SEC
@@ -13,6 +60,7 @@
 
         ; Hide sprite when torch is off screen
         @off_screen: 
+            RTS
             ;Y coordinate
             LDA #$FF
             STA oam, X
@@ -50,6 +98,14 @@
             RTS
 .endproc
 
+.segment "CODE"
+.proc draw_chests
+    LDX curr_oam_byte
+
+    RTS
+.endproc
+
+.segment "CODE"
 .proc update_torch_visibility
     ; example
     ; RANGE == 3

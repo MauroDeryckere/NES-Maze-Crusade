@@ -122,10 +122,6 @@ irq:
 	LDX #0
 	STX nmi_ready
 
-    ; reset the oam byte counter
-    LDX #OAM_PLAYER_BYTE_END
-    STX curr_oam_byte 
-
     ; this essentialy makes this function x amount of scanlines longer (depending on the position of the Sprite 0) 
     ; instead of just waiting additional logic could be executed here given that it doesnt take so long the PPU gets past the point you wish to split screen.
     ; Some mappers allow scanline interupts and could be a "better solution" but the current HUD is limited to some top rows so it is not necessary to switch to a different mapper.
@@ -303,7 +299,6 @@ irq:
             BNE @PAUSED
             
             JSR title_screen_input_logic
-            JSR draw_player_sprite ; player sprite is used in the titlescreen
 
             LDA current_game_mode
             CMP #GAMEMODE_TITLE_SCREEN
@@ -327,8 +322,9 @@ irq:
                     STA has_started
                     JMP mainloop
                 :
-
                 JSR step_title_update
+                JSR update_oam
+
             JMP mainloop
 
         ;------------;
@@ -360,8 +356,6 @@ irq:
                 LDA has_started
                 CMP #0
                 BNE :+++  
-                    JSR hide_player_sprite
-
                     LDA #0
                     STA player_movement_delay_ct
                     ;------------------------
@@ -409,8 +403,10 @@ irq:
                     INC scroll_x
                 :
 
-                JSR run_prims_maze ; whether or not the algorithm is finished is stored in the A register (0 when not finished)
-                JSR run_prims_maze ; whether or not the algorithm is finished is stored in the A register (0 when not finished)
+                JSR run_prims_maze
+                JSR run_prims_maze
+
+                JSR update_oam
 
                 ; BROKEN TILES ANIMATION
                 LDA player_movement_delay_ct
@@ -527,7 +523,6 @@ irq:
                 STA checked_this_frame ; set flag so that we only do this once per frame
 
                 JSR update_player_position
-                JSR draw_player_sprite
                 JSR update_oam
 
                 ; Have we started the game yet? if not, execute the start function once
@@ -673,7 +668,6 @@ irq:
                     BNE @LFR_SOLVE
 
                     JSR update_player_position
-                    JSR draw_player_sprite
 
                     JSR play_when_backtracking
 
@@ -695,7 +689,7 @@ irq:
                     :
 
                     JSR left_hand_rule
-                    JSR draw_player_sprite
+                    JSR update_oam
 
                     ; are we in hard mode?
                     LDA input_game_mode
@@ -829,7 +823,6 @@ irq:
 ;*****************************************************************
 ; resets everything necessary so that the maze generation can start again
 .proc reset_generation
-    JSR hide_player_sprite
     JSR clear_changed_tiles_buffer
     JSR clear_maze
 
@@ -841,6 +834,11 @@ irq:
     STA scroll_x
     LDA #1
     STA hit_check_enabled
+
+    LDA #0
+    STA num_torches
+
+    JSR clear_oam
 
     RTS
 .endproc

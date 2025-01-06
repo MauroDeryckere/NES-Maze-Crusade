@@ -162,7 +162,7 @@
         .byte $0F,$13,$15,$30 ; bg3: HUD color | Purple, Pink-Red, White
         
         .byte $0F,$1D,$20,$10 ; sp0: Player | Black, White, Light gray
-        .byte $0F,$07,$16,$27 ; sp1: Torches | Brown, Orange, Yellow
+        .byte $0F,$07,$16,$27 ; sp1: Torches, Chests | Brown, Orange, Yellow
         .byte $0F,$0F,$0F,$0F ; sp2: Currently unused
         .byte $0F,$0F,$0F,$0F ; sp3: Currently unused
 ;*****************************************************************

@@ -50,7 +50,7 @@
 ;simply hides the sprite off screen
 .proc hide_player_sprite
     LDX #OAM_PLAYER_BYTE_START
-    LDA #$FE       ; Y-coordinate off-screen
+    LDA #$FF       ; Y-coordinate off-screen
     STA oam, X      ; Write to OAM  
     RTS
 .endproc
