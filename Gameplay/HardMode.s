@@ -1,6 +1,11 @@
 ;*****************************************************************
 ; Hard mode related code
 ;*****************************************************************
+
+.include "Torches.s"
+.include "Chests.s"
+
+
 .segment "CODE"
 .proc start_hard_mode
     ; "Fog of War effect"
@@ -9,11 +14,9 @@
 
     JSR ppu_off    
     ; Torches
-    JSR update_torch_visibility
-
-    JSR draw_background
-    JSR clear_changed_tiles_buffer
-
+    JSR init_torches
+    JSR init_chests
+    
     JSR ppu_update
 
     JSR random_number_generator

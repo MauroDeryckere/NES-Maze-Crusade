@@ -53,6 +53,8 @@ irq:
 
     BIT PPU_STATUS
     
+    
+
     ;increase our frame counter (one vblank occurs per frame)
     INC frame_counter
     LDA frame_counter
@@ -103,7 +105,6 @@ irq:
         INX
         CPX #32
         BCC @loop
-
     ; Reset the scroll (necessary for the split scroll to work)
     LDA #0
 	STA PPU_VRAM_ADDRESS1
@@ -837,7 +838,8 @@ irq:
 
     LDA #0
     STA num_torches
-
+    STA num_chests
+    
     JSR clear_oam
 
     RTS

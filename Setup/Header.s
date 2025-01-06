@@ -132,7 +132,11 @@
     ; GAMEPLAY
     ; Map specific - may be moved to normal memory in future if necessary but since we have space in zero page, keep it here.
     num_torches:            .res 1 ; how many torches are there on the current map
-    torches_buffer:         .res 2 ; Row, Col for all tourches
+
+    ; not used currently ! 
+    torches_buffer:         .res 2 ; Row, Col for all tourches 
+
+    num_chests:              .res 1 ; how many chests are there on the current map
 
     ; AUDIO
     temp_sound:             .res 1
@@ -162,7 +166,7 @@
         .byte $0F,$13,$15,$30 ; bg3: HUD color | Purple, Pink-Red, White
         
         .byte $0F,$1D,$20,$10 ; sp0: Player | Black, White, Light gray
-        .byte $0F,$07,$16,$27 ; sp1: Torches, Chests | Brown, Orange, Yellow
-        .byte $0F,$0F,$0F,$0F ; sp2: Currently unused
+        .byte $0F,$07,$16,$27 ; sp1: Torches | Brown, Orange, Yellow
+        .byte $0F,$07,$17,$00 ; sp2: Chests | Dark brown, Light brown, Gray
         .byte $0F,$0F,$0F,$0F ; sp3: Currently unused
 ;*****************************************************************
