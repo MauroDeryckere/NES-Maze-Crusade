@@ -1,17 +1,5 @@
 .segment "CODE"
 .proc update_oam    
-    LDA #1
-    STA num_torches
-    STA temp
-
-    ; will be randomly generated later
-    ; torch tile
-    LDY #8 ; row (map)
-    LDX #1 ; col (map)
-    STY temp_row
-    STX temp_col
-    JSR update_torch_visibility
-    
     LDX curr_oam_byte
     ; Torches / lamps
     @torch_loop:
@@ -63,7 +51,6 @@
 .endproc
 
 .proc update_torch_visibility
-    JSR update_visibility_torch_dir
     ; example
     ; RANGE == 3
     ; 0 0 0 A 0 0 0
@@ -87,6 +74,19 @@
     ; 0 0 0 ? B B B ? 0 0 0
     ; 0 0 0 0 B B B 0 0 0 0
     ; 0 0 0 0 0 B 0 0 0 0 0
+
+    LDA #1
+    STA num_torches
+    STA temp
+
+    ; will be randomly generated later
+    ; torch tile
+    LDY #8 ; row (map)
+    LDX #1 ; col (map)
+    STY temp_row
+    STX temp_col
+
+    JSR update_visibility_torch_dir
 
     LDA temp_row
     STA temp_frontier_row ; temp value to fall back on, frontier not in use currently
@@ -374,7 +374,6 @@
 
         get_map_tile_state temp, temp_col
         BEQ @skip_half
-        
         add_to_changed_tiles_buffer temp_row, temp_col, #SIDE_WALL_HALF_TILE
         LDA #0
         JMP @return

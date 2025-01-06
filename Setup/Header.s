@@ -159,7 +159,7 @@
         .byte $0F,$16,$1C,$2C ; bg0: Maze color | Red, Teal, Cyan  
         .byte $0F,$0F,$0F,$0F ; bg1: Currently unused
         .byte $0F,$0F,$0F,$0F ; bg2: Currently unused
-        .byte $0F,$1D,$20,$10 ; bg3: HUD color | 
+        .byte $0F,$13,$15,$30 ; bg3: HUD color | Purple, Pink-Red, White
         
         .byte $0F,$1D,$20,$10 ; sp0: Player | Black, White, Light gray
         .byte $0F,$07,$16,$27 ; sp1: Torches | Brown, Orange, Yellow

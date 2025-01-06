@@ -3,6 +3,19 @@
 ;*****************************************************************
 .segment "CODE"
 .proc start_hard_mode
+    ; "Fog of War effect"
+    JSR display_clear_map
+    JSR clear_visited_buffer
+
+    JSR ppu_off    
+    ; Torches
+    JSR update_torch_visibility
+
+    JSR draw_background
+    JSR clear_changed_tiles_buffer
+
+    JSR ppu_update
+
     JSR random_number_generator
     AND #%00000011 ; 0-3
     CLC
@@ -10,10 +23,10 @@
     STA temp
     add_to_changed_tiles_buffer player_row, player_collumn, temp
 
+    JSR update_visibility
+
     ; In case we want the end to be visible for debugging purposes
     ; add_to_changed_tiles_buffer end_row, end_col, x_val
-
-    JSR clear_visited_buffer
 
     RTS
 .endproc

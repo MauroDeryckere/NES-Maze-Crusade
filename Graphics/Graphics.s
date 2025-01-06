@@ -360,147 +360,51 @@
     ; Write top border
     vram_set_address (NAME_TABLE_0_ADDRESS + 17 * 32 + 11)
     assign_16i paddr, top_border
-    jsr write_text
+    JSR write_consecutive_tiles
 
     ; Write play button
     vram_set_address (NAME_TABLE_0_ADDRESS + 18 * 32 + 11)
     assign_16i paddr, play_text
-    jsr write_text
+    JSR write_consecutive_tiles
 
     ; Write auto button
     vram_set_address (NAME_TABLE_0_ADDRESS + 19 * 32 + 11)
     assign_16i paddr, auto_text
-    jsr write_text
+    JSR write_consecutive_tiles
 
     ; Write hard button
     vram_set_address (NAME_TABLE_0_ADDRESS + 20 * 32 + 11)
     assign_16i paddr, hard_text
-    jsr write_text
+    JSR write_consecutive_tiles
 
     ; Write bottom border
     vram_set_address (NAME_TABLE_0_ADDRESS + 21 * 32 + 11)
     assign_16i paddr, bottom_border
-    jsr write_text
+    JSR write_consecutive_tiles
 	RTS
 .endproc
 
 .segment "CODE"
-.proc write_text
-    ldy #0
+.proc write_consecutive_tiles
+    LDY #0
     @loop:
-        lda (paddr),y ; get the byte at the current source address
-        beq exit ; exit when we encounter a zero in the text
-        SEC
-        SBC #$11
-        sta PPU_VRAM_IO ; write the byte to video memory
-        iny
-        jmp @loop
-    exit:
-	rts
+        LDA (paddr),y ; get the byte at the current source address
+        BEQ @exit ; exit when we encounter a zero in the text
+        STA PPU_VRAM_IO ; write the byte to video memory
+        INY
+        JMP @loop
+    @exit:
+	RTS
 .endproc
 
-; .proc draw_title
-;     ; LDA temp_player_collumn
-    
-;     ; CMP #1
-;     ; BEQ @p0
-;     ; CMP #2
-;     ; BEQ @p1
-;     ; CMP #3
-;     ; BNE :+
-;     ;     JMP @p2
-;     ; :
-;     ; CMP #4
-;     ; BNE :+
-;     ;     JMP @p3
-;     ; :
-;     ; CMP #5
-;     ; BNE :+
-;     ;     JMP @p4
-;     ; :
-
-;     ; RTS
-
-;     @p0:
-;         vram_set_address (NAME_TABLE_0_ADDRESS + 1 * 32 + 1)
-;         assign_16i paddr, titlebox_line_1
-;         JSR write_text
-;         vram_set_address (NAME_TABLE_0_ADDRESS + 2 * 32 + 1)
-;         assign_16i paddr, titlebox_line_2
-;         JSR write_text
-
-;     ;RTS
-;     @p1: 
-;         vram_set_address (NAME_TABLE_0_ADDRESS + 3 * 32 + 1)
-;         assign_16i paddr, title_line_1
-; 	    JSR write_text 
-;         vram_set_address (NAME_TABLE_0_ADDRESS + 4 * 32 + 1)
-;         assign_16i paddr, title_line_2
-;         JSR write_text 
-;     ;RTS
-;     @p2: 
-;         vram_set_address (NAME_TABLE_0_ADDRESS + 5 * 32 + 1)
-;         assign_16i paddr, title_line_3
-;         JSR write_text
-;         vram_set_address (NAME_TABLE_0_ADDRESS + 6 * 32 + 1)
-;         assign_16i paddr, title_line_4
-;         JSR write_text
-;     ;RTS
-;     @p3: 
-;         vram_set_address (NAME_TABLE_0_ADDRESS + 7 * 32 + 1)
-;         assign_16i paddr, title_line_5
-;         JSR write_text
-;         vram_set_address (NAME_TABLE_0_ADDRESS + 8 * 32 + 1)
-;         assign_16i paddr, title_line_6
-;         JSR write_text
-;     ;RTS
-;     @p4: 
-;         vram_set_address (NAME_TABLE_0_ADDRESS + 9 * 32 + 1)
-;         assign_16i paddr, titlebox_line_3
-;         JSR write_text
-;         vram_set_address (NAME_TABLE_0_ADDRESS + 10 * 32 + 1)
-;         assign_16i paddr, titlebox_line_4
-;         JSR write_text
-
-;         LDA #1
-;         STA has_started
-    
-;     RTS
-
-; .endproc
-
-; #BLACK_TILE = deciml 16
 top_border:
-    .byte $83, $82, $82, $82, $82, $82, $82, $82, $82, $86, 0
+    .byte $72, $71, $71, $71, $71, $71, $71, $71, $71, $75, 0
 play_text:
-    .byte $81, 16, 16, "p", "l", "a", "y", 16, 16, $85, 0
-auto_text:
-    .byte $81, 16, 16, "a", "u", "t", "o", 16, $7A, $85, 0
+    .byte $70, $10, $10, $5F, $5B, $50, $68, $10, $10, $74, 0 ; PLAY
+auto_text: 
+    .byte $70, $10, $10, $50, $64, $63, $5E, $10, $10, $74, 0 ; AUTO
 hard_text:
-    .byte $81, 16, 16, "h", "a", "r", "d", 16, $7A, $85, 0
+    .byte $70, $10, $10, $57, $50, $61, $53, $10, $10, $74, 0 ; HARD
 bottom_border:
-    .byte $84, $87, $87, $87, $87, $87, $87, $87, $87, $88, 0
-
-; titlebox_line_1:
-; .byte $11,$15,  $11, $11, $17, $17, $17,  $11,$11,    $17, $17, $15, $15, $11,    $11,$11,    $15, $11, $11, $15, $15,    $11,$11,    $15, $11, $15, $11, $11,  $11,$11, 0
-; titlebox_line_2:
-; .byte $11,$15,  $15, $15, $15, $17, $17,  $15,$15,    $15, $17, $17, $15, $15,    $11,$11,    $15, $15, $15, $15, $15,    $15,$15,    $15, $16, $16, $15, $15,  $15,$11, 0
-
-; title_line_1: 
-; .byte $15,$15,  $14, $14, $15, $14, $14,  $15,$15,    $15, $14, $14, $14, $15,    $11,$15,    $14, $14, $14, $14, $14,    $15,$15,    $14, $14, $14, $14, $14,  $15,$11, 0
-; title_line_2: 
-; .byte $17,$15,  $14, $14, $14, $14, $14,  $17,$17,    $14, $14, $15, $14, $14,    $11,$15,    $14, $15, $15, $14, $14,    $17,$17,    $14, $14, $15, $15, $14,  $15,$15, 0
-; title_line_3: 
-; .byte $17,$15,  $14, $15, $14, $15, $14,  $15,$17,    $14, $15, $15, $15, $14,    $17,$15,    $16, $15, $14, $14, $15,    $15,$17,    $16, $14, $14, $15, $17,  $15,$15, 0
-; title_line_4: 
-; .byte $15,$17,  $14, $15, $15, $15, $14,  $15,$15,    $14, $14, $14, $14, $14,    $16,$16,    $16, $14, $14, $15, $15,    $15,$15,    $15, $14, $14, $17, $17,  $17,$15, 0
-; title_line_5: 
-; .byte $15,$15,  $14, $15, $15, $15, $14,  $15,$15,    $14, $15, $15, $16, $14,    $16,$16,    $14, $14, $15, $15, $14,    $15,$15,    $15, $14, $15, $15, $14,  $15,$11, 0
-; title_line_6: 
-; .byte $11,$16,  $14, $16, $15, $15, $14,  $15,$15,    $14, $15, $15, $15, $14,    $15,$16,    $14, $14, $14, $14, $14,    $15,$15,    $14, $14, $14, $14, $14,  $15,$11, 0
-
-; titlebox_line_3:
-; .byte $11,$16,  $16, $16, $11, $11, $15,  $15,$15,    $15, $15, $15, $15, $15,    $15,$15,    $15, $15, $15, $15, $15,    $15,$15,    $15, $17, $17, $17, $17,  $17,$11, 0
-; titlebox_line_4:
-; .byte $11,$11,  $11, $11, $11, $11, $11,  $15,$15,    $15, $15, $15, $15, $15,    $15,$15,    $15, $15, $11, $11, $11,    $11,$15,    $15, $15, $17, $17, $11,  $11,$11, 0
+    .byte $73, $76, $76, $76, $76, $76, $76, $76, $76, $77, 0
 ;*****************************************************************

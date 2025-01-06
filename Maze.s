@@ -78,9 +78,7 @@ irq:
         JMP @skip_hud
 
     @skip_start_screen: 
-
-    JSR display_hp_bar
-    JSR display_score
+        JSR display_score
     @skip_hud: 
 
 
@@ -227,7 +225,7 @@ irq:
     ; scrolling / camera stuff
     ; Y pos
     LDX #0
-    LDA #14 ; up until third row == blocked
+    LDA #21 ; up until third row == blocked
     STA oam, X
 
     ; Tile ID - can be replaced with something else we just need sprite 0 to be there to block the HUD 
@@ -242,7 +240,7 @@ irq:
 
     ; X pos
     INX 
-    LDA #200
+    LDA #240
     STA oam, X
 
     ; disabled by default
@@ -399,11 +397,11 @@ irq:
                 :
 
                 ;slow down generation if necessary
-                modulo frame_counter, #MAZE_GENERATION_SPEED
-                CMP #0
-                BEQ :+
-                    JMP mainloop
-                :
+                ; modulo frame_counter, #MAZE_GENERATION_SPEED
+                ; CMP #0
+                ; BEQ :+
+                ;     JMP mainloop
+                ; :
 
                 LDA scroll_x
                 CMP #248
@@ -852,7 +850,6 @@ irq:
     AND #HARD_MODE_MASK
     CMP #0
     BEQ :+
-        JSR display_clear_map
         JSR start_hard_mode
     :
 
