@@ -51,9 +51,7 @@ irq:
     TYA
     PHA
 
-    BIT PPU_STATUS
-    
-    
+    BIT PPU_STATUS    
 
     ;increase our frame counter (one vblank occurs per frame)
     INC frame_counter
@@ -164,6 +162,11 @@ irq:
 ;*****************************************************************
 .segment "CODE"
 .proc init
+    LDA ppu_ctl0           ; Load the current PPU_CONTROL value
+    AND #%01111111         ; Clear Bits 3 and 4 (sprite and background table select)
+    ORA #%00001000         ; Set Bit 3 (sprites to Pattern Table 1), clear Bit 4 (background to Pattern Table 0)
+    STA ppu_ctl0           ; Store back to ppu_ctl0 (this is now the new PPU_CONTROL value)    
+
     LDX #0
     palette_loop:
         LDA default_palette, x  ;load palettes

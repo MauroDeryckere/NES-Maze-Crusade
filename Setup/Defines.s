@@ -23,6 +23,12 @@ DEBUG_MODE = 0
     NT_2800 = $02
     NT_2C00 = $03
 
+; Define constants for PPUCTRL bits
+    PPUCTRL_SPRITE_TABLE_0 = %00000000  ; Sprites use Pattern Table 0
+    PPUCTRL_SPRITE_TABLE_1 = %00001000  ; Sprites use Pattern Table 1
+    PPUCTRL_BG_TABLE_0     = %00000000  ; Background uses Pattern Table 0
+    PPUCTRL_BG_TABLE_1     = %00010000  ; Background uses Pattern Table 1
+
 ; Useful PPU memory addresses
     NAME_TABLE_0_ADDRESS		= $2000
     ATTRIBUTE_TABLE_0_ADDRESS	= $23C0

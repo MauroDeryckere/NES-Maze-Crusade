@@ -3,6 +3,8 @@
 ;*****************************************************************
 ;update player position with player input
 .proc update_player_position
+    ; PLAYER MOVEMENT
+    @MOVEMENT: 
     ;check if delay is reached otherwise update delay
     LDA player_movement_delay_ct
     BEQ :+
@@ -141,7 +143,7 @@
     @GAMEPAD_RIGHT:     
         LDA gamepad
         AND #PAD_R
-        BEQ @NOT_GAMEPAD_RIGHT
+        BEQ @NOT_MOVEMENT_INPUT
             ; change player direction
             LDA #RIGHT_D
             STA player_dir
@@ -152,7 +154,7 @@
             ; bounds check first
             LDA player_collumn
             CMP #MAP_END_COL
-            BEQ @NOT_GAMEPAD_RIGHT
+            BEQ @NOT_MOVEMENT_INPUT
 
             INC player_collumn
             
@@ -189,7 +191,13 @@
             @HitRight: ; sprite collided with wall
                 DEC player_collumn
 
-    @NOT_GAMEPAD_RIGHT: 
+    @NOT_MOVEMENT_INPUT: 
+        ; PLAYER INTERACT
+        @GAMEPAD_A: 
+            LDA gamepad
+            AND #PAD_A
+            
+            
         ;neither up, down, left, or right is pressed - could add extra logic for other buttons here in future
     RTS
 .endproc

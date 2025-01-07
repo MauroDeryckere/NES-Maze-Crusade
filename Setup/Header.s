@@ -160,13 +160,13 @@
 ;*****************************************************************
 .segment "RODATA"
     default_palette:
-        .byte $0F,$16,$1C,$2C ; bg0: Maze color | Red, Teal, Cyan  
+        .byte $0F,$16,$1C,$2C ; bg0: Maze color | Red (barely used), Teal, Cyan  
         .byte $0F,$0F,$0F,$0F ; bg1: Currently unused
         .byte $0F,$0F,$0F,$0F ; bg2: Currently unused
-        .byte $0F,$13,$15,$30 ; bg3: HUD color | Purple, Pink-Red, White
+        .byte $0F,$13,$15,$30 ; bg3: HUD color | Purple (unused), Pink-Red, White
         
         .byte $0F,$1D,$20,$10 ; sp0: Player | Black, White, Light gray
-        .byte $0F,$07,$16,$27 ; sp1: Torches | Brown, Orange, Yellow
+        .byte $0F,$07,$16,$27 ; sp1: Torches | Brown (unused), Orange, Yellow
         .byte $0F,$07,$17,$00 ; sp2: Chests | Dark brown, Light brown, Gray
         .byte $0F,$0F,$0F,$0F ; sp3: Currently unused
 ;*****************************************************************
