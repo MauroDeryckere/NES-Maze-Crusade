@@ -209,28 +209,26 @@
                 BEQ :+
                     JMP @not_top_d
                 :
-                    LDA player_row
-                    STA temp_row
-                    CMP #MAP_START_ROW
-                    BNE :+
-                        JMP @RETURN
-                    :
+                    ; LDA player_row
+                    ; STA temp_row
+                    ; CMP #MAP_START_ROW
+                    ; BNE :+
+                    ;     JMP @RETURN
+                    ; :
 
-                    DEC temp_row
-                    get_map_tile_state temp_row, #MAP_END_COL + 1
-                    BNE :+
-                        JMP @RETURN
-                    :
+                    ; DEC temp_row
+                    ; get_map_tile_state temp_row, #MAP_END_COL + 1
+                    ; BNE :+
+                    ;     JMP @RETURN
+                    ; :
 
-                    get_map_tile_state #MAP_START_ROW - 1, player_collumn
-                    BNE :+
-                        JMP @RETURN
-                    :
-                    LDA #0
-                    STA num_chests
+                    ; get_map_tile_state #MAP_START_ROW - 1, player_collumn
+                    ; BNE :+
+                    ;     JMP @RETURN
+                    ; :
 
-                    LDA #5
-                    JSR add_score
+                    ; LDA #5
+                    ; JSR add_score
 
                 @not_top_d: 
 

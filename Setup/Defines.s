@@ -115,8 +115,8 @@ DEBUG_MODE = 0
     CHANGED_TILES_BUFFER_SIZE = 72
 
 ; OBJECTS BUFFERS
-    CHEST_BUFFER_SIZE = 2
-    TORCH_BUFFER_SIZE = 2
+    CHEST_BUFFER_SIZE = 6 ; 3 chests max
+    TORCH_BUFFER_SIZE = 6 ; 3 torches max
 
 ; SETUP
     GENERATION_ANIMATION_DELAY = 35 ; start the broken tiles animation after x amt of frames

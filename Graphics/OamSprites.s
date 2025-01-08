@@ -96,54 +96,70 @@
 
 .segment "CODE"
 .proc draw_chests
-    LDA num_chests
-    BNE @chest_loop
-    RTS
+    LDY curr_oam_byte
+    LDX #0
+    @loop: 
+        LDA chests_buffer, X
+        BNE :+
+            INX
+            INX
+            CPX #CHEST_BUFFER_SIZE
+            BNE @loop
+            RTS
+        :
+        STA temp_row
 
-    ; just a single torch currently 
-    ; Torches / lamps
-    @chest_loop:
-        LDX curr_oam_byte
-        ; calculate x pos first to know if this torch is off screen
-        LDA #8
+        INX 
+        LDA chests_buffer, X
+        INX
+
+        ASL
+        ASL
+        ASL
         SEC
         SBC scroll_x 
-        TAY
-        BCC @off_screen
-        JMP @on_screen
+        STA temp_col
 
-        ; Hide sprite when torch is off screen
-        @off_screen: 
+        BCC :+
+        JMP :++
+        :
+            ; off creen
+            CPX #CHEST_BUFFER_SIZE
+            BNE @loop
             RTS
-        @on_screen: 
-
+        :
+        
+    ; set the sprite stuff    
         ;Y coordinate
-        LDA #55
-        STA oam, X
-        INX
+        LDA temp_row
+        ASL
+        ASL
+        ASL
+        STA oam, Y
+        INY
 
         ;Tile pattern index
         LDA #CHEST_TILE
-        STA oam, X
-        INX
+        STA oam, Y
+        INY
 
         ;Sprite attributes
         LDA #%00000010
-        STA oam, X
-        INX
+        STA oam, Y
+        INY
 
+        LDA temp_col
         ;X coordinate
-        TYA
-        STA oam, X
-        INX
+        STA oam, Y
+        INY     
 
-        @end: 
-            ; adjust curr oam byte
-            LDA num_torches
-            ASL
-            ASL
-            CLC
-            ADC curr_oam_byte
-            STA curr_oam_byte
-            RTS
+        CPX #CHEST_BUFFER_SIZE
+        BNE @loop
+
+    @return: 
+        TYA 
+        CLC
+        ADC curr_oam_byte 
+        STA curr_oam_byte
+        RTS
 .endproc

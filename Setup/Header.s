@@ -13,7 +13,7 @@
     .byte $0 ; additional mapper info - we don't use this
     .byte $4 ; pal mode
     .byte $0, $0, $0, $0, $0, $0 ; padding
-              ; PAL mode
+
 .segment "TILES"
     .incbin "Graphics/Tiles.chr"
 
@@ -136,7 +136,6 @@
     num_torches:            .res 1 ; how many torches are there on the current map
     torches_buffer:         .res TORCH_BUFFER_SIZE ; Row, Col for all tourches | row == 0 means there is no item at the current slot
 
-    num_chests:             .res 1 ; how many chests are there on the current map
     chests_buffer:          .res CHEST_BUFFER_SIZE ; Row, Col for all chests | row == 0 means there is no item at the current slot
 
     ; AUDIO
@@ -170,4 +169,4 @@
         .byte $0F,$07,$16,$27 ; sp1: Torches | Brown (unused), Orange, Yellow
         .byte $0F,$07,$17,$00 ; sp2: Chests | Dark brown, Light brown, Gray
         .byte $0F,$0F,$0F,$0F ; sp3: Currently unused
-;*****************************************************************
+;*****************************************************************w

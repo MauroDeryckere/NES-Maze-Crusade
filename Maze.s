@@ -843,7 +843,8 @@ irq:
 
     LDA #0
     STA num_torches
-    STA num_chests
+
+    JSR clear_chest_buffer
     
     JSR clear_oam
 
