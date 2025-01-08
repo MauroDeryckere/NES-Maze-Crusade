@@ -5,10 +5,12 @@
 
 .include "DataStructures/ChangedTileBuffer.s"
 .include "DataStructures/DirectionBuffer.s"
+.include "DataStructures/ChestBuffer.s"
 .include "DataStructures/FrontierList.s"
 .include "DataStructures/MapBuffer.s"
 .include "DataStructures/Queue.s"
 .include "DataStructures/StartScreenBuffer.s"
+.include "DataStructures/TorchBuffer.s"
 .include "DataStructures/VisitedBuffer.s"
 
 .include "Graphics/Graphics.s"

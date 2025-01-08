@@ -9,7 +9,7 @@
     LDA player_movement_delay_ct
     BEQ :+
         DEC player_movement_delay_ct
-        RTS
+        JMP @NOT_MOVEMENT_INPUT 
     :
 
     @GAMEPAD_DOWN:
@@ -46,7 +46,8 @@
                 ; reset cooldown
                 LDA #PLAYER_MOVEMENT_DELAY
                 STA player_movement_delay_ct
-                RTS
+                JMP @NOT_MOVEMENT_INPUT 
+
             @HitDown: ; sprite collided with wall
                 DEC player_row
 
@@ -86,7 +87,8 @@
                 ; Reset cooldown
                 LDA #PLAYER_MOVEMENT_DELAY
                 STA player_movement_delay_ct
-                RTS
+                JMP @NOT_MOVEMENT_INPUT 
+
             @HitUp: ; sprite collided with wall
                 INC player_row
 
@@ -135,8 +137,8 @@
                         STA scroll_x
                         INC player_collumn
                 :
-            RTS
-
+            JMP @NOT_MOVEMENT_INPUT 
+        
             @HitLeft: ; sprite collided with wall
                 INC player_collumn
 
@@ -187,7 +189,7 @@
                         DEC player_collumn
                 :
 
-                RTS 
+                JMP @NOT_MOVEMENT_INPUT 
             @HitRight: ; sprite collided with wall
                 DEC player_collumn
 
@@ -196,9 +198,52 @@
         @GAMEPAD_A: 
             LDA gamepad
             AND #PAD_A
+            BNE :+
+                JMP @RETURN
+            :
+        ;        LDA player_collumn
+        
+
+                LDA player_dir
+                CMP #TOP_D
+                BEQ :+
+                    JMP @not_top_d
+                :
+                    LDA player_row
+                    STA temp_row
+                    CMP #MAP_START_ROW
+                    BNE :+
+                        JMP @RETURN
+                    :
+
+                    DEC temp_row
+                    get_map_tile_state temp_row, #MAP_END_COL + 1
+                    BNE :+
+                        JMP @RETURN
+                    :
+
+                    get_map_tile_state #MAP_START_ROW - 1, player_collumn
+                    BNE :+
+                        JMP @RETURN
+                    :
+                    LDA #0
+                    STA num_chests
+
+                    LDA #5
+                    JSR add_score
+
+                @not_top_d: 
+
+                CMP #RIGHT_D
+                BNE :+
+                :
+                CMP #BOTTOM_D
+                BNE :+
+                :
+                CMP #LEFT_D
+
             
-            
-        ;neither up, down, left, or right is pressed - could add extra logic for other buttons here in future
+    @RETURN: 
     RTS
 .endproc
 ;*****************************************************************

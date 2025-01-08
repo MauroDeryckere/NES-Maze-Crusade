@@ -8,6 +8,7 @@
 ; Row 1: 0000 0000  0000 0000   0000 0000   0000 0000   0000 0000
 ;...
 
+; Note: system assumes there is only one item for a given column (or row if that's preferred)
 ; Additional info is stored at the edges of the map buffer in the following way: 
 ; T means an object is stored in that row / column this way we know the object is stored in [1, 0], ...
 ;Column: 0123 4567  89...                                           Last column

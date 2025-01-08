@@ -114,6 +114,10 @@ DEBUG_MODE = 0
 ; CHANGED TILES BUFFER
     CHANGED_TILES_BUFFER_SIZE = 72
 
+; OBJECTS BUFFERS
+    CHEST_BUFFER_SIZE = 2
+    TORCH_BUFFER_SIZE = 2
+
 ; SETUP
     GENERATION_ANIMATION_DELAY = 35 ; start the broken tiles animation after x amt of frames
     PLAYER_MOVEMENT_DELAY = 5 ;sets the delay for player movement (==  movement speed)

@@ -10,8 +10,10 @@
     .byte $01 ; 8 KB program bank count
     .byte INES_MIRROR | (INES_SRAM << 1) | ((INES_MAPPER & $f) << 4)
     .byte (INES_MAPPER & %11110000)
-    .byte $0, $0, $0, $0, $0, $0, $0, $0 ; padding
-
+    .byte $0 ; additional mapper info - we don't use this
+    .byte $4 ; pal mode
+    .byte $0, $0, $0, $0, $0, $0 ; padding
+              ; PAL mode
 .segment "TILES"
     .incbin "Graphics/Tiles.chr"
 
@@ -132,11 +134,10 @@
     ; GAMEPLAY
     ; Map specific - may be moved to normal memory in future if necessary but since we have space in zero page, keep it here.
     num_torches:            .res 1 ; how many torches are there on the current map
+    torches_buffer:         .res TORCH_BUFFER_SIZE ; Row, Col for all tourches | row == 0 means there is no item at the current slot
 
-    ; not used currently ! 
-    torches_buffer:         .res 2 ; Row, Col for all tourches 
-
-    num_chests:              .res 1 ; how many chests are there on the current map
+    num_chests:             .res 1 ; how many chests are there on the current map
+    chests_buffer:          .res CHEST_BUFFER_SIZE ; Row, Col for all chests | row == 0 means there is no item at the current slot
 
     ; AUDIO
     temp_sound:             .res 1
