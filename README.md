@@ -21,10 +21,12 @@ Players can enjoy the game on original NES hardware or through a compatible NES 
 
 ## How To Play
 
+To play the game if you don't have a NES, you need an emulator, we have tested the game in Mesen and FCEUX but other emulators may also work when they support PAL mode. If you do have a NES you will need a way to upload the NES file to a cartridge (Everdrive, ...)
+
 ### Gamemodes
 
 - **Hard**: Hard mode stops displaying the maze once it's been generated and has has the player looking for their way out using a classic "Fog of War" system.
-- **Auto**: The auto gamemode disables player input (in hardmode) and uses solving algorithms to solve fhe maze. This allows you to sit back and enjoy the satisfying animation. Starting in auto mode with the hard flag enabled uses the Left Hand Rule solving algorithm, without it uses a Breadth First Search.
+- **Auto**: The auto gamemode disables player input (in hardmode) and uses solving algorithms to solve the maze. This allows you to sit back and enjoy the satisfying animation. Starting in auto mode with the hard flag enabled uses the Left Hand Rule solving algorithm, without it uses a Breadth First Search.
 
 ### Title Screen Controls
 
@@ -37,6 +39,7 @@ Players can enjoy the game on original NES hardware or through a compatible NES 
 
 - **START**: Pause the game
 - **DPAD**: Move up, right, down, or left
+- **A**: Open chest
 
 ### Objective
 
@@ -53,6 +56,7 @@ Navigate through the maze and reach the end to complete the level.
 **Coding:**
 - [Visual Studio Code](https://code.visualstudio.com/)
 - [Mesen](https://www.mesen.ca/) and [MesenX](https://github.com/NovaSquirrel/Mesen-X) (debugging and emulating)
+- [FCEUX](https://fceux.com/web/home.html) (debugging and emulating)
 
 ## Our Team
 
@@ -64,6 +68,7 @@ Navigate through the maze and reach the end to complete the level.
   
 **Audio:**
 - Kaffeine
+- Slumpyre
 
 ## References
 
