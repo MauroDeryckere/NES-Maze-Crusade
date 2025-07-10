@@ -1,21 +1,21 @@
 # NES Maze Game
 
-## Overview
+## Intro
 
 The NES Maze Game is a maze navigation game inspired by classic titles from the golden era of gaming. Designed for the Nintendo Entertainment System (NES), it offers players the chance to navigate through intricate mazes in different modes.
 
 Players can enjoy the game on original NES hardware or through a compatible NES emulator, making it accessible to a wider audience of retro gaming enthusiasts.
 
 ## Table of Contents
-1. [Overview](#overview)
+1. [Intro](#intro)
 2. [How To Play](#how-to-play)
    - [Gamemodes](#gamemodes) 
    - [Title Screen Controls](#title-screen-controls)
    - [In-Game Controls](#in-game-controls)  
    - [Objective](#objective)  
+3. [Technical Information](#technical-information)
 4. [Used Software](#used-software)
-5. [Our Team](#our-team)
-6. [References](#references)  
+5. [References](#references)  
    - [Sources](#sources)  
    - [Initial Project](#initial-project)  
 
@@ -45,6 +45,8 @@ To play the game if you don't have a NES, you need an emulator, we have tested t
 
 Navigate through the maze and reach the end to complete the level.
 
+## Technical information
+
 ## Used Software
 **Graphics:**
 - [YY-CHR](https://wiki.vg-resource.com/YY-CHR)
@@ -53,22 +55,10 @@ Navigate through the maze and reach the end to complete the level.
 **Audio:**
 - [FamiStudio](https://famistudio.org/)
 
-**Coding:**
+**Coding & Debugging:**
 - [Visual Studio Code](https://code.visualstudio.com/)
 - [Mesen](https://www.mesen.ca/) and [MesenX](https://github.com/NovaSquirrel/Mesen-X) (debugging and emulating)
 - [FCEUX](https://fceux.com/web/home.html) (debugging and emulating)
-
-## Our Team
-
-**Programming:**
-- Mauro Deryckere
-  
-**Art:**
-- Ibe Vandendriessche
-  
-**Audio:**
-- Kaffeine
-- Slumpyre
 
 ## References
 
@@ -94,4 +84,4 @@ The original project was created by:
 - **Seppe Mestdagh**
 - **Aaron Van Sichem De Combe**
 
-For more information, or to view the original project, please visit the official project repository [here](https://github.com/thegamingnobody/AssemblyMaze).
+For more information, or to view the original project, please visit the project repository [here](https://github.com/thegamingnobody/AssemblyMaze).
