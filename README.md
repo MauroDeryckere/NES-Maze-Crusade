@@ -15,6 +15,10 @@ Players can enjoy the game on original NES hardware or through a compatible NES 
    - [Objective](#objective)  
 3. [Technical Information](#technical-information)
    - [Building Project](#building-project)
+   - [Graphics](#graphics)
+   - [Data Structures](#data-structures)
+   - [Maze Generation](#maze-generation)
+   - [Maze Solving](#maze-solving)
 4. [Used Software](#used-software)
 5. [References](#references)  
    - [Sources](#sources)  
@@ -53,6 +57,8 @@ To build the project (I am using a VS Code terminal in this case, but any termin
 ```bash
 Setup\build.bat Maze
 ```
+
+Having a 6502 compiler installed is a requirement, we used [CC65](https://cc65.github.io/).
 
 ### Graphics
 split scrolling "hack" for HUD
@@ -104,10 +110,5 @@ Classic Programming on the NES. </br>
 Manning Publications Co.</br>
 ISBN: 9781633438019.
 
-The original project was created by:
-
-- **Mauro Deryckere**
-- **Seppe Mestdagh**
-- **Aaron Van Sichem De Combe**
-
 For more information, or to view the original project, please visit the project repository [here](https://github.com/thegamingnobody/AssemblyMaze).
+ZZ
