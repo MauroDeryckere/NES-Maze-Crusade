@@ -86,6 +86,7 @@ The queue is a circular queue to avoid the moving of memory (limited possibility
 *Note: the queue uses one extra byte at the end to be able to distinguish between full and empty without storing additonal flags / adding extra loggic (N-1 usable slots)*
 
 Example of how the queue data structure works: 
+```text
 Initial state - empty: 
 queue_head = 0
 queue_tail = 0
@@ -115,6 +116,7 @@ Enqueue 70
 queue_head = 1 
 queue_tail = 0 - wrapped around to 0
 [ 70 ][ 43 ][ 50 ][ 60 ][ ?? ]  ; note: last slot remains [??] - reserve one to distinguish between empty and full
+```
 
 ### Maze generation
 Prims
