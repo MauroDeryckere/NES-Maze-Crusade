@@ -51,6 +51,7 @@ To play the game if you don't have a NES, you need an emulator, we have tested t
 Navigate through the maze and reach the end to complete the level.
 
 ## Technical information
+In this section we will cover a lot of the technical details for the project.
 
 ### Building project
 To build the project (I am using a VS Code terminal in this case, but any terminal will work) run the folliwng command in a terminal: 
@@ -58,7 +59,7 @@ To build the project (I am using a VS Code terminal in this case, but any termin
 Setup\build.bat Maze
 ```
 
-Having a 6502 compiler installed is a requirement, we used [CC65](https://cc65.github.io/).
+Having a 6502 compiler installed is a requirement for this to work, we used [CC65](https://cc65.github.io/).
 
 ### Graphics
 split scrolling "hack" for HUD
@@ -68,9 +69,52 @@ animations
 uses changed tiles buffer -> more specifics there
 
 ### Data structures
-Buffers
-Queue
 
+#### Buffers
+Buffers (arrays) are the most commonly used data structure throughout the project, a few different ones are defined:
+- Changed Tile
+- Chest
+- Direction
+- Map
+- StartScreen
+- Torch
+- Visited
+
+#### Queue
+The queue is a circular queue to avoid the moving of memory (limited possibility to do this in 6502). Make sure the queue capacity that is reserved is sufficient when using this for certain algorithms that require you to maintain all items in the queue.
+
+*Note: the queue uses one extra byte at the end to be able to distinguish between full and empty without storing additonal flags / adding extra loggic (N-1 usable slots)*
+
+Example of how the queue data structure works: 
+Initial state - empty: 
+queue_head = 0
+queue_tail = 0
+
+Enqueue 42
+queue_head = 0
+queue_tail = 1
+[ 42 ][ ?? ][ ?? ]
+
+Enqueue 43
+queue_head = 0
+queue_tail = 2
+[ 42 ][ 43 ][ ?? ]
+
+Dequeue 
+queue_head = 1
+queue_tail = 2
+[ ?? ][ 43 ][ ?? ]
+
+Example of what happens when we need to wrap around in the circular queue: 
+initial state: 
+queue_head = 1
+queue_tail = 4
+[ ?? ][ 43 ][ 50 ][ 60 ][ ?? ] 
+
+Enqueue 70 
+queue_head = 1 
+queue_tail = 0 - wrapped around to 0
+[ 70 ][ 43 ][ 50 ][ 60 ][ ?? ]  ; note: last slot remains [??] - reserve one to distinguish between empty and full
 
 ### Maze generation
 Prims
