@@ -14,6 +14,7 @@ Players can enjoy the game on original NES hardware or through a compatible NES 
    - [In-Game Controls](#in-game-controls)  
    - [Objective](#objective)  
 3. [Technical Information](#technical-information)
+   - [Building Project](#building-project)
 4. [Used Software](#used-software)
 5. [References](#references)  
    - [Sources](#sources)  
@@ -46,6 +47,31 @@ To play the game if you don't have a NES, you need an emulator, we have tested t
 Navigate through the maze and reach the end to complete the level.
 
 ## Technical information
+
+### Building project
+To build the project (I am using a VS Code terminal in this case, but any terminal will work) run the folliwng command in a terminal: 
+```bash
+Setup\build.bat Maze
+```
+
+### Graphics
+split scrolling "hack" for HUD
+score
+animations
+
+uses changed tiles buffer -> more specifics there
+
+### Data structures
+Buffers
+Queue
+
+
+### Maze generation
+Prims
+
+### Maze solving
+LHR
+BFS
 
 ## Used Software
 **Graphics:**
