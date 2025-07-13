@@ -72,13 +72,44 @@ uses changed tiles buffer -> more specifics there
 
 #### Buffers
 Buffers (arrays) are the most commonly used data structure throughout the project, a few different ones are defined:
-- Changed Tile
-- Chest
-- Direction
-- Map
-- StartScreen
-- Torch
-- Visited
+- Changed Tile Buffer
+- Chest Buffer
+- Direction Buffer
+- Frontier List
+- Map Buffer
+- Start Screen Buffer
+- Torch Buffer
+- Visited Buffer
+
+Generally, most of these buffers work in a similar way, with a few differences as to how they're accessed and used.
+
+##### Changed Tile Buffer
+This buffer is used for graphics (more info in that section), this will just cover how the buffer itself works.
+The buffer contains the row and column of the tile on the background. It Stores 3 bytes per tile, high byte of location low byte of location and the tile from the tilesheet we're using. There's also 2 different buffers, one for each nametable.
+
+##### Chest, Torch and 
+These simply store a row and column in a buffer.
+
+##### Start Screen buffer and Frontier List
+These work in a similar way as the previously mentioned buffers, but the start screen buffer acts a little different as it is actually 3 buffers since a lot of data needs to be stored. The frontier list also has some additional macros that work closely together with the map buffer (see. how the maze generation works).
+
+##### Map, Direction, Visted buffer
+These all store information about the map, but to safe space the buffers have been optimized quite a bit.
+**Map Buffer**
+For the map buffern very tile corresponds with one bit: wall or path.
+
+```text
+;Column: 0123 4567  89...
+; Row 0: 0000 0000  0000 0000   0000 0000   0000 0000   0000 0000
+; Row 1: 0000 0000  0000 0000   0000 0000   0000 0000   0000 0000
+;...
+```
+
+**Direction Buffer**
+The direction buffer works the same as the map buffer, but there are 2 bits per tile: direction 0-3.
+
+**Visited Buffer**
+The visited buffer works the same as the map buffer, but instead of storing whether or not it's a wall, it stores if the cell has been visited (solving algorithm) or if it is visible to the player (hardmode).
 
 #### Queue
 The queue is a circular queue to avoid the moving of memory (limited possibility to do this in 6502). Make sure the queue capacity that is reserved is sufficient when using this for certain algorithms that require you to maintain all items in the queue.

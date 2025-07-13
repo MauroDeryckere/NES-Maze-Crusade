@@ -1,6 +1,6 @@
 ;*****************************************************************
 ; Map buffer - directions
-; same macros as maze buffer but not in zero page
+; same macros as MapBuffer.s
 ; additonally there are 2 bits per tile, direction 0-3
 ;*****************************************************************
 ; stores offset in temp address
