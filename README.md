@@ -94,8 +94,8 @@ These simply store a row and column in a buffer.
 These work in a similar way as the previously mentioned buffers, but the start screen buffer acts a little different as it is actually 3 buffers since a lot of data needs to be stored. The frontier list also has some additional macros that work closely together with the map buffer (see. how the maze generation works).
 
 ##### Map, Direction, Visted buffer
-These all store information about the map, but to safe space the buffers have been optimized quite a bit.
-**Map Buffer**
+These all store information about the map, but to safe space the buffers have been optimized quite a bit.</br>
+**Map Buffer**</br>
 For the map buffern very tile corresponds with one bit: wall or path.
 
 ```text
@@ -105,10 +105,10 @@ For the map buffern very tile corresponds with one bit: wall or path.
 ;...
 ```
 
-**Direction Buffer**
+**Direction Buffer**</br>
 The direction buffer works the same as the map buffer, but there are 2 bits per tile: direction 0-3.
 
-**Visited Buffer**
+**Visited Buffer**</br>
 The visited buffer works the same as the map buffer, but instead of storing whether or not it's a wall, it stores if the cell has been visited (solving algorithm) or if it is visible to the player (hardmode).
 
 #### Queue
