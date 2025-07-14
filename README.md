@@ -87,7 +87,7 @@ Generally, most of these buffers work in a similar way, with a few differences a
 This buffer is used for graphics (more info in that section), this will just cover how the buffer itself works.
 The buffer contains the row and column of the tile on the background. It Stores 3 bytes per tile, high byte of location low byte of location and the tile from the tilesheet we're using. There's also 2 different buffers, one for each nametable.
 
-##### Chest, Torch and 
+##### Chest and torch buffer
 These simply store a row and column in a buffer.
 
 ##### Start Screen buffer and Frontier List
