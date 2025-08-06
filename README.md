@@ -8,21 +8,29 @@ Players can enjoy the game on original NES hardware or through a compatible NES 
 
 ## Table of Contents
 1. [Intro](#intro)
-2. [How To Play](#how-to-play)
+2. [About The Project](#about-the-project)
+3. [How To Play](#how-to-play)
    - [Gamemodes](#gamemodes) 
    - [Title Screen Controls](#title-screen-controls)
    - [In-Game Controls](#in-game-controls)  
    - [Objective](#objective)  
-3. [Technical Information](#technical-information)
+4. [Technical Information](#technical-information)
    - [Building Project](#building-project)
    - [Graphics](#graphics)
    - [Data Structures](#data-structures)
    - [Maze Generation](#maze-generation)
    - [Maze Solving](#maze-solving)
-4. [Used Software](#used-software)
-5. [References](#references)  
+5. [Used Software](#used-software)
+6. [References](#references)  
    - [Sources](#sources)  
    - [Initial Project](#initial-project)  
+
+## About The Project
+The project started a as a [group project](#initial-project) for a DAE course, where the goal was to create a better understanding of low level programming and learn 6502 assembly for the NES. Since then I've continued the project and added more features.
+
+The project explores Maze generation in a low level programming language, you can play easy mode (no darkness), hard mode (darkness) and auto mode, which uses a solving algorithm.
+
+Currently the project isn't really much of a game as you can only solve the Maze, and there's no enemies yet. Inb the future I would like to add some enemies in the maze to add more difficulty and gameplay.
 
 ## How To Play
 
