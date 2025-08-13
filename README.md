@@ -176,6 +176,8 @@ The rest of the algoritm simply recursively does this:
 - Pick a random Frontier cell.
 - For all walkable neighbors of the Frontier cell (distance 2), pick a random neighbor and connect the Frontier cell with the neighbor. Now calculate new Frontier cells for the Frontier cell that was picked. (also remove the now used Frontier cell)
 
+For Prim's algorithm we simply need a Frontier list that allows random access.
+
 ![Example](Doc/Prims01.png)
 
 ![Example2](Doc/Prims02.png)
@@ -211,7 +213,9 @@ Then a very simple calculation is done whenever a random number is needed.
 The first solving algorithm that was implemented is a very simple one, you just always keep your left hand on the wall until you reach the exit.
 
 #### Bread-First Search
-The second algorithm that was implemented is more complicated, especially on older hardware like this. It is a BFS algorithm. You explore all unvisited walkable neighbors, if none are the goal tile, you continue exploring all their neighbors again.
+The second algorithm that was implemented is more complicated, especially on older hardware like this. It is a BFS algorithm. You explore all unvisited walkable neighbors, if none are the goal tile, you continue exploring all the of the furthest exlored tiles until the goal was found.
+
+In order for the BFS algorithm to work we need to track a visited list (easy since it is a grid) and a queue with the cells we're currently exploring.
 
 ## Used Software
 **Graphics:**
