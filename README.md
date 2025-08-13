@@ -176,11 +176,11 @@ The rest of the algoritm simply recursively does this:
 - Pick a random Frontier cell.
 - For all walkable neighbors of the Frontier cell (distance 2), pick a random neighbor and connect the Frontier cell with the neighbor. Now calculate new Frontier cells for the Frontier cell that was picked. (also remove the now used Frontier cell)
 
-![Example](Docs/Prims01.png)
+![Example](Doc/Prims01.png)
 
-![Example2](Docs/Prims02.png)
+![Example2](Doc/Prims02.png)
 
-![Example3](Docs/Prims03.png)
+![Example3](Doc/Prims03.png)
 
 #### Random numbers
 To make this work, we need random number generation which we do the follow way: a random seed is stored in ZPG and we increase the seed as many times as we can during a frame (this results in more randomness).
