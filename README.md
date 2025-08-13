@@ -21,6 +21,7 @@ Players can enjoy the game on original NES hardware or through a compatible NES 
    - [Graphics](#graphics)
    - [Data Structures](#data-structures)
    - [Maze Generation](#maze-generation)
+      - [Random Numbers](#random-numbers)
    - [Maze Solving](#maze-solving)
 5. [Used Software](#used-software)
 6. [References](#references)  
@@ -167,13 +168,50 @@ queue_tail = 0 - wrapped around to 0
 ```
 
 ### Maze generation
-Prims
+For the maze generation I used Prim's algorithm. It works the following way. 
+
+Pick a random grid cell and set its state to passage (walkable), then calculate the Frontier cells for this cell. Frontier cells are cells at distance 2 that are blocked.
+
+The rest of the algoritm simply recursively does this: 
+- Pick a random Frontier cell.
+- For all walkable neighbors of the Frontier cell (distance 2), pick a random neighbor and connect the Frontier cell with the neighbor. Now calculate new Frontier cells for the Frontier cell that was picked. (also remove the now used Frontier cell)
+
+[Example](Docs/Prims01)
+
+[Example2](Docs/Prims02)
+
+[Example3](Docs/Prims03)
+
+#### Random numbers
+To make this work, we need random number generation which we do the follow way: a random seed is stored in ZPG and we increase the seed as many times as we can during a frame (this results in more randomness).
+
+Then a very simple calculation is done whenever a random number is needed.
+
+```asm6502
+; takes the current random seed and adjusts it based on the current frame
+; if this adjustment happens to be 0 its incremented to ensure we never end up with a random seed of 0 (may cause issues in saoe cases)
+.segment "CODE"
+.proc random_number_generator
+    @RNG:
+        LDA random_seed
+        EOR frame_counter ; XOR with a feedback value
+
+        BNE :+
+        ; If the random seed is 0 -> increase to 1
+            INC random_seed ; ensure its non zero
+        :
+        STA random_seed  ; Store the new seed
+    RTS 
+.endproc
+```
 
 ### Maze solving
 
 #### Left Hand Rule
 
+
 #### Bread-First Search
+
 
 ## Used Software
 **Graphics:**
@@ -196,6 +234,8 @@ For the controller input on the NES there are some things to consider if you use
 
 The split scrolling for the HUD is done using the old trick from Super Mario Bros 3 since I was not using a mapper that supports scanline interrupts at the time and the HUD is at the top row [source](https://retrocomputing.stackexchange.com/questions/1898/how-can-i-create-a-split-scroll-effect-in-an-nes-game).
 
+For the Maze generation: [Stackoverflow post explaining the algoritm](https://stackoverflow.com/questions/29739751/implementing-a-randomly-generated-maze-using-prims-algorithm)
+
 ### Initial Project
 
 The initial project was made during a class in a [DAE](https://www.digitalartsandentertainment.be/page/31/Game+Development) course (Retro Console & Emulator Programming) given by Tom Tesch.
@@ -207,4 +247,3 @@ Manning Publications Co.</br>
 ISBN: 9781633438019.
 
 For more information, or to view the original project, please visit the project repository [here](https://github.com/thegamingnobody/AssemblyMaze).
-ZZ
