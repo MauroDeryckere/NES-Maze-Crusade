@@ -208,10 +208,10 @@ Then a very simple calculation is done whenever a random number is needed.
 ### Maze solving
 
 #### Left Hand Rule
-
+The first solving algorithm that was implemented is a very simple one, you just always keep your left hand on the wall until you reach the exit.
 
 #### Bread-First Search
-
+The second algorithm that was implemented is more complicated, especially on older hardware like this. It is a BFS algorithm. You explore all unvisited walkable neighbors, if none are the goal tile, you continue exploring all their neighbors again.
 
 ## Used Software
 **Graphics:**
