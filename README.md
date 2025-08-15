@@ -19,6 +19,8 @@ Players can enjoy the game on original NES hardware or through a compatible NES 
 4. [Technical Information](#technical-information)
    - [Building Project](#building-project)
    - [Graphics](#graphics)
+      - [HUD](#hud)
+      - [Animations](#animations)
    - [Data Structures](#data-structures)
    - [Maze Generation](#maze-generation)
       - [Random Numbers](#random-numbers)
@@ -80,11 +82,13 @@ Setup\build.bat Maze
 Having a 6502 compiler installed is a requirement for this to work, we used [CC65](https://cc65.github.io/).
 
 ### Graphics
-split scrolling "hack" for HUD
-score
-animations
+#### HUD
+For the HUD, a classic trick is used, during VBlank the scroll is changed when the sprite 0  is encountered using the sprite 0 hit test. This is simply an invisible sprite at the end of the HUD scanline. 
 
-uses changed tiles buffer -> more specifics there
+#### Animations
+The titlescreen background is animated on load, and during the maze generation I also animated the background tiles.
+
+To change any background tiles, I use the changed tiles buffer as it is not "safe" to change background tiles outside of VBlank time, this buffer simply stores any tiles I want to change until VBlank, changes the tiles and then clears it for the next frame.
 
 ### Data structures
 
@@ -238,7 +242,7 @@ For the controller input on the NES there are some things to consider if you use
 
 The split scrolling for the HUD is done using the old trick from Super Mario Bros 3 since I was not using a mapper that supports scanline interrupts at the time and the HUD is at the top row [source](https://retrocomputing.stackexchange.com/questions/1898/how-can-i-create-a-split-scroll-effect-in-an-nes-game).
 
-For the Maze generation: [Stackoverflow post explaining the algoritm](https://stackoverflow.com/questions/29739751/implementing-a-randomly-generated-maze-using-prims-algorithm)
+For the Maze generation: [Stackoverflow post explaining the algorithm](https://stackoverflow.com/questions/29739751/implementing-a-randomly-generated-maze-using-prims-algorithm)
 
 ### Initial Project
 
